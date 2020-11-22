@@ -1,0 +1,686 @@
+Options:
+#Permissions
+	permissionwarn: "mod::*" or "mod::warn"
+	permissionmessagewarn: &cYou can't warn players!
+#Prefix
+	prefix: &7»&4Warn&7«
+#Usage
+	usagewarn: &cIncorrect Usage&7: &f/warn <player> <reason> 
+	usagewarns: &cIncorrect Usage&7: &f/warns <player>
+#Swear Punishments
+	swearmute1: &8(&3Reason: &7Consistent Swearing&8) &8(&4First Punishment&8)
+	swearmute1b: &530m
+	swearmute1c: 30m
+	swearmute2: &8(&3Reason: &7Consistent Swearing&8) &8(&4Second Punishment&8)
+	swearmute2b: &53h
+	swearmute2c: 3h
+	swearmute3: &8(&3Reason: &7Consistent Swearing&8) &8(&4Third Punishment&8)
+	swearmute3b: &512h
+	swearmute3c: 12h
+#Caps Punishments
+	capsmute1: &8(&3Reason: &7Using too much caps in chat&8) &8(&4First Punishment&8)
+	capsmute1b: &530m
+	capsmute1c: 30m
+	capsmute2: &8(&3Reason: &7Using too much caps in chat&8) &8(&4Second Punishment&8)
+	capsmute2b: &52h
+	capsmute2c: 2h
+#Spam Punishments
+	spammute1: &8(&3Reason: &7Spamming in chat&8) &8(&4First Punishment&8)
+	spammute1b: &53h
+	spammute1c: 3h
+	spammute2: &8(&3Reason: &7Spamming in chat&8) &8(&4Second Punishment&8)
+	spammute2b: &56h
+	spammute2c: 6h
+	spammute3: &8(&3Reason: &7Spamming in chat&8) &8(&4Third Punishment&8)
+	spammute3b: &512h
+	spammute3c: 12h
+	spammute4: &8(&3Reason: &7Spamming in chat&8) &8(&4Forth and Final Punishment&8)
+	spammute4b: &5Perm
+	spammute4c: Perm
+#Stealing Punishments
+	stealban1:&8(&3Reason: &7Stealing items from other players&8) &8(&4First Punishment&8)
+	stealban1b: &53d
+	stealban1c: 3d
+#Staff Disrespect Punishments
+	sdisrespectmute1: &8(&3Reason: &7Staff Disrespect&8) &8(&4First Punishment&8)
+	sdisrespectmute1b: &51h
+	sdisrespectmute1c: 1h
+	sdisrespectmute2: &8(&3Reason: &7Staff Disrespect&8) &8(&4Second Punishment&8)
+	sdisrespectmute2b: &53h
+	sdisrespectmute2c: 3h
+	sdisrespectmute3: &8(&3Reason: &7Staff Disrespect&8) &8(&4Third Punishment&8)
+	sdisrespectmute3b: &512h
+	sdisrespectmute3c: 12h
+	sdisrespectmute4: &8(&3Reason: &7Staff Disrespect&8) &8(&4Forth and Final Punishment&8)
+	sdisrespectmute4b: &5Perm
+	sdisrespectmute4c: Perm
+#Message
+	warnmessage: &CYou have been warned! &8(&3Reason: &7%arg-2%&8)
+	warnreset1: &aYou have reset the warns of &8(&7%arg-1%&8)
+	warnreset2: 35125
+	messagetomod: &CYou have warned &4%arg-1% &cdue to &a%arg-2%
+	unwarnmsg: &aYou have been unwarned!
+	umsgtomod: &aYou have unwarned &2%arg-1%&a.
+
+
+on first join: 
+	set {punishment::player::%uuid of player%::warns} to 0
+	set {punishment::player::%uuid of player%::warns::swearing} to 0
+	set {punishment::player::%uuid of player%::warns::caps} to 0
+	set {punishment::player::%uuid of player%::warns::spam} to 0
+	set {punishment::player::%uuid of player%::warns::stealing} to 0 
+	set {punishment::player::%uuid of player%::warns::sdisrespect} to 0
+	set {punishment::player::%uuid of player%::warns::askop} to 0 
+	set {punishment::player::%uuid of player%::mutes} to 0
+	set {punishment::player::%uuid of player%::mutes::swearing} to 0
+	set {punishment::player::%uuid of player%::mutes::caps} to 0
+	set {punishment::player::%uuid of player%::mutes::spam} to 0
+	set {punishment::player::%uuid of player%::mutes::sdisrespect} to 0 
+	set {punishment::player::%uuid of player%::kicks} to 0
+	set {punishment::player::%uuid of player%::kicks::swearing} to 0
+	set {punishment::player::%uuid of player%::kicks::caps} to 0
+	set {punishment::player::%uuid of player%::bans} to 0
+	set {punishment::player::%uuid of player%::bans::caps} to 0
+	set {punishment::player::%uuid of player%::bans::spam} to 0
+	set {punishment::player::%uuid of player%::bans::stealing} to 0 
+	set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%uuid of player%.yml" to false
+
+
+every 1 second in "world":
+	if {punishment::timer::%uuid of player%::left::ban} is between 0 and 5 seconds:
+		broadcast "%uuid of player% has been unbanned"
+#		set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%{_p}%.yml" to false
+
+
+#command /pardo <offline player>:
+#	trigger:
+#		set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%uuid of player%.yml" to false
+
+command /warn <offline player> <text>:
+	permission: {@permissionwarn}
+	permission message: {@permissionmessagewarn}
+	usage: {@usagewarn}
+	trigger:
+		if arg-1 is set:
+			if arg-2 is "Swearing" or "swearing":
+				if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is true:
+					send "{@prefix} &4%arg-1% &chas already been muted for &3%{punishment::timer::%arg-1's uuid%::mute::length::gui}%"
+					send "&6&lReason: &3%{punishment::%arg-1's uuid%::mute::reason}%"
+					send "&6&lTime Left: &3%{punishment::timer::%arg-1's uuid%::left::mute}%"
+				else if {punishment::player::%arg-1's uuid%::warns::swearing} is less than 2:
+					send "{@prefix} {@warnmessage}" to arg-1
+					send "{@prefix} {@messagetomod}"
+					add 1 to {punishment::player::%arg-1's uuid%::warns}
+					add 1 to {punishment::player::%arg-1's uuid%::warns::swearing}
+				else if {punishment::player::%arg-1's uuid%::warns::swearing} is 2:
+					if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is false:
+						if {punishment::player::%arg-1's uuid%::mutes::swearing} is 0:
+							send "{@prefix}  &CYou have been muted for {@swearmute1b}&c! {@swearmute1}" to arg-1
+							send "{@prefix} &CYou have muted &4%arg-1% for {@swearmute1} &cdue to &a%arg-2%"
+							make player say "/mute %arg-1's uuid% {@swearmute1c} {@swearmute1}"
+							add 1 to {punishment::player::%arg-1's uuid%::warns}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes::swearing}
+							set {punishment::player::%arg-1's uuid%::warns::swearing} to 0
+							set {punishment::time::%arg-1's uuid%::mute} to now
+							set {punishment::timer::%arg-1's uuid%::mute::length::swearing} to "30m"
+							set {punishment::timer::%arg-1's uuid%::mute::length} to "30m"
+							set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Consistent Swearing&8) &8(&4First Punishment&8)"
+							set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+						else if {punishment::player::%arg-1's uuid%::mutes::swearing} is 1:
+							send "{@prefix}  &CYou have been muted for {@swearmute2b}&c! {@swearmute2}" to arg-1
+							send "{@prefix} &CYou have muted &4%arg-1% for {@swearmute2} &cdue to &a%arg-2%"
+							make player say "/mute %arg-1's uuid% {@swearmute2c} {@swearmute2}"
+							add 1 to {punishment::player::%arg-1's uuid%::warns}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes}
+							add 1 to {punishment::player::%arg-1's uuid%::mute::swearing}
+							set {punishment::player::%arg-1's uuid%::warns::swearing} to 0
+							set {punishment::time::%arg-1's uuid%::mute} to now
+							set {punishment::timer::%arg-1's uuid%::mute::length::swearing} to "3h"
+							set {punishment::timer::%arg-1's uuid%::mute::length} to "3h"
+							set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Consistent Swearing&8) &8(&4Second Punishment&8)"
+							set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+						else if {punishment::player::%arg-1's uuid%::mutes::swearing} is 2:
+							send "{@prefix}  &CYou have been muted for {@swearmute3b}&c! {@swearmute3}" to arg-1
+							send "{@prefix} &CYou have muted &4%arg-1% for {@swearmute3} &cdue to &a%arg-2%"
+							make player say "/mute %arg-1's uuid% {@swearmute3c} {@swearmute3}"
+							add 1 to {punishment::player::%arg-1's uuid%::warns}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes::swearing}
+							set {punishment::player::%arg-1's uuid%::warns::swearing} to 0
+							set {punishment::time::%arg-1's uuid%::mute} to now
+							set {punishment::timer::%arg-1's uuid%::mute::length::swearing} to "12h"
+							set {punishment::timer::%arg-1's uuid%::mute::length} to "12h"
+							set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Consistent Swearing&8) &8(&4Third Punishment&8)"
+							set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+						else if {punishment::player::%arg-1's uuid%::mutes::swearing} is 3:
+							send "{@prefix} &4%arg-1% &chas already been muted for the maximum lenght!"
+			
+
+
+			if arg-2 is "Caps" or "caps" or "CAPS":
+				if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is true:
+					send "{@prefix} &4%arg-1% &chas already been muted for &3%{punishment::timer::%arg-1's uuid%::mute::length::gui}%"
+					send "&6&lReason: &3%{punishment::%arg-1's uuid%::mute::reason}%"
+					send "&6&lTime Left: &3%{punishment::timer::%arg-1's uuid%::left::mute}%"
+				else if {punishment::player::%arg-1's uuid%::warns::caps} is less than 5:
+					send "{@prefix} {@warnmessage}" to arg-1
+					send "{@prefix} {@messagetomod}"
+					add 1 to {punishment::player::%arg-1's uuid%::warns}
+					add 1 to {punishment::player::%arg-1's uuid%::warns::caps}
+				else if {punishment::player::%arg-1's uuid%::warns::caps} is 5:
+					if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is false:
+						if {punishment::player::%arg-1's uuid%::mutes::caps} is 0:
+							send "{@prefix}  &CYou have been muted for {@capsmute1b}&c! {@capsmute1}" to arg-1
+							send "{@prefix} &CYou have muted &4%arg-1% for {@capsmute1} &cdue to &a%arg-2%"
+							make player say "/mute %arg-1's uuid% {@capsmute1c} {@capsmute1}"
+							add 1 to {punishment::player::%arg-1's uuid%::warns}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes::caps}
+							set {punishment::player::%arg-1's uuid%::warns::caps} to 0
+							set {punishment::time::%arg-1's uuid%::mute} to now
+							set {punishment::timer::%arg-1's uuid%::mute::length::caps} to "30m"
+							set {punishment::timer::%arg-1's uuid%::mute::length} to "30m"
+							set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Using too much caps in chat&8) &8(&4First Punishment&8)"
+							set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+						else if {punishment::player::%arg-1's uuid%::mutes::caps} is 1:
+							send "{@prefix}  &CYou have been muted for {@capsmute2b}&c! {@capsmute2}" to arg-1
+							send "{@prefix} &CYou have muted &4%arg-1% for {@capsmute2} &cdue to &a%arg-2%"
+							make player say "/mute %arg-1's uuid% {@capsmute2c} {@capsmute2}"
+							add 1 to {punishment::player::%arg-1's uuid%::warns}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes}
+							add 1 to {punishment::player::%arg-1's uuid%::mutes::caps}
+							set {punishment::player::%arg-1's uuid%::warns::caps} to 0
+							set {punishment::time::%arg-1's uuid%::mute} to now
+							set {punishment::timer::%arg-1's uuid%::mute::length::caps} to "2h"
+							set {punishment::timer::%arg-1's uuid%::mute::length} to "2h"
+							set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Using too much caps in chat&8) &8(&4Second Punishment&8)"
+							set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+						
+			
+			if arg-2 is "spam" or "Spam":
+				if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is true:
+					send "{@prefix} &4%arg-1% &chas already been muted for &3%{punishment::timer::%arg-1's uuid%::mute::length::gui}%"
+					send "&6&lReason: &3%{punishment::%arg-1's uuid%::mute::reason}%"
+					send "&6&lTime Left: &3%{punishment::timer::%arg-1's uuid%::left::mute}%"
+				else if {punishment::player::%arg-1's uuid%::warns::spam} is 0:
+					send "{@prefix} {@warnmessage}" to arg-1
+					send "{@prefix} {@messagetomod}"
+					add 1 to {punishment::player::%arg-1's uuid%::warns}
+					add 1 to {punishment::player::%arg-1's uuid%::warns::spam}
+				else if {punishment::player::%arg-1's uuid%::warns::spam} is 1:
+					if {punishment::player::%arg-1's uuid%::mutes::spam} is 0:
+						send "{@prefix}  &CYou have been muted for {@spammute1b}&c! {@spammute1}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@spammute1} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid% {@spammute1c} {@spammute1}"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::spam}
+						set {punishment::player::%arg-1's uuid%::warns::spam} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::spam} to "3h"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "3h"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Spamming in chat&8) &8(&4First Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+					else if {punishment::player::%arg-1's uuid%::mutes::spam} is 1:
+						send "{@prefix}  &CYou have been muted for {@spammute2b}&c! {@spammute2}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@spammute2} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid% {@spammute2c} {@spammute2}"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::spam}
+						set {punishment::player::%arg-1's uuid%::warns::spam} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::spam} to "6h"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "6h"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Spamming in chat&8) &8(&4Second Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+					else if {punishment::player::%arg-1's uuid%::mutes::spam} is 2:
+						send "{@prefix}  &CYou have been muted for {@spammute3b}&c! {@spammute3}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@spammute3} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid% {@spammute3c} {@spammute3}"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::spam}
+						set {punishment::player::%arg-1's uuid%::warns::spam} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::spam} to "12h"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "12h"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Spamming in chat&8) &8(&4Third Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+					else if {punishment::player::%arg-1's uuid%::mutes::spam} is 3:
+						send "{@prefix}  &CYou have been &4&lPermanantly &r&cmuted! {@spammute4}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@spammute4} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid%"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::spam}
+						set {punishment::player::%arg-1's uuid%::warns::spam} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::spam} to "Perm"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "Perm"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Spamming in chat&8) &8(&4Fourth and Final Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+			
+			
+			if arg-2 is "Stealing" or "stealing":
+				if {punishment::player::%arg-1's uuid%::warns::stealing} is 0:
+					send "{@prefix} {@warnmessage}" to arg-1
+					send "{@prefix} {@messagetomod}"
+					add 1 to {punishment::player::%arg-1's uuid%::warns}
+					add 1 to {punishment::player::%arg-1's uuid%::warns::stealing}
+				else if {punishment::player::%arg-1's uuid%::warns::stealing} is 1:
+					make player say "/tempban %arg-1's uuid% {@stealban1c} {@stealban1}"
+					send "&cYou have banned %arg-1% for {@stealban1b} {@stealban1}"
+					add 1 to {punishment::player::%arg-1's uuid%::bans::stealing}
+					add 1 to {punishment::player::%arg-1's uuid%::bans}
+			
+			
+			if arg-2 is "Staff Disrespect":
+				if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is true:
+					send "{@prefix} &4%arg-1% &chas already been muted for &3%{punishment::timer::%arg-1's uuid%::mute::length::gui}%"
+					send "&6&lReason: &3%{punishment::%arg-1's uuid%::mute::reason}%"
+					send "&6&lTime Left: &3%{punishment::timer::%arg-1's uuid%::left::mute}%"
+				else if {punishment::player::%arg-1's uuid%::warns::sdisrespect} is 0:
+					send "{@prefix} {@warnmessage}" to arg-1
+					send "{@prefix} {@messagetomod}"
+					add 1 to {punishment::player::%arg-1's uuid%::warns}
+					add 1 to {punishment::player::%arg-1's uuid%::warns::sdisrespect}
+				else if {punishment::player::%arg-1's uuid%::warns::sdisrespect} is 1:
+					if {punishment::player::%arg-1's uuid%::mutes::sdisrespect} is 0:
+						send "{@prefix}  &CYou have been muted for {@sdisrespectmute1b}&c! {@sdisrespectmute1}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@sdisrespectmute1} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid% {@sdisrespectmute1c} {@sdisrespectmute1}"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::sdisrespect}
+						set {punishment::player::%arg-1's uuid%::warns::sdisrespect} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} to "1h"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "1h"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Staff Disrespect&8) &8(&4First Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+					else if {punishment::player::%arg-1's uuid%::mutes::sdisrespect} is 1:
+						send "{@prefix}  &CYou have been muted for {@sdisrespectmute2b}&c! {@sdisrespectmute2}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@sdisrespectmute2} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid% {@sdisrespectmute2c} {@sdisrespectmute2}"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::sdisrespect}
+						set {punishment::player::%arg-1's uuid%::warns::sdisrespect} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} to "3h"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "3h"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Staff Disrespect&8) &8(&4Second Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+					else if {punishment::player::%arg-1's uuid%::mutes::sdisrespect} is 2:
+						send "{@prefix}  &CYou have been muted for {@sdisrespectmute3b}&c! {@sdisrespectmute3}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@sdisrespectmute3} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid% {@sdisrespectmute3c} {@sdisrespectmute3}"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::sdisrespect}
+						set {punishment::player::%arg-1's uuid%::warns::sdisrespect} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} to "12h"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "12h"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Staff Disrespect&8) &8(&4Third Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+					else if {punishment::player::%arg-1's uuid%::mutes::sdisrespect} is 3:
+						send "{@prefix}  &CYou have been &4&lPermanantly &r&cmuted! {@sdisrespectmute4}" to arg-1
+						send "{@prefix} &CYou have muted &4%arg-1% for {@sdisrespectmute4} &cdue to &a%arg-2%"
+						make player say "/mute %arg-1's uuid%"
+						add 1 to {punishment::player::%arg-1's uuid%::warns}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes}
+						add 1 to {punishment::player::%arg-1's uuid%::mutes::sdisrespect}
+						set {punishment::player::%arg-1's uuid%::warns::sdisrespect} to 0
+						set {punishment::time::%arg-1's uuid%::mute} to now
+						set {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} to "Perm"
+						set {punishment::timer::%arg-1's uuid%::mute::length} to "Perm"
+						set {punishment::%arg-1's uuid%::mute::reason} to "&8(&7Staff Disrespect&8) &8(&4Fourth and Final Punishment&8)"
+						set yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" to true
+#{@stealban1b}			
+			
+			if arg-2 is "Asking for OP":
+				if {punishment::player::%arg-1's uuid%::warns::askop} is 0:
+					send "{@prefix} {@warnmessage}" to arg-1
+					send "{@prefix} {@messagetomod}"
+					add 1 to {punishment::player::%arg-1's uuid%::warns}
+					add 1 to {punishment::player::%arg-1's uuid%::warns::askop}
+				else if {punishment::player::%arg-1's uuid%::warns::askop} is 1:
+					make player say "/tempban %arg-1's uuid% {@stealban1c} {@stealban1}"
+					send "&cYou have banned %arg-1% for 30s {@stealban1}"
+					add 1 to {punishment::player::%arg-1's uuid%::bans::askop}
+					add 1 to {punishment::player::%arg-1's uuid%::bans}
+					set {punishment::time::%arg-1's uuid%::ban} to now
+					set {punishment::timer::%arg-1's uuid%::ban::length::askop} to "3d"
+					set {punishment::timer::%arg-1's uuid%::ban::length} to "3d"
+					set {punishment::%arg-1's uuid%::ban::reason} to "&8(&3Reason: &7Asking for OP&8) &8(&4First Punishment&8)"
+					set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%arg-1's uuid%.yml" to true
+
+command /punish <offline player>:
+	trigger:
+		if arg-1 is set:
+			#Check warn
+			if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is false:
+				set {punishment::timer::%arg-1's uuid%::left::mute} to "&2N/A"
+				set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&2No"
+				set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "&2None"
+				set {punishment::%arg-1's uuid%::mute::reason} to "&8(&2N/A&8)"
+			if yaml value "muted" from "C:\Users\ceace\Desktop\Skript server\plugins\Essentials\userdata\%arg-1's uuid%.yml" is true:
+				#Swear
+				if {punishment::timer::%arg-1's uuid%::mute::length::swearing} is "30m":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@swearmute1c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 30 minutes
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::swearing} is "3h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@swearmute2c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 180 minutes
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::swearing} is "12h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@swearmute3c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 12 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				#Caps
+				if {punishment::timer::%arg-1's uuid%::mute::length::caps} is "30m":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@capsmute1c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 30 minutes
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::caps} is "2h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@capsmute2c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 2 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				#Spam
+				if {punishment::timer::%arg-1's uuid%::mute::length::spam} is "3h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@spammute1c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 3 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::spam} is "6h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@spammute2c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 6 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::spam} is "12h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@spammute3c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 12 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::spam} is "Perm":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@spammute4c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to "Never"
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				#Staff Disrespect
+				if {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} is "1h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@sdisrespectmute1c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 1 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} is "3h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@sdisrespectmute2c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 3 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} is "12h":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@sdisrespectmute3c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to difference between {punishment::timer::%arg-1's uuid%::mute} and 12 hours
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+				if {punishment::timer::%arg-1's uuid%::mute::length::sdisrespect} is "Perm":
+					set {punishment::timer::%arg-1's uuid%::mute::length::gui} to "{@sdisrespectmute4c}"
+					set {punishment::timer::%arg-1's uuid%::left::mute} to "Never"
+					set {punishment::timer::%arg-1's uuid%::mute} to difference between {punishment::time::%arg-1's uuid%::mute} and now
+					set {punishment::timer::%arg-1's uuid%::mute::toggle} to "&cYes"
+			if yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%arg-1's uuid%.yml" is false:
+				set {punishment::timer::%arg-1's uuid%::left::ban} to "&2N/A"
+				set {punishment::timer::%arg-1's uuid%::ban::toggle} to "&2No"
+				set {punishment::timer::%arg-1's uuid%::ban::length::gui} to "&2None"
+				set {punishment::%arg-1's uuid%::ban::reason} to "&8(&2N/A&8)"
+			if yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%arg-1's uuid%.yml" is true:
+				if {punishment::timer::%arg-1's uuid%::ban::length::stealing} is "3d":
+					set {punishment::timer::%arg-1's uuid%::ban::length::gui} to "{@stealban1c}"
+					set {punishment::timer::%arg-1's uuid%::left::ban} to difference between {punishment::timer::%arg-1's uuid%::ban} and 30 seconds
+					set {punishment::timer::%arg-1's uuid%::ban} to difference between {punishment::time::%arg-1's uuid%::ban} and now
+					set {punishment::timer::%arg-1's uuid%::ban::toggle} to "&cYes"
+
+
+
+			#Player
+			set {player} to arg-1
+			#Player Head
+			set {skull} to skull of arg-1 named "&3&l&nPunishments" 
+			set line 1 of lore of {skull} to "&4&l-Warnings-"
+			set line 2 of lore of {skull} to "&cTotal &8(&7%{punishment::player::%arg-1's uuid%::warns}%&8)"
+			set line 3 of lore of {skull} to " "
+			set line 4 of lore of {skull} to "&4&l  -Mutes-"
+			set line 5 of lore of {skull} to "&cTotal &8(&7%{punishment::player::%arg-1's uuid%::mutes}%&8)"
+			set line 6 of lore of {skull} to " "
+			set line 7 of lore of {skull} to "&6&lLeft Click &f- &7To View More"
+			set line 8 of lore of {skull} to "&6&lRight Click &f- &7To Reset"
+			#Back arrow
+			set {back} to arrow named "&6Back"
+			#Warn
+			set {warn} to glowing paper named "&3&lWarn"
+			set line 1 of lore of {warn} to "&cTotal &8(&3%{punishment::player::%arg-1's uuid%::warns}%&8)"
+			#Warns 
+			set {warns} to glowing paper named "&3&lWarns"
+			set line 1 of lore of {warns} to "&cSwearing &8(&3%{punishment::player::%arg-1's uuid%::warns::swearing}%&8)"
+			set line 2 of lore of {warns} to "&cCaps &8(&3%{punishment::player::%arg-1's uuid%::warns}%&8)"
+			set {swearwarn} to glowing paper named "&3&lSwearing"
+			set line 1 of lore of {swearwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::swearing}%&8)"
+			set {capswarn} to glowing paper named "&3&lCaps"
+			set line 1 of lore of {capswarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::caps}%&8)"
+			set {spamwarn} to glowing paper named "&3&lSpam"
+			set line 1 of lore of {spamwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::spam}%&8)"
+			set {stealwarn} to glowing paper named "&3&lStealing"
+			set line 1 of lore of {stealwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::stealing}%&8)"
+			set {sdisrespectwarn} to glowing paper named "&3&lStaff Disrespect"
+			set line 1 of lore of {sdisrespectwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::sdisrespect}%&8)"
+			set {askopwarn} to glowing paper named "&3&lAsking for OP"
+			set line 1 of lore of {askopwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::askop}%&8)"
+			set {steal1warn} to glowing paper named "&3&lStealing"
+			set {stea1lwarn} to glowing paper named "&3&lStealing"
+			#Mute
+			set {mute} to glowing barrier block named "&3&lMute" 
+			set line 1 of lore of {mute} to "&cTotal &8(&3%{punishment::player::%arg-1's uuid%::mutes}%&8)"
+			set line 2 of lore of {mute} to ""
+			set line 3 of lore of {mute} to "&6&lCurrently Muted &8(&3%{punishment::timer::%arg-1's uuid%::mute::toggle}%&8)"
+			set line 4 of lore of {mute} to "&6&lReason &3%{punishment::%arg-1's uuid%::mute::reason}%"
+			set line 5 of lore of {mute} to "&6&lLength &8(&3%{punishment::timer::%arg-1's uuid%::mute::length::gui} %&8)"
+			set line 6 of lore of {mute} to "&6&lExpires in &8(&3%{punishment::timer::%arg-1's uuid%::left::mute}%&8)"
+			#Mutes
+			set {mutes} to glowing barrier block named "&3&lMutes"
+			set line 1 of lore of {mutes} to "&cSwearing &8(&3%{punishment::player::%arg-1's uuid%::mutes::swearing}%&8)"
+			set line 2 of lore of {mutes} to "&cCaps &8(&3%{punishment::player::%arg-1's uuid%::mutes::caps}%&8)"
+			#Kick
+			set {kick} to glowing leather boots named "&3&lKick"
+			set line 1 of lore of {kick} to "&cTotal &8(&3%{punishment::player::%arg-1's uuid%::kicks}%&8)"
+			#Kicks
+			set {kicks} to glowing leather boots named "&3&lKicks"
+			set line 1 of lore of {kicks} to "&cSwearing &8(&3%{punishment::player::%arg-1's uuid%::kicks::swearing}%&8)"
+			set line 2 of lore of {kicks} to "&cCaps &8(&3%{punishment::player::%arg-1's uuid%::kicks::caps}%&8)"
+			#Ban
+			set {ban} to glowing tnt named "&3&lBan"
+			set line 1 of lore of {ban} to "&cTotal &8(&3%{punishment::player::%arg-1's uuid%::bans}%&8)"
+			set line 2 of lore of {ban} to ""
+			set line 3 of lore of {ban} to "&6&lCurrently Banned &8(&3%{punishment::timer::%arg-1's uuid%::ban::toggle}%&8)"
+			set line 4 of lore of {ban} to "&6&lReason &3%{punishment::%arg-1's uuid%::ban::reason}%"
+			set line 5 of lore of {ban} to "&6&lLength &8(&3%{punishment::timer::%arg-1's uuid%::ban::length::gui} %&8)"
+			set line 6 of lore of {ban} to "&6&lExpires in &8(&3%{punishment::timer::%arg-1's uuid%::left::ban}%&8)"
+			#Bans
+			set {bans} to glowing tnt named "&3&lBans"
+			set line 1 of lore of {bans} to "&cSwearing &8(%{bans::swearing::%arg-1's uuid%}%&8)"
+			set line 2 of lore of {bans} to "&cCaps &8(&3%{bans::caps::%arg-1's uuid%}%&8)"
+			set {_punish} to virtual hopper inventory named "&7[&4&lPunish&7] &3%arg-1%"
+			open {_punish} to player
+			format gui slot 0 of player with {warn} to run function openMenu(player, 0)
+			format gui slot 1 of player with {mute} to run function openMenu(player, 1)
+			format gui slot 2 of player with {kick} to run function openMenu(player, 2)
+			format gui slot 3 of player with {ban} to run function openMenu(player, 3)
+			format gui slot 4 of player with {skull} to run function openMenu(player, 4) with "left" click
+			format gui slot 4 of player with {skull} to run function openMenu(player, 5) with "right" click
+
+
+
+function openMenu(p: Player, type: int = 0):
+	if {_type} is 0:
+		open virtual chest inventory with 4 rows named "&7[&4&lWarn&7] &3%{player}%" to {_p}
+		format a gui slot 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 24, 25, 26, 27, 28, 29, 30, 32, 33 and 34 of {_p} with gray stained glass pane 
+		make a gui slot 10 of {_p} with {swearwarn} to close then run {_p} command "warn %{player}% Swearing"
+		make a gui slot 11 of {_p} with {capswarn} to close then run {_p} command "warn %{player}% Caps"
+		make a gui slot 12 of {_p} with {spamwarn} to close then run {_p} command "warn %{player}% Spam"
+		make a gui slot 13 of {_p} with {stealwarn} to close then run {_p} command "warn %{player}% Stealing"
+		make a gui slot 14 of {_p} with {sdisrespectwarn} to close then run {_p} command "warn %{player}% Staff Disrespect"
+		make a gui slot 15 of {_p} with {askopwarn} to close then run {_p} command "warn %{player}% Asking for OP"
+		make a gui slot 16 of {_p} with {swearwarn} to close then run {_p} command "warn %{player}% Swea"
+		make a gui slot 21 of {_p} with {capswarn} to close then run {_p} command "warn %{player}% Caps"
+		make a gui slot 22 of {_p} with {spamwarn} to close then run {_p} command "warn %{player}% Spam"
+		make a gui slot 23 of {_p} with {spamwarn} to close then run {_p} command "warn %{player}% Spam"
+		format gui slot 31 of {_p} with {skull} to run function openMenu({_p}, 4) with "left" click
+		format gui slot 31 of {_p} with {skull} to run function openMenu({_p}, 5) with "right" click
+		make a gui slot 35 of {_p} with {back} to close then run {_p} command "punish %{player}%"
+	if {_type} is 1:
+		open virtual chest inventory with 2 rows named "&7[&4&lMute&7] &3%{player}%" to {_p}
+		make a gui slot 0 of {_p} with {swearwarn} to run {_p} command "warn %{player}% Swearing"
+		make a gui slot 1 of {_p} with {mutes} 
+		make a gui slot 2 of {_p} with stone
+		make a gui slot 3 of {_p} with stone
+		make a gui slot 4 of {_p} with {skull} 
+		make a gui slot 5 of {_p} with {skull} 
+		make a gui slot 6 of {_p} with {skull} 
+		make a gui slot 7 of {_p} with {skull} 
+		make a gui slot 8 of {_p} with {skull} 
+		make a gui slot 9 of {_p} with gray stained glass pane 
+		make a gui slot 10 of {_p} with gray stained glass pane 
+		make a gui slot 11 of {_p} with gray stained glass pane 
+		make a gui slot 12 of {_p} with gray stained glass pane 
+		format gui slot 13 of {_p} with {skull} to run function openMenu({_p}, 4) with "left" click
+		format gui slot 13 of {_p} with {skull} to run function openMenu({_p}, 5) with "right" click
+		make a gui slot 14 of {_p} with gray stained glass pane 
+		make a gui slot 15 of {_p} with gray stained glass pane   
+		make a gui slot 16 of {_p} with gray stained glass pane 
+		make a gui slot 17 of {_p} with {back} to run {_p} command "punish %{player}%"
+	if {_type} is 2:
+		open virtual chest inventory with 2 rows named "&7[&4&lKick&7] &3%{player}%" to {_p}
+		make a gui slot 0 of {_p} with {swearwarn} to run {_p} command "warn %{player}% Swearing"
+		make a gui slot 1 of {_p} with {mutes} 
+		make a gui slot 2 of {_p} with stone
+		make a gui slot 3 of {_p} with stone
+		make a gui slot 4 of {_p} with {skull} 
+		make a gui slot 5 of {_p} with {skull} 
+		make a gui slot 6 of {_p} with {skull} 
+		make a gui slot 7 of {_p} with {skull} 
+		make a gui slot 8 of {_p} with {skull} 
+		make a gui slot 9 of {_p} with gray stained glass pane 
+		make a gui slot 10 of {_p} with gray stained glass pane 
+		make a gui slot 11 of {_p} with gray stained glass pane 
+		make a gui slot 12 of {_p} with gray stained glass pane 
+		format gui slot 13 of {_p} with {skull} to run function openMenu({_p}, 4) with "left" click
+		format gui slot 13 of {_p} with {skull} to run function openMenu({_p}, 5) with "right" click 
+		make a gui slot 14 of {_p} with gray stained glass pane 
+		make a gui slot 15 of {_p} with gray stained glass pane   
+		make a gui slot 16 of {_p} with gray stained glass pane 
+		make a gui slot 17 of {_p} with {back} to run {_p} command "punish %{player}%"
+	if {_type} is 3:
+		open virtual chest inventory with 2 rows named "&7[&4&lBan&7] &3%{player}%" to {_p}
+		make a gui slot 0 of {_p} with {swearwarn} to run {_p} command "warn %{player}% Swearing"
+		make a gui slot 1 of {_p} with {mutes} 
+		make a gui slot 2 of {_p} with stone
+		make a gui slot 3 of {_p} with stone
+		make a gui slot 4 of {_p} with {skull} 
+		make a gui slot 5 of {_p} with {skull} 
+		make a gui slot 6 of {_p} with {skull} 
+		make a gui slot 7 of {_p} with {skull} 
+		make a gui slot 8 of {_p} with {skull} 
+		make a gui slot 9 of {_p} with gray stained glass pane 
+		make a gui slot 10 of {_p} with gray stained glass pane 
+		make a gui slot 11 of {_p} with gray stained glass pane 
+		make a gui slot 12 of {_p} with gray stained glass pane 
+		format gui slot 13 of {_p} with {skull} to run function openMenu({_p}, 4) with "left" click
+		format gui slot 13 of {_p} with {skull} to run function openMenu({_p}, 5) with "right" click
+		make a gui slot 14 of {_p} with gray stained glass pane 
+		make a gui slot 15 of {_p} with gray stained glass pane   
+		make a gui slot 16 of {_p} with gray stained glass pane 
+		make a gui slot 17 of {_p} with {back} to run {_p} command "punish %{player}%"
+	else if {_type} is 4:
+		open virtual hopper inventory named "&7[&4&lPunishments&7] &3%{player}%" to {_p}
+		make a gui slot 0 of {_p} with {warns}
+		make a gui slot 1 of {_p} with {mutes}
+		make a gui slot 2 of {_p} with {kicks}
+		make a gui slot 3 of {_p} with {bans}  
+		format gui slot 4 of {_p} with {skull} to run function openMenu({_p}, 4) with "left" click
+		format gui slot 4 of {_p} with {skull} to run function openMenu({_p}, 5) with "right" click
+	else if {_type} is 5:
+		open virtual hopper inventory named "&7[&2&lConfirm Reset&7] " to {_p}
+		make a gui slot 0 of {_p} with red wool named "&c&lCANCEL&7" to run {_p} command "punish %{player}%"
+		make a gui slot 4 of {_p} with green wool named "&2&lCONFIRM&7" with lore "&6&lRight Click &f-&7 To Confirm" to close then run {_p} command "warns-reset %{player}%" with "right" click 
+		
+
+
+
+
+command /unwarn <offline player>:
+	permission: {@permissionwarn}
+	permission message: {@permissionmessagewarn}
+	trigger:
+		if arg-1 is set:
+			send "{@prefix} {@unwarnmsg}" to arg-1
+			send "{@prefix} {@umsgtomod}"
+			remove 1 from {punishment::player::%arg-1's uuid%::warns}
+
+command /warns <offline player>:
+	trigger:
+		if arg-1 is set:
+			set {_pwarns} to {punishment::player::%arg-1's uuid%::warns}
+			set {_pswarns} to {punishment::player::%arg-1's uuid%::warns::swearing}
+			set {_psmutes} to {punishment::player::%arg-1's uuid%::mutes::swearing}
+			send "                  {@prefix}" to player
+			send "&2%arg-1's uuid% &4Total Warns &8(&3%{punishment::player::%arg-1's uuid%::warns}%&8)" to player
+			send "&9Swearing: &8(&3%{punishment::player::%arg-1's uuid%::warns::swearing}%&8)" to player
+			send "%{punishment::player::%arg-1's uuid%::mutes::swearing}%"
+			send "                  {@prefix}" to player
+		else if arg-1 is not set:
+			send "{@prefix} {@usagewarns}"
+
+command /warns-reset <offline player>:
+	trigger:
+		if arg-1 is set:
+			set {punishment::player::%uuid of player%::warns} to 0
+			set {punishment::player::%uuid of player%::warns::swearing} to 0
+			set {punishment::player::%uuid of player%::warns::caps} to 0
+			set {punishment::player::%uuid of player%::warns::spam} to 0
+			set {punishment::player::%uuid of player%::warns::stealing} to 0 
+			set {punishment::player::%uuid of player%::warns::sdisrespect} to 0
+			set {punishment::player::%uuid of player%::warns::askop} to 0
+			set {punishment::player::%uuid of player%::mutes} to 0
+			set {punishment::player::%uuid of player%::mutes::swearing} to 0
+			set {punishment::player::%uuid of player%::mutes::caps} to 0
+			set {punishment::player::%uuid of player%::mutes::spam} to 0
+			set {punishment::player::%uuid of player%::mutes::sdisrespect} to 0 
+			set {punishment::player::%uuid of player%::kicks} to 0
+			set {punishment::player::%uuid of player%::kicks::swearing} to 0
+			set {punishment::player::%uuid of player%::kicks::caps} to 0
+			set {punishment::player::%uuid of player%::bans} to 0
+			set {punishment::player::%uuid of player%::bans::caps} to 0
+			set {punishment::player::%uuid of player%::bans::spam} to 0
+			send ""
+			send "{@prefix} &8%arg-1%&8's &7Warns have been reset"
+			send ""
+
+command /mutes-reset <offline player>:
+	trigger:
+		if arg-1 is set:
+			set {punishment::timeleft::%arg-1's uuid%::mutes} to 0 
+command /warns-reset-all:
+	trigger:
+		set {punishment::player::*} to 0 
+
+command /ban-reset <offline player>:
+	trigger:
+		set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%arg-1's uuid%.yml" to false
