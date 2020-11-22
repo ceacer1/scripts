@@ -1,0 +1,18 @@
+on join:
+	create bossbar titled "&a&lWelcome &7to &b&lFastGens!" and id "welcome.%player's uuid%" for player with progress 100 with colors green
+	wait 5 ticks
+	loop 50 times:
+#		set bossbar "welcome.%player's uuid%" color to blue
+		set {_bbarvalue} to value of bossbar "welcome.%player's uuid%"
+		remove 1 from {_bbarvalue}
+		set bossbar "welcome.%player's uuid%" value to {_bbarvalue}
+		wait 100 ticks
+#		set bossbar "welcome.%player's uuid%" color to blue
+#		remove 1 from {_bbarvalue}
+#		set bossbar "welcome.%player's uuid%" value to {_bbarvalue}
+#		wait 100 ticks
+	set {_bbarvalue} to 100
+
+command /bbaroff:
+    trigger:
+        remove all players from bossbar "welcome.%player's uuid%"

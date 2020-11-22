@@ -1,0 +1,144 @@
+options:
+    bsgp:10
+
+
+command /shop:
+    trigger:
+        set {_bal} to sunflower named "&2Money"
+        set line 1 of lore of {_bal} to "&6%balance of player%"
+        open virtual chest with 3 row named "&f[&3Shop&f]" to player
+        format gui slot 0 of player with black stained glass pane named "&7Close" to close
+        format gui slot 1 of player with black stained glass pane named "&7Close" to close
+        format gui slot 2 of player with black stained glass pane named "&7Close" to close
+        format gui slot 3 of player with black stained glass pane named "&7Close" to close
+        format gui slot 4 of player with black stained glass pane named "&7Close" to close
+        format gui slot 5 of player with black stained glass pane named "&7Close" to close
+        format gui slot 6 of player with black stained glass pane named "&7Close" to close
+        format gui slot 7 of player with black stained glass pane named "&7Close" to close
+        format gui slot 8 of player with black stained glass pane named "&7Close" to close
+        format gui slot 9 of player with black stained glass pane named "&7Close" to close
+        format gui slot 10 of player with green stained glass pane named "&2Green" to run player command "/green"
+        format gui slot 11 of player with black stained glass pane named "&7Close" to close
+        format gui slot 12 of player with blue stained glass pane named "&1Blue"
+        format gui slot 13 of player with black stained glass pane named "&7Close" to close
+        format gui slot 14 of player with yellow stained glass pane named "&7Close" to close
+        format gui slot 15 of player with black stained glass pane named "&7Close" to close
+        format gui slot 16 of player with orange stained glass pane named "&7Close" to close
+        format gui slot 17 of player with black stained glass pane named "&7Close" to close
+        format gui slot 18 of player with black stained glass pane named "&7Close" to close
+        format gui slot 19 of player with black stained glass pane named "&7Close" to close
+        format gui slot 20 of player with black stained glass pane named "&7Close" to close
+        format gui slot 21 of player with black stained glass pane named "&7Close" to close
+        format gui slot 22 of player with {_bal}
+        format gui slot 23 of player with black stained glass pane named "&7Close" to close
+        format gui slot 24 of player with black stained glass pane named "&7Close" to close
+        format gui slot 25 of player with black stained glass pane named "&7Close" to close
+        format gui slot 26 of player with black stained glass pane named "&7Close" to close
+
+
+command /green:
+    trigger:
+        set {_bal} to sunflower named "&2Money"
+        set line 1 of lore of {_bal} to "&6%balance of player%"
+        open virtual chest with 6 row named "&f[&2Green&f]" to player
+        format gui slot 0 of player with black stained glass pane named "&7Close" to close
+        format gui slot 1 of player with black stained glass pane named "&7Close" to close
+        format gui slot 2 of player with black stained glass pane named "&7Close" to close
+        format gui slot 3 of player with black stained glass pane named "&7Close" to close
+        format gui slot 4 of player with black stained glass pane named "&7Close" to close
+        format gui slot 5 of player with black stained glass pane named "&7Close" to close
+        format gui slot 6 of player with black stained glass pane named "&7Close" to close
+        format gui slot 7 of player with black stained glass pane named "&7Close" to close
+        format gui slot 8 of player with black stained glass pane named "&7Close" to close
+        format gui slot 9 of player with black stained glass pane named "&7Close" to close
+        format gui slot 10 of player with blue stained glass pane named "&1Blue" to run player command "/bsgp"
+        format gui slot 11 of player with blue stained glass pane named "&1Blue"
+        format gui slot 12 of player with blue stained glass pane named "&1Blue"
+        format gui slot 13 of player with blue stained glass pane named "&1Blue"
+        format gui slot 14 of player with blue stained glass pane named "&1Blue"
+        format gui slot 15 of player with blue stained glass pane named "&1Blue"
+        format gui slot 16 of player with blue stained glass pane named "&1Blue"
+        format gui slot 17 of player with black stained glass pane named "&7Close" to close
+        format gui slot 18 of player with black stained glass pane named "&7Close" to close
+        format gui slot 19 of player with blue stained glass pane named "&1Blue"
+        format gui slot 20 of player with blue stained glass pane named "&1Blue"
+        format gui slot 21 of player with blue stained glass pane named "&1Blue"
+        format gui slot 22 of player with blue stained glass pane named "&1Blue"
+        format gui slot 23 of player with blue stained glass pane named "&1Blue"
+        format gui slot 24 of player with blue stained glass pane named "&1Blue"
+        format gui slot 25 of player with blue stained glass pane named "&1Blue"
+        format gui slot 26 of player with black stained glass pane named "&7Close" to close
+        format gui slot 27 of player with black stained glass pane named "&7Close" to close
+        format gui slot 28 of player with blue stained glass pane named "&1Blue"
+        format gui slot 29 of player with black stained glass pane named "&7Close" to close
+        format gui slot 30 of player with black stained glass pane named "&7Close" to close
+        format gui slot 31 of player with black stained glass pane named "&7Close" to close
+        format gui slot 32 of player with black stained glass pane named "&7Close" to close
+        format gui slot 33 of player with black stained glass pane named "&7Close" to close
+        format gui slot 34 of player with blue stained glass pane named "&1Blue"
+        format gui slot 35 of player with black stained glass pane named "&7Close" to close
+        format gui slot 36 of player with black stained glass pane named "&7Close" to close
+        format gui slot 37 of player with blue stained glass pane named "&1Blue"
+        format gui slot 38 of player with black stained glass pane named "&7Close" to close
+        format gui slot 39 of player with black stained glass pane named "&7Close" to close
+        format gui slot 40 of player with black stained glass pane named "&7Close" to close
+        format gui slot 41 of player with black stained glass pane named "&7Close" to close
+        format gui slot 42 of player with black stained glass pane named "&7Close" to close
+        format gui slot 43 of player with blue stained glass pane named "&1Blue"
+        format gui slot 44 of player with black stained glass pane named "&7Close" to close
+        format gui slot 45 of player with black stained glass pane named "&7Close" to close
+        format gui slot 46 of player with black stained glass pane named "&7Close" to close
+        format gui slot 47 of player with black stained glass pane named "&7Close" to close
+        format gui slot 48 of player with paper named "&7←-----" with lore "&7Main Menu" to run player command "/shop"
+        format gui slot 49 of player with {_bal}
+        format gui slot 50 of player with paper named "&7-----→" with lore "&7Page 2" to run player command "/green2"
+        format gui slot 51 of player with black stained glass pane named "&7Close" to close
+        format gui slot 52 of player with black stained glass pane named "&7Close" to close
+        format gui slot 53 of player with black stained glass pane named "&7Close" to close
+
+command /bsgp:
+    trigger:
+        set {_bal} to sunflower named "&2Money"
+        set line 1 of lore of {_bal} to "&6%balance of player%"
+        open virtual chest with 6 row named "bsgp" to player
+        format gui slot 0 of player with black stained glass pane named "&7Close" to close
+        format gui slot 1 of player with black stained glass pane named "&7Close" to close
+        format gui slot 2 of player with black stained glass pane named "&7Close" to close
+        format gui slot 3 of player with black stained glass pane named "&7Close" to close
+        format gui slot 4 of player with black stained glass pane named "&7Close" to close
+        format gui slot 5 of player with black stained glass pane named "&7Close" to close
+        format gui slot 6 of player with black stained glass pane named "&7Close" to close
+        format gui slot 7 of player with black stained glass pane named "&7Close" to close
+        format gui slot 8 of player with black stained glass pane named "&7Close" to close
+        format gui slot 9 of player with black stained glass pane named "&7Close" to close
+        format gui slot 13 of player with blue stained glass pane with lore "&2Price Per 1" and "&6${@bsgp}"
+        format gui slot 17 of player with black stained glass pane named "&7Close" to close
+        format gui slot 18 of player with black stained glass pane named "&7Close" to close
+        format gui slot 26 of player with black stained glass pane named "&7Close" to close
+        format gui slot 27 of player with black stained glass pane named "&7Close" to close
+        format gui slot 29 of player with blue stained glass pane with lore "&2Price" and "&6${@bsgp}"
+        format gui slot 30 of player with 2 blue stained glass pane with lore "&2Price" and "&6$20"
+        format gui slot 31 of player with 8 blue stained glass pane with lore "&2Price" and "&6${@bsgp}"
+        format gui slot 32 of player with 16 blue stained glass pane with lore "&2Price" and "&6${@bsgp}"
+        format gui slot 33 of player with blue stained glass pane with lore "&2Price" and "&6${@bsgp}"
+        format gui slot 35 of player with black stained glass pane named "&7Close" to close
+        format gui slot 36 of player with black stained glass pane named "&7Close" to close
+        format gui slot 44 of player with black stained glass pane named "&7Close" to close
+        format gui slot 45 of player with black stained glass pane named "&7Close" to close
+        format gui slot 46 of player with black stained glass pane named "&7Close" to close
+        format gui slot 47 of player with black stained glass pane named "&7Close" to close
+        format gui slot 48 of player with paper named "&7←-----" with lore "&7Main Menu" to run player command "/shop"
+        format gui slot 49 of player with {_bal}
+        format gui slot 50 of player with paper named "&7-----→" with lore "&7Page 2" to run player command "/green2"
+        format gui slot 51 of player with black stained glass pane named "&7Close" to close
+        format gui slot 52 of player with black stained glass pane named "&7Close" to close
+        format gui slot 53 of player with black stained glass pane named "&7Close" to close
+
+on inventory click:
+    if event-inventory's display name contains "bsgp":
+        if event-slot is 30:
+            give player 2 blue stained glass pane
+            remove {_bsgp2} from player's balance
+
+on load:
+    set {_bsgp2} to ({@bsgp} * 2)
