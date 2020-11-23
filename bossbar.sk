@@ -18,23 +18,50 @@ command /bbar-on:
 
 command /bbar-set:
 	trigger:
+		set {bossbar::toggle} to true
+		remove all players from bossbar "welcome.bossbar"
 		create bossbar titled "&a&lWelcome &7to &b&lFastGens!" and id "welcome.bossbar" for all players with progress 100 with colors green
 		wait 5 ticks
-		loop all players:
-			if {bossbar::toggle::%uuid of player%} is true:
-				loop 100 times:
-					set {_bbarvalue} to value of bossbar "welcome.bossbar"
-					remove 1 from {_bbarvalue}
-					set bossbar "welcome.bossbar" value to {_bbarvalue}
-					wait 5 ticks
-				set bossbar "welcome.bossbar" title to "&bJoin our &5Discord &bwith &6/discord"
-				set {_bbarvalue} to 100
-				set bossbar "welcome.bossbar" value to {_bbarvalue}
-				loop 100 times:
-					set {_bbarvalue} to value of bossbar "welcome.bossbar"
-					remove 1 from {_bbarvalue}
-					set bossbar "welcome.bossbar" value to {_bbarvalue}
-					wait 5 ticks
-				set bossbar "welcome.bossbar" title to "&bDon't forget to &aDonate &bwith &6/buy"
-				set {_bbarvalue} to 100
-				set bossbar "welcome.bossbar" value to {_bbarvalue}
+		bossbar(player)
+			
+command /bbar-remove:
+	trigger:
+		remove bossbar "welcome.bossbar"
+		set {bossbar::toggle} to false
+
+
+function bossbar(p: player):
+	if {bossbar::toggle} is true:
+		loop 100 times:
+			set {_bbarvalue} to value of bossbar "welcome.bossbar"
+			remove 1 from {_bbarvalue}
+			set bossbar "welcome.bossbar" value to {_bbarvalue}
+			wait 5 ticks
+		set bossbar "welcome.bossbar" title to "&bJoin our &dDiscord &bwith &6/discord"
+		set {_bbarvalue} to 100
+		set bossbar "welcome.bossbar" value to {_bbarvalue}
+		loop 100 times:
+			set {_bbarvalue} to value of bossbar "welcome.bossbar"
+			remove 1 from {_bbarvalue}
+			set bossbar "welcome.bossbar" value to {_bbarvalue}
+			wait 5 ticks
+		set bossbar "welcome.bossbar" title to "&cHave an issue? &3Open a ticket on &dDiscord"
+		set {_bbarvalue} to 100
+		set bossbar "welcome.bossbar" value to {_bbarvalue}
+		loop 100 times:
+			set {_bbarvalue} to value of bossbar "welcome.bossbar"
+			remove 1 from {_bbarvalue}
+			set bossbar "welcome.bossbar" value to {_bbarvalue}
+			wait 5 ticks
+		set bossbar "welcome.bossbar" title to "&bDon't forget to &aDonate &bwith &6/buy"
+		set {_bbarvalue} to 100
+		set bossbar "welcome.bossbar" value to {_bbarvalue}
+		loop 100 times:
+			set {_bbarvalue} to value of bossbar "welcome.bossbar"
+			remove 1 from {_bbarvalue}
+			set bossbar "welcome.bossbar" value to {_bbarvalue}
+			wait 5 ticks
+		set bossbar "welcome.bossbar" title to "&a&lWelcome &7to &b&lFastGens!"
+		set {_bbarvalue} to 100
+		set bossbar "welcome.bossbar" value to {_bbarvalue}
+		bossbar({_p})
