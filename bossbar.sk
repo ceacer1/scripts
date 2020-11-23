@@ -1,18 +1,40 @@
 on join:
-	create bossbar titled "&a&lWelcome &7to &b&lFastGens!" and id "welcome.%player's uuid%" for player with progress 100 with colors green
-	wait 5 ticks
-	loop 50 times:
-#		set bossbar "welcome.%player's uuid%" color to blue
-		set {_bbarvalue} to value of bossbar "welcome.%player's uuid%"
-		remove 1 from {_bbarvalue}
-		set bossbar "welcome.%player's uuid%" value to {_bbarvalue}
-		wait 100 ticks
-#		set bossbar "welcome.%player's uuid%" color to blue
-#		remove 1 from {_bbarvalue}
-#		set bossbar "welcome.%player's uuid%" value to {_bbarvalue}
-#		wait 100 ticks
-	set {_bbarvalue} to 100
+	if {bossbar::toggle::%uuid of player%} is true:
+		show bossbar "welcome.bossbar"
+	if {bossbar::toggle::%uuid of player%} is false:
+		hide bossbar "welcome.bossbar"
+	
 
-command /bbaroff:
+
+command /bbar-off:
     trigger:
-        remove all players from bossbar "welcome.%player's uuid%"
+        hide bossbar "welcome.bossbar"
+        set {bossbar::toggle::%uuid of player%} to false
+
+command /bbar-on:
+	trigger:
+		show bossbar "welcome.bossbar"
+		set {bossbar::toggle::%uuid of player%} to true
+
+command /bbar-set:
+	trigger:
+		create bossbar titled "&a&lWelcome &7to &b&lFastGens!" and id "welcome.bossbar" for all players with progress 100 with colors green
+		wait 5 ticks
+		loop all players:
+			if {bossbar::toggle::%uuid of player%} is true:
+				loop 100 times:
+					set {_bbarvalue} to value of bossbar "welcome.bossbar"
+					remove 1 from {_bbarvalue}
+					set bossbar "welcome.bossbar" value to {_bbarvalue}
+					wait 5 ticks
+				set bossbar "welcome.bossbar" title to "&bJoin our &5Discord &bwith &6/discord"
+				set {_bbarvalue} to 100
+				set bossbar "welcome.bossbar" value to {_bbarvalue}
+				loop 100 times:
+					set {_bbarvalue} to value of bossbar "welcome.bossbar"
+					remove 1 from {_bbarvalue}
+					set bossbar "welcome.bossbar" value to {_bbarvalue}
+					wait 5 ticks
+				set bossbar "welcome.bossbar" title to "&bDon't forget to &aDonate &bwith &6/buy"
+				set {_bbarvalue} to 100
+				set bossbar "welcome.bossbar" value to {_bbarvalue}
