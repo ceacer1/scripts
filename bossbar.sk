@@ -1,19 +1,20 @@
 on join:
 	if {bossbar::toggle::%uuid of player%} is true:
-		show bossbar "welcome.bossbar"
+		remove player from bossbar "welcome.bossbar"
+		set bossbar "welcome.bossbar" for player
 	if {bossbar::toggle::%uuid of player%} is false:
-		hide bossbar "welcome.bossbar"
+		remove player from bossbar "welcome.bossbar"
 	
 
 
 command /bbar-off:
     trigger:
-        hide bossbar "welcome.bossbar"
+        remove player from bossbar "welcome.bossbar"
         set {bossbar::toggle::%uuid of player%} to false
 
 command /bbar-on:
 	trigger:
-		show bossbar "welcome.bossbar"
+		set bossbar "welcome.bossbar" for player
 		set {bossbar::toggle::%uuid of player%} to true
 
 command /bbar-set:
