@@ -86,10 +86,7 @@ on first join:
 	set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%uuid of player%.yml" to false
 
 
-every 1 second in "world":
-	if {punishment::timer::%uuid of player%::left::ban} is between 0 and 5 seconds:
-		broadcast "%uuid of player% has been unbanned"
-#		set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%{_p}%.yml" to false
+
 
 
 #command /pardo <offline player>:

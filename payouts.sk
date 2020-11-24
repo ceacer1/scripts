@@ -1,0 +1,17 @@
+options:
+	first: &a35$ &bPaypal or &a50$ &bStore Credit
+	second: &a35$ &bPaypal or &a50$ &bStore Credit
+	third: &a35$ &bPaypal or &a50$ &bStore Credit
+
+command /payouts:
+	trigger:
+		set {_payouts} to virtual chest inventory with 3 rows named "&b&l&nFastGens Payouts"
+		open {_payouts} to player
+		loop integers between 0 and menu size of player's current inventory - 1:
+			format slot loop-number of player with gray glass pane named "&8" to run ""
+		format gui slot 11 of player with glowing paper named "&6&lFirst"
+		format gui slot 13 of player with glowing paper named "&f&lSecond"
+		format gui slot 15 of player with glowing paper named "&Third
+		format gui slot 22 of player with glowing paper named "&aPrevious Winners"
+
+function payoutWinners(p: Player, type: int = 0):
