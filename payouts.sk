@@ -44,6 +44,8 @@ options:
 	S5F3: Not yet Announced
 	S5F3bal: Not yet Announced
 
+
+
 command /payouts:
 	trigger:
 		send "" to player
@@ -60,6 +62,8 @@ command /payouts:
 command /winners:
 	trigger:
 		payoutWinners(player, 0)
+
+
 function payoutWinners(p: player, type: int = 0):
 	if {_type} is 0:
 		open chest with 3 rows named "&2&l&nWinners" to {_p}
@@ -69,7 +73,7 @@ function payoutWinners(p: player, type: int = 0):
 		format gui slot 11 of {_p} with glowing paper named "&6&lSeason 2" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 2)
 		format gui slot 12 of {_p} with glowing paper named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 3)
 		format gui slot 13 of {_p} with glowing paper named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 4)
-		format gui slot 14 of {_p} with glowing barrier block named "&6&lSeason 5" with lore "" and "&8(&cNot Avaliable&8)"
+		format gui slot 14 of {_p} with glowing barrier block named "&6&lSeason 5" with lore "" and "&8(&2&lCurrent Season&r&8)"
 		format gui slot 15 of {_p} with glowing barrier block named "&6&lSeason 6" with lore "" and "&8(&cNot Avaliable&8)"
 		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 7" with lore "" and "&8(&cNot Avaliable&8)"
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
