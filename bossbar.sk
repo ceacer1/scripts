@@ -1,6 +1,8 @@
 on join:
+	if {bossbar::toggle::%uuid of player%} is not set:
+		set bossbar "welcome.bossbar" for player
+		set {bossbar::toggle::%uuid of player%} to true
 	if {bossbar::toggle::%uuid of player%} is true:
-		remove player from bossbar "welcome.bossbar"
 		set bossbar "welcome.bossbar" for player
 	if {bossbar::toggle::%uuid of player%} is false:
 		remove player from bossbar "welcome.bossbar"
