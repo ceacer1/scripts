@@ -1,17 +1,117 @@
 options:
 	first: &a35$ &bPaypal or &a50$ &bStore Credit
-	second: &a35$ &bPaypal or &a50$ &bStore Credit
-	third: &a35$ &bPaypal or &a50$ &bStore Credit
+	second: &a35$ &bStore Credit
+	third: &a15$ &bStore Credit
+	#Other
+	winbal: &a&lWinning Balance
+	#Places
+	firstplace: &6&lFirst Place
+	secondplace: &6&lSecond Place
+	thirdplace: &6&lThird Place
+	#Season 1 Winners
+	S1F1: CokeGirl
+	S1F1bal: Not Recorded
+	S1F2: Communicator
+	S1F2bal: Not Recorded
+	S1F3: Hykonic
+	S1F3bal: Not Recorded
+	#Season 2 Winners
+	S2F1: itamar_c
+	S2F1bal: Not Recorded
+	S2F2: Unknown
+	S2F2bal: Not Recorded
+	S2F3: XPICKLEWIZARDX
+	S2F3bal: Not Recorded
+	#Season 3 Winners
+	S3F1: DJOverTime
+	S3F1bal: $36,300,255,386
+	S3F2: soosnov
+	S3F2bal: $31,967,772,348
+	S3F3: LegoParkiet
+	S3F3bal: $18,016,327,731
+	#Season 4 Winners
+	S4F1: DJOverTime
+	S4F1bal: $26,799,013,765
+	S4F2: soosnov
+	S4F2bal: $21,870,636,617
+	S4F3: RussPlays
+	S4F3bal: $10,397,937,959
+	#Season 5 Winners
+	S5F1: Not yet Announced
+	S5F1bal: Not yet Announced
+	S5F2: Not yet Announced
+	S5F2bal: Not yet Announced
+	S5F3: Not yet Announced
+	S5F3bal: Not yet Announced
 
 command /payouts:
 	trigger:
-		set {_payouts} to virtual chest inventory with 3 rows named "&b&l&nFastGens Payouts"
-		open {_payouts} to player
-		loop integers between 0 and menu size of player's current inventory - 1:
-			format slot loop-number of player with gray glass pane named "&8" to run ""
-		format gui slot 11 of player with glowing paper named "&6&lFirst"
-		format gui slot 13 of player with glowing paper named "&f&lSecond"
-		format gui slot 15 of player with glowing paper named "&Third
-		format gui slot 22 of player with glowing paper named "&aPrevious Winners"
+		send "" to player
+		send "&f---&b&lFastGens Payouts&f---" to player
+		send "" to player
+		send "&b1. {@first}" to player
+		send "&b2. {@second}" to player
+		send "&b3. {@third}" to player
+		send "" to player
+		send "&bWant to see previous winners?" to player
+		send "&bType &6/winners &bor <command:/winners>&a&l(Click Here)<reset>" to player
 
-function payoutWinners(p: Player, type: int = 0):
+		
+command /winners:
+	trigger:
+		payoutWinners(player, 0)
+function payoutWinners(p: player, type: int = 0):
+	if {_type} is 0:
+		open chest with 3 rows named "&2&l&nWinners" to {_p}
+		format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+		format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+		format gui slot 10 of {_p} with glowing paper named "&6&lSeason 1" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 1)
+		format gui slot 11 of {_p} with glowing paper named "&6&lSeason 2" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 2)
+		format gui slot 12 of {_p} with glowing paper named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 3)
+		format gui slot 13 of {_p} with glowing paper named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 4)
+		format gui slot 14 of {_p} with glowing barrier block named "&6&lSeason 5" with lore "" and "&8(&cNot Avaliable&8)"
+		format gui slot 15 of {_p} with glowing barrier block named "&6&lSeason 6" with lore "" and "&8(&cNot Avaliable&8)"
+		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 7" with lore "" and "&8(&cNot Avaliable&8)"
+		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
+	if {_type} is 1:
+		open chest with 3 rows named "&4&lS&c&l1 &2&lWinners" to {_p}
+		format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+		format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+		format gui slot 11 of {_p} with skull of ("{@S1F1}" parsed as offline player) named "&a&l&n{@S1F1}" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a{@S1F1bal}" 
+		format gui slot 13 of {_p} with skull of ("{@S1F2}" parsed as offline player) named "&a&l&n{@S1F2}" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a{@S1F2bal}"
+		format gui slot 15 of {_p} with skull of ("{@S1F3}" parsed as offline player) named "&a&l&n{@S1F3}" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a{@S1F3bal}" 
+		format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+	if {_type} is 2:
+		open chest with 3 rows named "&e&lS&6&l2 &2&lWinners" to {_p}
+		format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+		format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+		format gui slot 11 of {_p} with skull of ("{@S2F1}" parsed as offline player) named "&a&l&n{@S2F1}" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a{@S2F1bal}" 
+		format gui slot 13 of {_p} with skull of ("{@S2F2}" parsed as offline player) named "&a&l&n{@S2F2}" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a{@S2F2bal}"
+		format gui slot 15 of {_p} with skull of ("{@S2F3}" parsed as offline player) named "&a&l&n{@S2F3}" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a{@S2F3bal}" 
+		format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+	if {_type} is 3:
+		open chest with 3 rows named "&b&lS&3&l3 &2&lWinners" to {_p}
+		format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+		format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+		format gui slot 11 of {_p} with skull of ("{@S3F1}" parsed as offline player) named "&a&l&n{@S3F1}" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a{@S3F1bal}" 
+		format gui slot 13 of {_p} with skull of ("{@S3F2}" parsed as offline player) named "&a&l&n{@S3F2}" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a{@S3F2bal}"
+		format gui slot 15 of {_p} with skull of ("{@S3F3}" parsed as offline player) named "&a&l&n{@S3F3}" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a{@S3F3bal}" 
+		format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+	if {_type} is 4:
+		open chest with 3 rows named "&d&lS&5&l4 &2&lWinners" to {_p}
+		format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+		format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+		format gui slot 11 of {_p} with skull of ("{@S4F1}" parsed as offline player) named "&a&l&n{@S4F1}" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a{@S4F1bal}" 
+		format gui slot 13 of {_p} with skull of ("{@S4F2}" parsed as offline player) named "&a&l&n{@S4F2}" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a{@S4F2bal}"
+		format gui slot 15 of {_p} with skull of ("{@S4F3}" parsed as offline player) named "&a&l&n{@S4F3}" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a{@S4F3bal}" 
+		format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+#	if {_type} is 5:
+#		open chest with 3 rows named "&f&lS&8&l5 &2&lWinners" to {_p}
+#		format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+#		format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+#		format gui slot 11 of {_p} with skull of ("{@S5F1}" parsed as offline player) named "&a&l&n{@S5F1}" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a{@S5F1bal}" 
+#		format gui slot 13 of {_p} with skull of ("{@S5F2}" parsed as offline player) named "&a&l&n{@S5F2}" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a{@S5F2bal}"
+#		format gui slot 15 of {_p} with skull of ("{@S5F3}" parsed as offline player) named "&a&l&n{@S5F3}" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a{@S5F3bal}" 
+#		format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+
+
