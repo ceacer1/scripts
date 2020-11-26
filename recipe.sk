@@ -1,0 +1,2 @@
+on script load:
+    remove smithing recipe "netherite_chestplate"
