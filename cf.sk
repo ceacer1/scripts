@@ -1,0 +1,215 @@
+#_________________________________________________________________#
+# |~\ _    _ | _  _  _| _ _|_   |` _ _                            #
+# |_/(_)VV| ||(_)(_|(_|(/_ |   ¯|¯| (_|                           #
+#     __  ___        _____   __            _           __         #
+#    /  |/  / _____ / ___/  / /__  _____  (_) ____    / /_  _____ #
+#   / /|_/ / / ___/ \__ \  / //_/ / ___/ / / / __ \  / __/ / ___/ #
+#  / /  / / / /__  ___/ / / ,<   / /    / / / /_/ / / /_  (__  )  #
+# /_/  /_/  \___/ /____/ /_/|_| /_/    /_/ / .___/  \__/ /____/   #
+#                                         /_/                     #
+# |~\ _  _    _  _  _ _  _ _  _      _  .  _|_.|   _ _ _. _ _|_ _ #
+# |_/(/_| |  | |(/_| | || | |(/_  \/(/_ |   | ||  _\(_| ||_) | _\ #
+#                                      L|                |        #
+#                                                                 #
+#      Dette produkt må ikke sælges eller videredistribueres      #
+#¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯#
+
+# COPYRIGHT MCSKRIPTS.DK ALLE RETTIGHEDER FORBEHOLDT #
+#         DETTE SKRIPT MÅ IKKE VIDERESÆLGES          #
+
+on unload:
+	loop {coinflip.bets::*}:
+		add {coinflip.bet.%loop-value%.amount} to loop-value's balance
+		clear {coinflip.bet.%loop-value%.amount}
+	clear {coinflip.bets::*}
+
+command /coinflip [<text>] [<text>]:
+	aliases: /cf
+	trigger:
+		if arg-1 is not set:
+			open chest with 7 rows named "" to player
+			wait 2 ticks
+			format slot 0 of player with orange wool named "&6Coin&eFlip" to be unstealable
+			loop {coinflip.bets::*}:
+				set {_gh} to loop-index
+				format slot ({_gh} parsed as an integer) of player with skull of loop-value named "&c%{coinflip.bet.%loop-value%.amount}%$" with lore "&4%loop-value%" to close then run [execute player command "/cf take %loop-value%"]
+			format slot 54 of player with emerald named "&9/CF Bet (Antal)" to close then run [execute player command "/cf bet"]
+			format slot 55 of player with emerald named "&9/CF Take (Spiller)" to close then run [execute player command "/cf take"]
+			loop integers from 56 to 62:
+				format slot loop-number of player with blue stained glass pane named "" to be unstealable
+		if arg-1 isn't "bet" or "Take":
+			open chest with 7 rows named "" to player
+			wait 2 ticks
+			format slot 0 of player with orange wool named "&6Coin&eFlip" to be unstealable
+			loop {coinflip.bets::*}:
+				set {_gh} to loop-index
+				format slot ({_gh} parsed as an integer) of player with skull of loop-value named "&c%{coinflip.bet.%loop-value%.amount}%$" with lore "&4%loop-value%" to close then run [execute player command "/cf take %loop-value%"]
+			format slot 54 of player with emerald named "&9/CF Bet (Antal)" to close then run [execute player command "/cf bet"]
+			format slot 55 of player with emerald named "&9/CF Take (Spiller)" to close then run [execute player command "/cf take"]
+			loop integers from 56 to 62:
+				format slot loop-number of player with blue stained glass pane named "" to be unstealable
+		if arg-1 is "bet":
+			if arg-2 parsed as an integer is greater than 50:
+				player's balance >= arg-2 parsed as an integer:
+					{coinflip.bet.%player%.amount} isn't set:
+						remove arg-2 parsed as an integer from player's balance
+						add player to {coinflip.bets::*}
+						set {coinflip.bet.%player%.amount} to arg-2 parsed as an integer
+						send "&6Coin&eFlip&6 || &aDu lavede et bet %arg-2 parsed as an integer%$"
+					else:
+						send "&6Coin&eFlip&6 || &7Du har allerede et coinflip igang!"
+				else:
+					send "&6Coin&eFlip&6 || &7Du har ikke nok penge til at lave et coinflip på %arg-2 parsed as an integer%"
+			else:
+				send "&6Coin&eFlip&6 || &7Skriv et tal højere end 50$"
+		if arg-1 is "take":
+			arg-2 isn't set:
+				send "&6Coin&eFlip&6 || &7Skriv en spiller med et aktivt coinflip"
+				stop
+			arg-2 is player's name:
+				{coinflip.bets::*} contains player:
+					add {coinflip.bet.%arg-2%.amount} to player's balance
+					clear {coinflip.bet.%arg-2%.amount}
+					remove player from {coinflip.bets::*}
+					send "&6Coin&eFlip&6 || &aFjernede dit coinflip"
+					stop
+				else:
+					send "&6Coin&eFlip&6 || &7Du har ikke noget aktiv coinflip"
+					stop
+			else:
+				{coinflip.bets::*} contains ("%arg-2%" parsed as an player):
+					player's balance !>= {coinflip.bet.%arg-2%.amount}:
+						send "&6Coin&eFlip&6 || &7Du har ikke nok penge"
+						stop
+					set {_Spiller1} to player
+					set {_Spiller2} to ("%arg-2%" parsed as a player)
+					remove {_spiller2} from {coinflip.bets::*}
+					set {_pris} to {coinflip.bet.%arg-2%.amount}
+					clear {coinflip.bet.%arg-2%.amount}
+					remove ({coinflip.bet.%player%.amount}) from player's balance
+					close {_spiller1}'s inventory
+					close {_Spiller2}'s inventory
+					wait 2 tick
+					open chest with 5 rows named "&6&lCoinflip: &a%{_spiller2}%" to {_Spiller1}
+					open chest with 5 rows named "&6&lCoinflip: &a%{_spiller1}%" to {_Spiller2}
+					set {coinflip.open::%player%} to true
+					set {coinflip.open::%{_spiller2}%} to true
+					wait 1 tick
+					set {_Time} to 0
+					set {_CurrentWinner} to player
+					while {_Vinder} isn't set:
+						wait ("%{_time}% ticks" parsed as a timespan)
+						add (1) to {_time}
+						{_time} is greater than 30:
+							chance of 15%:
+								set {_Vinder} to {_currentwinner}
+								stop loop
+						loop integers from 0 to 44:
+							set {_random} to a random integer between 1 and 9
+							{_random} is 1:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to light green stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to light green stained glass pane
+							{_random} is 2:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to red stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to red stained glass pane
+							{_random} is 3:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to yellow stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to yellow stained glass pane
+							{_random} is 4:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to light blue stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to light blue stained glass pane
+							{_random} is 5:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to cyan stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to cyan stained glass pane
+							{_random} is 6:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to orange stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to orange stained glass pane
+							{_random} is 7:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to pink stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to pink stained glass pane
+							{_random} is 8:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to purple stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to purple stained glass pane
+							{_random} is 9:
+								{coinflip.open::%player%} is true:
+									set slot loop-number of {_Spiller1}'s current inventory to blue stained glass pane
+								{coinflip.open::%{_spiller2}%} is true:
+									set slot (loop-number) of {_Spiller2}'s current inventory to blue stained glass pane
+						{coinflip.open::%player%} is true:
+							play sound "NOTE_PLING" to {_spiller1} with volume 10 and pitch 5
+							set slot 12 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 13 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 14 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 21 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 23 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 32 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 30 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 31 of {_Spiller1}'s current inventory to shiny red stained glass pane
+							set slot 22 of {_Spiller1}'s current inventory to skull of {_CurrentWinner} named "&6%{_CurrentWinner}%" with lore "%{_pris}%$"
+						{coinflip.open::%{_spiller2}%} is true:
+							play sound "NOTE_PLING" to {_spiller2} with volume 10 and pitch 5
+							set slot 12 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 13 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 14 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 21 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 23 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 32 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 30 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 31 of {_Spiller2}'s current inventory to shiny red stained glass pane
+							set slot 22 of {_Spiller2}'s current inventory to skull of {_CurrentWinner} named "&6%{_CurrentWinner}%" with lore "%{_pris}%$"
+						{_CurrentWinner} is player:
+							set {_CurrentWinner} to {_Spiller2}
+						else:
+							set {_CurrentWinner} to {_Spiller1}
+					{_Vinder} is {_spiller1}:
+						send "&6Coin&eFlip&6 || &aDu vandt %{_pris}*2% over %{_spiller2}% i personens coinflip!" to {_spiller1}
+						send "&6Coin&eFlip&6 || &cDu tabte %{_pris}*2% over %{_spiller1}% i dit coinflip!" to {_spiller2}
+					else:
+						send "&6Coin&eFlip&6 || &aDu vandt %{_pris}*2% over %{_spiller1}% i dit coinflip!" to {_spiller2}
+						send "&6Coin&eFlip&6 || &cDu tabte %{_pris}*2% over %{_spiller2}% i personens coinflip!" to {_spiller1}
+					add {_pris}*2 to {_Vinder}'s balance
+					wait 1 second
+					close {_spiller1}'s inventory
+					close {_spiller2}'s inventory
+				else:
+					send "&6Coin&eFlip&6 || &7Denne spiller har ikke noget coinflip aktivt"
+
+on inventory close:
+	{coinflip.open::%player%} is true:
+		clear {coinflip.open::%player%}
+
+on inventory click:
+	{coinflip.open::%player%} is true:
+		cancel event
+
+
+on join:
+	{coinflip.bet.%player%.amount} is set:
+		add {coinflip.bet.%player%.amount} to player's balance
+		clear {coinflip.bet.%player%.amount}
+
+on death of player:
+	wait 1 second
+	force respawn player
+
+on disconnect:
+	{coinflip.bets::*} contains player:
+		add {coinflip.bet.%player%.amount} to player's balance
+		clear {coinflip.bet.%player%.amount}
+		remove player from {coinflip.bets::*}

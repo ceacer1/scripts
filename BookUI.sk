@@ -1,0 +1,84 @@
+command /bookui [<text>] [<text>] [<player>]:
+	permission: bookui.use
+	executable by: players and console
+	trigger:
+		if argument 1 is not set:
+			message "&8&m=======================&8[&6BookUI&8]&m======================="
+			message "&a/bookui add <name>&f - Create a book with the given name." to executor
+			message "&a/bookui open <name> [player]&f - Opens the given book." to executor
+			message "&a/bookui delete <name>&f - Deletes the given book." to executor
+			message "&a/bookui get <name>&f - Gives you the given book in an item form." to executor
+			message "&a/bookui info&f - Info about bookui." to executor
+			message "&8&m=====================================================" to executor
+		else if argument 1 is "help":
+			message "&8&m=======================&8[&6BookUI&8]&m======================="
+			message "&a/bookui add <name>&f - Create a book with the given name." to executor
+			message "&a/bookui open <name> [player]&f - Opens the given book." to executor
+			message "&a/bookui delete <name>&f - Deletes the given book." to executor
+			message "&a/bookui get <name>&f - Gives you the given book in an item form." to executor
+			message "&a/bookui info&f - Info about bookui." to executor
+			message "&8&m=====================================================" to executor
+		else if argument 1 is "add":
+			if executor is console:
+				message "&8[&6BookUI&8]&a This command can't be executed from the console." to executor
+			else:
+				if argument 2 is not set:
+					message "&8[&6BookUI&8]&a Usage: &f/bookui add <name>" to executor
+				else:
+					if argument 3 is set:
+						message "&8[&6BookUI&8]&a Usage: &f/bookui add <name>" to executor
+					else:
+						if {bookui.book.%arg 2%} is set:
+							message "&8[&6BookUI&8]&a Book &f%arg 2%&a already exists!" to executor
+						else:
+							if player is holding a written book:
+								set {bookui.book.%arg 2%} to executor's tool
+								message "&8[&6BookUI&8]&a Book &f%arg 2%&a has been successfully set!" to executor
+							else:
+								message "&8[&6BookUI&8]&a You must be holding a signed book to perform this command!" to executor
+		else if argument 1 is "open":
+			if argument 2 is not set:
+				message "&8[&6BookUI&8]&a Usage: &f/bookui open <name> [player]" to executor
+			else:
+				if {bookui.book.%arg 2%} is not set:
+					message "&8[&6BookUI&8] &aBook &f%arg 2%&a does not exist." to executor
+				else:
+					if argument 3 is not set:
+						if executor is console:
+							message "&8[&6BookUI&8]&a This command can't be executed from the console." to executor
+						else:
+							open book {bookui.book.%arg 2%} to executor
+					else:
+						set {_player} to argument 3
+						open book {bookui.book.%arg 2%} to {_player}
+		else if argument 1 is "delete":
+			if argument 2 is not set:
+				message "&8[&6BookUI&8]&a Usage: &f/bookui delete <name>" to executor
+			else:
+				if {bookui.book.%arg 2%} is not set:
+					message "&8[&6BookUI&8] &aBook &f%arg 2%&a does not exist." to executor
+				else:
+					delete {bookui.book.%arg 2%}
+					message "&8[&6BookUI&8] &aBook &f%arg 2%&a has been deleted!" to executor
+		else if argument 1 is "info":
+			if argument 2 is set:
+				message "&8[&6BookUI&8]&a Usage: &f/bookui info" to executor
+			else:
+				message "&8&m=======================&8[&6BookUI&8]&m=======================" to executor
+				message "&aYou are running &fBookUI v1.1&a." to executor
+				message "&aCreated by: &fsymvizan&a." to executor
+				message "&8&m=====================================================" to executor
+		else if argument 1 is "get":
+			if argument 2 is not set:
+				message "&8[&6BookUI&8]&a Usage: &f/bookui get <book>" to executor
+			else:
+				if executor is console:
+					message "&8[&6BookUI&8]&a This command can't be executed from the console." to executor
+				else:
+					if {bookui.book.%arg 2%} is not set:
+						message "&8[&6BookUI&8] &aBook &f%arg 2%&a does not exist." to executor
+					else:
+						give 1 of {bookui.book.%arg 2%} to player
+						message "&8[&6BookUI&8]&f %arg 2%&a has been given to you in an item form!" to executor
+		else:
+			message "&8[&6bookui&8]&a Usage: &f/bookui help" to executor

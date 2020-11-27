@@ -1,0 +1,41 @@
+# Coinflip
+# by plugins.pixelservers.org
+
+command /cf <integer> <text>:
+	aliases: coinflip
+	trigger:
+		if arg-1 is set:
+			if arg-2 is "heads" or "tails":
+				if player's balance is greater than or equal to arg-1:
+					if arg-1 is greater than or equal to 10:
+						set {_flip} to a random integer between 1 and 2
+						if {_flip} is 1:
+							set {_coin} to "heads"
+							if {_coin} is equal to arg-2:
+								send "&b&l[CF] &6You have won! Congratulations."
+								add arg-1 to {_money}
+								add arg-1 to {_money}
+								console command "/eco give %executor% %{_money}%"
+							else:
+								send "&b&l[CF] &6You have lost! Sorry."
+								set {_money} to arg-1
+								console command "/eco take %executor% %{_money}%"
+						else if {_flip} is 2:
+							set {_coin} to "tails"
+							if {_coin} is arg-2:
+								send "&b&l[CF] &6You have won! Congratulations."
+								add arg-1 to {_money}
+								add arg-1 to {_money}
+								console command "/eco give %executor% %{_money}%"
+							else:
+								send "&b&l[CF] &6You have lost! Sorry."
+								set {_money} to arg-1
+								console command "/eco take %executor% %{_money}%"
+					else:
+						send "&b&l[CF] &6Sorry, but the minium bet is $10."
+				else:
+					send "&b&l[CF] &6You do not have enough money."
+			else:
+				send "&b&l[CF] &6Syntax: /cf <Bet> <Heads/Tails>"
+		else:
+			send "&b&l[CF] &6Please enter a bet. (Usage: /cf <Bet> <Heads/Tails>)"
