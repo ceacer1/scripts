@@ -7,6 +7,7 @@ Options:
 #Usage
 	usagewarn: &cIncorrect Usage&7: &f/warn <player> <reason> 
 	usagewarns: &cIncorrect Usage&7: &f/warns <player>
+	usagepunish: &cIncorrect Usage&7: &f/punish <player>
 #Swear Punishments
 	swearmute1: &8(&3Reason: &7Consistent Swearing&8) &8(&4First Punishment&8)
 	swearmute1b: &530m
@@ -356,6 +357,7 @@ command /warn <offline player> <text>:
 					set yaml value "banned" from "C:\Users\ceace\Desktop\Skript server\plugins\Skript\skript-yaml\%arg-1's uuid%.yml" to true
 
 command /punish <offline player>:
+	usage: {@usagepunish}
 	trigger:
 		if arg-1 is set:
 			#Check warn
@@ -463,26 +465,26 @@ command /punish <offline player>:
 			#Back arrow
 			set {back} to arrow named "&6Back"
 			#Warn
-			set {warn} to glowing paper named "&3&lWarn"
+			set {warn} to glowing book named "&3&lWarn"
 			set line 1 of lore of {warn} to "&cTotal &8(&3%{punishment::player::%arg-1's uuid%::warns}%&8)"
 			#Warns 
-			set {warns} to glowing paper named "&3&lWarns"
+			set {warns} to glowing book named "&3&lWarns"
 			set line 1 of lore of {warns} to "&cSwearing &8(&3%{punishment::player::%arg-1's uuid%::warns::swearing}%&8)"
 			set line 2 of lore of {warns} to "&cCaps &8(&3%{punishment::player::%arg-1's uuid%::warns}%&8)"
-			set {swearwarn} to glowing paper named "&3&lSwearing"
+			set {swearwarn} to glowing book named "&3&lSwearing"
 			set line 1 of lore of {swearwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::swearing}%&8)"
-			set {capswarn} to glowing paper named "&3&lCaps"
+			set {capswarn} to glowing book named "&3&lCaps"
 			set line 1 of lore of {capswarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::caps}%&8)"
-			set {spamwarn} to glowing paper named "&3&lSpam"
+			set {spamwarn} to glowing book named "&3&lSpam"
 			set line 1 of lore of {spamwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::spam}%&8)"
-			set {stealwarn} to glowing paper named "&3&lStealing"
+			set {stealwarn} to glowing book named "&3&lStealing"
 			set line 1 of lore of {stealwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::stealing}%&8)"
-			set {sdisrespectwarn} to glowing paper named "&3&lStaff Disrespect"
+			set {sdisrespectwarn} to glowing book named "&3&lStaff Disrespect"
 			set line 1 of lore of {sdisrespectwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::sdisrespect}%&8)"
-			set {askopwarn} to glowing paper named "&3&lAsking for OP"
+			set {askopwarn} to glowing book named "&3&lAsking for OP"
 			set line 1 of lore of {askopwarn} to "&cCurrent Warn: &8(&3%{punishment::player::%arg-1's uuid%::warns::askop}%&8)"
-			set {steal1warn} to glowing paper named "&3&lStealing"
-			set {stea1lwarn} to glowing paper named "&3&lStealing"
+			set {steal1warn} to glowing book named "&3&lStealing"
+			set {stea1lwarn} to glowing book named "&3&lStealing"
 			#Mute
 			set {mute} to glowing barrier block named "&3&lMute" 
 			set line 1 of lore of {mute} to "&cTotal &8(&3%{punishment::player::%arg-1's uuid%::mutes}%&8)"
