@@ -1,0 +1,58 @@
+command /team [<text>] [<text>] [<player>]:
+    trigger:
+        if arg-1 is not set:
+            send "&cInvalid Usage: &6/team <text> <text>"
+
+        if arg-1 is "create":
+            if arg-2 is set:
+                if {teams.member::%player%} is not set:
+                    add arg-2 to {teams::*}
+                    add player to {teams.%arg-2%::*}
+                    set {teams.member::%player%} to true
+                    set {teams.owner::%player%} to true
+                    add player to {teams.%arg-2%.owner::*}
+                    send "&eYou have created a team named &6%arg-2%"
+            else:
+                send "&cInvalid Usage: &ePlease enter a team name"
+
+        if arg-1 is "list":
+            if {teams::*} contains arg-2:
+                message "&7&m      &7< &a&l%arg-2% &7>&7&m      "
+                loop {teams.%arg-2%::*}:
+                    send "&e%loop-value%" 
+            else:
+                message "&7&m      &7< &a&lTeams List &7>&7&m      "
+                loop {teams::*}:
+                    send "&e%loop-value%"
+        
+        if arg-1 is "invite":
+            if {teams.owner::%player%} is true:
+                if {teams::*} contains arg-2:
+                    if arg 3 is set:
+                        if arg 3 is online:
+                            if arg 3 is not executor:
+                                send "&eYou have invited &6%arg-3% &eto &6%arg-2%" to player
+                                set {teams.invite.%arg-2%::%arg-3%} to true
+                                #send "&eYou have been invited to join &6%arg-2% <command:/team join %arg-2%>&8(&aClick Here&8)<reset> &eto join" to arg-3
+                                json("%arg-3%", "&eYou have been invited to join &6%arg-2% &eClick to Join &9&l» ||ttp:&cClick to Join &a%player%&c.||cmd:/team join %arg-2%")
+
+        
+        if arg-1 is "join":
+            if {teams::*} contains arg-2:
+                if {teams.invite.%arg-2%::%player%} is true:
+                    add player to {teams.%arg-2%::*}
+                    set {teams.member::%player%} to true
+                    send "&eYou have joined team &6%arg-2%" to player
+                    send "&6%executor% &ehad joined &6%arg-2%" to {teams.%arg-2%.owner::*}
+
+#        if arg-1 is "leave":
+#           if {teams.member::%player%} is true:
+
+        if arg-1 is "clear":
+            loop {teams::*}:
+                clear {teams.%loop-value%::*}
+                clear {teams.%loop-value%.owner::*}
+            clear {teams::*}
+            clear {teams.member::*}
+            clear {teams.owner::*}
+            send "&eTeams have been cleared"
