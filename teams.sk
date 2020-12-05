@@ -33,6 +33,7 @@ command /team [<text>] [<text>] [<player>]:
                         add player to {teams.%arg-2%::*}
                         set {teams.owner::%player%} to true
                         set {teams.amount.players.%arg-2%} to 1
+                        add 1 to {teams.amount.total}
                         add player to {teams.%arg-2%.owner::*}
                         send "{@prefix} &8- &eYou have created a team named &6%arg-2%"
                     else:
@@ -64,8 +65,15 @@ command /team [<text>] [<text>] [<player>]:
                 
             else:
                 message "&7&m      &7< &a&lTeams List &7>&7&m      "
+                send ""
+                set {_n} to 0
                 loop {teams::*}:
+                    add 1 to {_n}
                     send "&6%loop-value%"
+                    if {_n} > 10:
+                        stop
+                send ""
+                send "&eAmount of Teams &8(&6%{_n}%&8)"
         
         if arg-1 is "invite":
             if arg-2 is set:
@@ -237,12 +245,18 @@ command /plot [<text>] [<player>]:
             send "&6/plot help protection &8- &7Protection" to player
             send "&6/plot help chat &8- &7Chat" to player
             send "&6/plot help web &8- &7Web" to player
-            send "&6/plot help cosmetic &7&8- Cosmetic" to player
+            send "&6/plot help cosmetic &8- &7Cosmetic" to player
             send "&6/plot help info &8- &7Info" to player
             send "&6/plot help debug &8- &7Debug" to player
             send "&6/plot help admin &8- &7Admin" to player
             send "&6/plot help all &8- &7Display all commands" to player
-            send "&8&m---------&r &6Plot² Help &8&m---------" to player       
+            send "&8&m---------&r &6Plot² Help &8&m---------" to player   
+        else:
+            send "&8&m---------&r &c&l!!NOTICE!! &8&m---------"
+            send "&6Team functionality is being used," to player
+            send "&6for all commands please replace" to player
+            send "&o&7""/plot"" &r&6with &o&7""/p, /plotme, /plotsquared"" " to player
+            send "&8&m---------&r &c&l!!NOTICE!! &8&m---------"    
 
 on command "/p add":
     if player has permission "op":
@@ -267,18 +281,12 @@ on command "/p trust":
 on command "/plotme add":
     if player has permission "op":
         stop
-    else if {teams.plot.add::%player%} is true:
-        set {teams.plot.add::%player%} to false
-        stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
         cancel event
 
 on command "/plotme trust":
     if player has permission "op":
-        stop
-    else if {teams.plot.trust::%player%} is true:
-        set {teams.plot.trust::%player%} to false
         stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
@@ -287,9 +295,6 @@ on command "/plotme trust":
 on command "/plotsquared add":
     if player has permission "op":
         stop
-    else if {teams.plot.add::%player%} is true:
-        set {teams.plot.add::%player%} to false
-        stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
         cancel event
@@ -297,8 +302,47 @@ on command "/plotsquared add":
 on command "/plotsquared trust":
     if player has permission "op":
         stop
-    else if {teams.plot.trust::%player%} is true:
-        set {teams.plot.trust::%player%} to false
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/p2 add":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
+        cancel event
+
+on command "/p2 trust":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/2 add":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
+        cancel event
+
+on command "/2 trust":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/ps add":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
+        cancel event
+
+on command "/ps trust":
+    if player has permission "op":
         stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player

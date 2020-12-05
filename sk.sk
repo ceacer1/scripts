@@ -1,0 +1,148 @@
+options:
+	tag: &f[&cRunner&f]
+
+command /runner [<text>] [<text>] [<text>] [<int>]:
+	trigger:
+		if arg 1 isn't set:
+			send "{@tag} &7Skript Codded By &cSkripTR"
+			send "{@tag} &7Help for &c/runner help"
+		if arg 1 is "help":
+			player has permission "runner.admin":
+				send "&8&m---------- &6HELP &8&m----------"
+				send "{@tag} &7/runner create [arena]"
+				send "{@tag} &7/runner remove [arena]"
+				send "{@tag} &7/runner setting"
+				send "{@tag} &7/runner join"
+				send "{@tag} &7/runner list"
+			else:
+				send "&8&m---------- &6HELP &8&m----------"
+				send "{@tag} &7/runner join"
+				send "{@tag} &7/runner list"
+		if arg 1 is "list":
+			size of {arenas::*} = 0:
+				send "{@tag} &cThere is no arena."
+			size of {arenas::*} > 0:
+				send "&8&m---------- &6List &8&m----------"
+				loop {arenas::*}:
+					send "&a* &7- &a%loop-value% &7- &a%{status.%loop-value%}% &7- &c%{player.%loop-value%}%&7/&c%{maxplayer.%loop-value%}%"
+		if arg 1 is "create":
+			player has permission "runner.admin":
+				if arg 2 is set:
+					{arenas::*} contains arg 2:
+						send "{@tag} &cArena is already set!"
+					else:
+						set {arenas::%arg 2%} to arg 2
+						set {status.%arg 2%} to "&aWAITING"
+						set {maxplayer.%arg 2%} to 0
+						set {player.%arg 2%} to 0
+						send "{@tag} &7Arena has been created"
+				else:
+					send "{@tag} &cPlease select a arena name"
+			else:
+				send "{@tag} &cYou don't have permission"
+		if arg 1 is "remove":
+			player has permission "runner.admin":
+				if arg 2 is set:
+					if {arenas::%arg 2%} is set:
+						delete {arenas::%arg 2%}
+						delete {spawn.%arg 2%}
+						delete {maxplayer.%arg 2%}
+						delete {player.%arg 2%}
+						delete {status.%arg 2%}
+						delete {players.%arg 2%::*}
+						send "{@tag} &7Arena has been removed"
+					else:
+						send "{@tag} &7Arena isn't found"
+				else:
+					send "{@tag} &cPlease select a arena name"
+			else:
+				send "{@tag} &cYou don't have permission"
+		if arg 1 is "settings":
+			player has permission "runner.admin":
+				if arg 2 isn't set:
+					send "{@tag} &7/runner settings &c(lobby-waitinglobby-spawn-maxplayer) [arena]"
+				else:
+					if arg 3 isn't set:
+						send "{@tag} &cPlease select a arena name"
+					else:
+						if {arenas::%arg 3%} isn't set:
+							send "{@tag} &7Arena isn't found"
+						else:
+							if arg 2 is "lobby":
+								set {lobby.%arg 3%} to location of player
+								send "{@tag} &7Lobby has been set! &b%location of player%"
+							if arg 2 is "beklemelobisi":
+								set {waitinglobby.%arg 3%} to location of player
+								send "{@tag} &7Waiting lobby has been set! &b%location of player%"
+							if arg 2 is "spawn":
+								set {spawn.%arg 3%} to location of player
+								send "{@tag} &7Spawn has been set! &b%location of player%"
+							if arg 2 is "maxplayer":
+								set {maxplayer.%arg 3%} to arg 4
+								send "{@tag} &7MaxPlayers has been set"
+			else:
+				send "{@tag} &cYou don't have permission"
+		if arg 1 is "join":
+			if arg 2 isn't set:
+				send "{@tag} &cPlease select a arena name"
+			else:
+				if {ingame.%player%} is set:
+					send "{@tag} &cYou already in game!"
+				else:
+					if {arenas::%arg 2%} is set:
+						if {status.%arg 2%} is "&4INGAME":
+							send "{@tag} &cArena already in game"
+						if {status.%arg 2%} is "&aWAITING":
+							if {player.%arg 2%} is greater than or equal to {maxplayer.%arg 2%}:
+								send "{@tag} &cArena Full"
+							else:
+								clear player's inventory
+								teleport player to {waitinglobby.%arg 2%}
+								set player's game mode to adventure
+								add player to {player.%arg 2%::*}
+								add 1 to {player.%arg 2%}
+								set {ingame.%player%} to 1
+								loop {player.%arg 2%::*}:
+									send "{@tag} &2%player% &ahas joinned the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+								if {player.%arg 2%} is equal to {maxplayer.%arg 2%}:
+									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									wait 1 seconds
+									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									wait 1 seconds
+									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									wait 1 seconds
+									send "{@tag} &aGame Starting in &b5 Seconds" to {playerr.%arg 2%::*}
+									wait 1 seconds
+									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									wait 1 seconds
+									loop {player.%arg 2%::*}:
+										teleport loop-value to {spawn.%arg 2%}
+										set {status.%arg 2%} to "&4INGAME"
+
+on step on red wool:
+	if {ingame.%player%} is set:
+		loop {arenas::*}:
+			{player.%loop-value%::*} contains player:
+				set {player.%loop-value%} to 0
+				set {status.%loop-value%} to "&aWAITING"
+				loop {player.%loop-value%::*}:
+					delete {ingame.%loop-value-2%}
+				teleport {player.%loop-value%::*} to {player.%loop-value%}
+				broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
+				delete {player.%loop-value%::*}
+
+on break:
+	if {ingame.%player%} is set:
+		cancel event
+
+on place:
+	if {ingame.%player%} is set:
+		cancel event
+
+on damage:
+	if {ingame.%attacker%} is set:
+		cancel event
+
+command /test:
+	trigger:
+		delete {ingame.%player%}
