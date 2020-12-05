@@ -1,10 +1,9 @@
 options:
-	tag: &f[&cRunner&f]
+	tag: &f[&b&lFast&3&lGens&f]
 
 command /runner [<text>] [<text>] [<text>] [<int>]:
 	trigger:
 		if arg 1 isn't set:
-			send "{@tag} &7Skript Codded By &cSkripTR"
 			send "{@tag} &7Help for &c/runner help"
 		if arg 1 is "help":
 			player has permission "runner.admin":
@@ -28,14 +27,19 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 		if arg 1 is "create":
 			player has permission "runner.admin":
 				if arg 2 is set:
-					{arenas::*} contains arg 2:
-						send "{@tag} &cArena is already set!"
+					if arg 3 is "parkour" or "race":
+						{arenas::*} contains arg 2:
+							send "{@tag} &cArena is already set!"
+						else:
+							set {gamemode::%arg 2%} to arg 3
+							set {arenas::%arg 2%} to arg 2
+							set {status.%arg 2%} to "&aWAITING"
+							set {maxplayer.%arg 2%} to 0
+							set {player.%arg 2%} to 0
+							send "{@tag} &7Arena has been created"
 					else:
-						set {arenas::%arg 2%} to arg 2
-						set {status.%arg 2%} to "&aWAITING"
-						set {maxplayer.%arg 2%} to 0
-						set {player.%arg 2%} to 0
-						send "{@tag} &7Arena has been created"
+						send "{@tag} &cPlease select a valid arena type"
+						send "{@tag} &8(&6Parkour, Race&8)"
 				else:
 					send "{@tag} &cPlease select a arena name"
 			else:
@@ -69,24 +73,28 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 							send "{@tag} &7Arena isn't found"
 						else:
 							if arg 2 is "lobby":
-								set {lobby.%arg 3%} to location of player
+								set {gameslobby} to location of player
 								send "{@tag} &7Lobby has been set! &b%location of player%"
-							if arg 2 is "beklemelobisi":
+							if arg 2 is "waitinglobby":
 								set {waitinglobby.%arg 3%} to location of player
 								send "{@tag} &7Waiting lobby has been set! &b%location of player%"
 							if arg 2 is "spawn":
 								set {spawn.%arg 3%} to location of player
 								send "{@tag} &7Spawn has been set! &b%location of player%"
+							if arg 2 is "winner":
+								set {winner.%arg 3%} to location of player
+								send "{@tag} &7Winner location has been set! &b%location of player%"
 							if arg 2 is "maxplayer":
 								set {maxplayer.%arg 3%} to arg 4
 								send "{@tag} &7MaxPlayers has been set"
+								gameSign({gamemode::%arg 3%})
 			else:
 				send "{@tag} &cYou don't have permission"
 		if arg 1 is "join":
 			if arg 2 isn't set:
 				send "{@tag} &cPlease select a arena name"
 			else:
-				if {ingame.%player%} is set:
+				if {ingame.%player%} is true:
 					send "{@tag} &cYou already in game!"
 				else:
 					if {arenas::%arg 2%} is set:
@@ -101,35 +109,93 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 								set player's game mode to adventure
 								add player to {player.%arg 2%::*}
 								add 1 to {player.%arg 2%}
-								set {ingame.%player%} to 1
+								set {ingame.%player%} to true
 								loop {player.%arg 2%::*}:
-									send "{@tag} &2%player% &ahas joinned the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+									send "{@tag} &2%player% &ahas joined the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+								gameSign({gamemode::%arg 2%})
 								if {player.%arg 2%} is equal to {maxplayer.%arg 2%}:
 									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
 									wait 1 seconds
-									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									send "{@tag} &aGame Starting in &b4 Seconds" to {player.%arg 2%::*}
 									wait 1 seconds
-									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									send "{@tag} &aGame Starting in &b3 Seconds" to {player.%arg 2%::*}
 									wait 1 seconds
-									send "{@tag} &aGame Starting in &b5 Seconds" to {playerr.%arg 2%::*}
+									send "{@tag} &aGame Starting in &b2 Seconds" to {player.%arg 2%::*}
 									wait 1 seconds
-									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+									send "{@tag} &aGame Starting in &b1 Seconds" to {player.%arg 2%::*}
 									wait 1 seconds
+									send "{@tag} &aGOOOOOOOO!!!" to {player.%arg 2%::*}
 									loop {player.%arg 2%::*}:
 										teleport loop-value to {spawn.%arg 2%}
 										set {status.%arg 2%} to "&4INGAME"
+									gameSign({gamemode::%arg 2%})
+		if arg 1 is "leave":
+			if arg 2 isn't set:
+				send "{@tag} &cPlease select a arena name"
+			else:
+				if {ingame.%player%} is false:
+					send "{@tag} &cYou are not in a game!"
+				else:
+					clear player's inventory
+					teleport player to {lobby.%arg 2%}
+					set player's game mode to survival
+					remove player from {player.%arg 2%::*}
+					remove 1 from {player.%arg 2%}
+					set {ingame.%player%} to false
+					loop {player.%arg 2%::*}:
+						send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+					send "{@tag} &aYou have left the game!"
+					#gameSign({gamemode::%arg 2%})
+
+
+command /gamesign [<text>]:
+	trigger:
+		if {arenas::*} contains arg 1:
+			targeted block is a sign
+			set {gamesign::%arg-1%} to targeted block
+			gameSign({gamemode::%arg 1%})
+		else:
+			send "{@tag} &cPlease select a valid arena name"
+			
+
+function gameSign(type: text):
+	loop {arenas::*}:
+		set {_game} to loop-value
+		set {_players} to {player.%loop-value%} 
+		set {_maxplayers} to {maxplayer.%loop-value%}
+		set {_status} to {status.%loop-value%}
+	if {_type} is "parkour":
+		set {_gamemode} to "&7[&6Parkour&7]"
+	if {_type} is "race":
+		set {_gamemode} to "&7[&6Race&7]"
+	set line 1 of {gamesign::%{_game}%} to "&8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]"
+	set line 2 of {gamesign::%{_game}%} to "&6%{_game}%"
+	set line 3 of {gamesign::%{_game}%} to {_status}
+	set line 4 of {gamesign::%{_game}%} to "%{_gamemode}% &8(&a%{_players}%&7/&a%{_maxplayers}%&8)"
+
+on rightclick on sign:
+	loop {arenas::*}:
+		set {_game} to loop-value
+	line 2 contains {_game}
+	make player say "/runner join %{_game}%"
+
 
 on step on red wool:
-	if {ingame.%player%} is set:
+	if {ingame.%player%} is true:
 		loop {arenas::*}:
 			{player.%loop-value%::*} contains player:
+				teleport player to {winner.%loop-value%}
 				set {player.%loop-value%} to 0
 				set {status.%loop-value%} to "&aWAITING"
 				loop {player.%loop-value%::*}:
 					delete {ingame.%loop-value-2%}
-				teleport {player.%loop-value%::*} to {player.%loop-value%}
+				teleport {player.%loop-value%::*} to {lobby.%loop-value%}
 				broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
 				delete {player.%loop-value%::*}
+				set player's game mode to survival
+				gameSign({gamemode::%loop-value%})
+	else:
+		send "{@tag} &7You are not in game." to player
 
 on break:
 	if {ingame.%player%} is set:
@@ -141,6 +207,10 @@ on place:
 
 on damage:
 	if {ingame.%attacker%} is set:
+		cancel event
+ 
+on drop:
+	if {ingame.%player%} is set:
 		cancel event
 
 command /test:

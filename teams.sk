@@ -82,8 +82,8 @@ command /team [<text>] [<text>] [<player>]:
                         if {teams.owner::%player%} is true:
                             if {teams.amount.players.%arg-2%} is 1:
                                 if arg 3 is set:
-                                    if {teams.owner::%player%} is not set:
-                                        if {teams.member::%player%} is not set:
+                                    if {teams.owner::%arg-3%} is not set:
+                                        if {teams.member::%arg-3%} is not set:
                                             if arg 3 is online:
                                                 if arg 3 is not executor:
                                                     send "{@prefix} &8- &eYou have invited &6%arg-3% &eto &6%arg-2%" to player
@@ -183,7 +183,7 @@ command /team [<text>] [<text>] [<player>]:
                     if {teams.%arg-2%::*} contains player:
                         if {teams.owner::%player%} is true:
                             if {teams.%arg-2%.owner::*} contains player:
-                                if {teams.amount.players.%arg-2%} is 2:
+                                if {teams.amount.players.%arg-2%} is 1:
                                     clear {teams.%arg-2%::*}
                                     clear {teams.owner::%player%}
                                     clear {teams.amount.players.%arg-2%}
@@ -207,10 +207,21 @@ command /team [<text>] [<text>] [<player>]:
                 clear {teams.%loop-value%::*}
                 clear {teams.%loop-value%.owner::*}
                 clear {teams.amount.players.%loop-value%}
-            clear {teams::*}
-            clear {teams.member::*}
-            clear {teams.owner::*}
+                loop {teams.%loop-value%::*}:
+                    clear {teams::%loop-value-2%}
+                    clear {teams.member::%loop-value-2%}
+                    clear {teams.owner::%loop-value-2%}
             send "{@prefix} &8- &eTeams have been cleared" to player
+        
+        if arg-1 is "test":
+            send "hi" to player
+            loop {teams::*}:
+                send "%{teams.%loop-value%::*}%" to player
+                send "%{teams.%loop-value%.owner::*}%" to player
+                send "%{teams.amount.players.%loop-value%}%" to player
+                send "%{teams::*}%" to player
+                send "%{teams.member::*}%" to player
+                send "%{teams.owner::*}%" to player
 
 
 command /plot [<text>] [<player>]:
@@ -251,7 +262,7 @@ command /plot [<text>] [<player>]:
             send "&6/plot help admin &8- &7Admin" to player
             send "&6/plot help all &8- &7Display all commands" to player
             send "&8&m---------&r &6Plot² Help &8&m---------" to player   
-        else:
+        else if arg-1 is not "add" or "trust":
             send "&8&m---------&r &c&l!!NOTICE!! &8&m---------"
             send "&6Team functionality is being used," to player
             send "&6for all commands please replace" to player
