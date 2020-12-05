@@ -45,7 +45,6 @@ options:
 	S5F3bal: Not yet Announced
 
 
-
 command /payouts:
 	trigger:
 		send "" to player
@@ -117,6 +116,4 @@ function payoutWinners(p: player, type: int = 0):
 		format gui slot 13 of {_p} with skull of ("{@S5F2}" parsed as offline player) named "&a&l&n{@S5F2}" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a{@S5F2bal}" to close
 		format gui slot 15 of {_p} with skull of ("{@S5F3}" parsed as offline player) named "&a&l&n{@S5F3}" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a{@S5F3bal}" to close
 		format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
-	
-
 

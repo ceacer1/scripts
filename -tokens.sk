@@ -1,0 +1,146 @@
+options:
+    prefix: &2Fast&aGens &8»&a
+    messageborders: &7&m          &a&m            &2&m            &a&m            &7&m          &r
+    goldnugget: &2Token &7(Right-Click to claim)
+
+#every 30 seconds:
+ #   set {tokens::tokenstop::*} to sorted {tokens::players::tcount::*} 
+
+command /tokens [<string>] [<player>] [<integer>]:
+    trigger:
+        if arg-1 is not set:
+            send ""
+            send "{@messageborders}" to player
+            send "&2Tokens Balance: %{tokens::players::tcount::%uuid of player%}%"
+            send "{@messageborders}" to player
+        if arg-1 = "pickupmode":
+            if {tokens::players::%uuid of player%::pickupmode} = false:
+                set {tokens::players::%uuid of player%::pickupmode} to true
+                send action bar "{@prefix} You are now picking up token generators..." to player
+                stop
+            if {tokens::players::%uuid of player%::pickupmode} = true:
+                set {tokens::players::%uuid of player%::pickupmode} to false
+                send action bar "{@prefix} You are no longer picking up token generators..." to player
+                stop
+        if arg-1 = "pay":
+            if arg-2 is set:
+                if arg-3 is set:
+                    if arg-3 > 0:
+                        if {tokens::players::tcount::%uuid of player%} >= arg-3:
+                            remove arg-3 from {tokens::players::tcount::%uuid of player%}
+                            add arg-3 to {tokens::players::tcount::%uuid of arg-2%}
+                            send action bar "{@prefix} &2%name of player% &ahas payed you &2%arg-3% &atokens" to arg-2
+                            PlaySound(arg-2, "ENTITY_VILLAGER_YES")
+                            send action bar "{@prefix} You sent &2%arg-3% &ato &2%arg-2%'s &atoken balance!" to player
+                            PlaySound(player, "ENTITY_VILLAGER_NO")
+                        else:
+                            send action bar "{@prefix} You don't have enough tokens to pay this amount to &2%arg-2%..." to player
+                    else:
+                        send action bar "{@prefix} You can't steal tokens from another player..." to player
+                else:
+                    send action bar "{@prefix} Please supply more arguments..." to player
+            else:
+                send action bar "{@prefix} Please supply more arguments..." to player
+        if arg-1 = "shop":
+            open chest inventory with 3 rows named "&2Tokens Shop" to player
+            loop 27 times:
+                format gui slot (loop-number - 1) of player with pink stained glass pane named " "
+            format gui slot 11 of player with gold ore with lore " " and "&aPrice: &2250 Tokens" to run:
+                if {tokens::players::tcount::%uuid of player%} >= 250:
+                    remove 250 from {tokens::players::tcount::%uuid of player%}
+                    give 1 of gold ore to player
+                    #PlaySound(player, "ENTITY_VILLAGER_YES")
+                    send action bar "{@prefix} You bought a gold ore" to player
+                else:
+                    close inventory of player
+                    #PlaySound(player, "ENTITY_VILLAGER_NO")
+                    send action bar "{@prefix} You don't have &2250 &atokens..." to player
+            format gui slot 13 of player with gold ingot named "&2x0.05 Multiplier" with lore " " and "&aPrice: &2350 Tokens" to run:
+                if {tokens::players::tcount::%uuid of player%} >= 350:
+                    remove 350 from {tokens::players::tcount::%uuid of player%}
+                    add 0.05 to {shop::boosters::%uuid of player%}
+                    #PlaySound(player, "ENTITY_VILLAGER_YES")
+                    send action bar "{@prefix} You bought a &2x0.05 &aaddition to your multiplier." to player
+                else:
+                    close inventory of player
+                    #PlaySound(player, "ENTITY_VILLAGER_NO")
+                    send action bar "{@prefix} You don't have &2350 &atokens..." to player
+            format gui slot 15 of player with gold block named "&2Gen Slot" with lore "" and "&aPrice: &2500 Tokens" to run:
+                if {tokens::players::tcount::%uuid of player%} >= 500:
+                    remove 500 from {tokens::players::tcount::%uuid of player%}
+                    add 1 to {gens::players::%uuid of player%::gencap}
+                    #PlaySound(player, "ENTITY_VILLAGER_YES")
+                    send action bar "{@prefix} You bought a extra genslot" to player
+                else:
+                    close inventory of player
+                    #PlaySound(player, "ENTITY_VILLAGER_NO")
+                    send action bar "{@prefix} You don't have &2500 &atokens..." to player
+        if arg-1 = "top":
+            send "&r" to player
+            send "{@messageborders}" to player
+            send "&2&lTOKENS TOP" to player
+            send "&r" to player
+            set {_num} to 0
+            loop {tokens::players::tcount::*}:
+                add loop-value to {_test}
+            set {tokens::tokenstop::*} to sorted {_test}
+            loop {tokens::tokenstop::*}:
+                add 1 to {_num}
+                set {_data::*} to split loop-value by ":"
+                set {_player} to "%{_data::1}%" parsed as offline player
+                set {_tokens} to {_data::2}
+                send "&7##%{_num}% - &2%{_player}% &awith &2%{_tokens}% &atokens" to player
+                wait 1 tick
+                if {_num} >= 5:
+                    stop loop
+            send "{@messageborders}" to player
+
+        if arg-1 = "help":
+            send "&r" to player
+            send "{@messageborders}" to player
+            send "&2&lTOKENS HELP" to player
+            send "&r" to player
+            send "&2/tokens pickupmode &7- &aWanna pickup your gold ores? Activate pickupmode using this command." to player
+            send "&2/tokens pay playername amount &7- &aWanna pay someone tokens? You can do it using the command." to player
+            send "&2/tokens shop &7- &aSpend your tokens on more gen slots or multipliers!" to player
+            send "&2/tokens top &7- &aTokens Leaderboard"
+            send "{@messageborders}" to player
+
+on break of gold ore:
+    if {tokens::players::%uuid of player%::pickupmode} is not set:
+        set {tokens::players::%uuid of player%::pickupmode} to false
+    if {tokens::players::%uuid of player%::pickupmode} = true:
+        stop
+    set {_loc} to location of event-block
+    add {_loc} to {tokens::generation::*}
+    give 1 of gold nugget named "{@goldnugget}" to player
+    cancel drops
+    wait 1 tick
+    set block at {_loc} to bedrock
+
+every 5 seconds:
+    loop {tokens::generation::*}:
+        set block at loop-value to gold ore
+        remove loop-value from {tokens::generation::*}
+        wait 2 tick
+
+on craft of gold nugget:
+    cancel event
+
+on right click with gold nugget:
+    if player is sneaking:
+        if player has permission "tokens.shiftclaim":
+            set {_a} to amount of gold nugget in inventory of player
+            remove {_a} of gold nugget named "{@goldnugget}" from inventory of player
+            add {_a} to {tokens::players::tcount::%uuid of player%}
+            send action bar "{@prefix} You claimed &2%{_a}% &atokens!" to player
+            PlaySound(player, "ENTITY_VILLAGER_YES")
+        if player does not have permission "tokens.shiftclaim":
+            PlaySound(player, "ENTITY_VILLAGER_NO")
+            send action bar "{@prefix} You don't have this donator feature... &7/buy" to player
+            stop
+    if player is not sneaking:
+        PlaySound(player, "ENTITY_VILLAGER_YES")
+        remove 1 of gold nugget named "{@goldnugget}" from inventory of player
+        add 1 to {tokens::players::tcount::%uuid of player%}
+        send action bar "{@prefix} You claimed a token." to player

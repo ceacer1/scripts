@@ -1,6 +1,13 @@
+
+options:
+    prefix: &b&lFast&3&lGens
+
 command /team [<text>] [<text>] [<player>]:
     trigger:
         if arg-1 is not set:
+            send ""
+            send "&7&m      &7< &a&l{@prefix} &7>&7&m      "
+            send ""
             send "&cInvalid Usage: &6/team <text> <text> <player>" to player
             send "&eUse &6/team help &efor more info." to player
 
@@ -27,13 +34,13 @@ command /team [<text>] [<text>] [<player>]:
                         set {teams.owner::%player%} to true
                         set {teams.amount.players.%arg-2%} to 1
                         add player to {teams.%arg-2%.owner::*}
-                        send "&eYou have created a team named &6%arg-2%"
+                        send "{@prefix} &8- &eYou have created a team named &6%arg-2%"
                     else:
-                        send "&eYou are already the owner of a team!" to player
+                        send "{@prefix} &8- &eYou are already the owner of a team!" to player
                 else:
-                    send "&eThe team &6%arg-2% &ealready exists." to player
+                    send "{@prefix} &8- &eThe team &6%arg-2% &ealready exists." to player
             else:
-                send "&cInvalid Usage: &ePlease enter a team name" to player
+                send "{@prefix} &8- &ePlease enter a team name" to player
 
         if arg-1 is "list":
             if {teams::*} contains arg-2:
@@ -67,30 +74,36 @@ command /team [<text>] [<text>] [<player>]:
                         if {teams.owner::%player%} is true:
                             if {teams.amount.players.%arg-2%} is 1:
                                 if arg 3 is set:
-                                    if arg 3 is online:
-                                        if arg 3 is not executor:
-                                            send "&eYou have invited &6%arg-3% &eto &6%arg-2%" to player
-                                            set {teams.invite.%arg-2%::%arg-3%} to true
-                                            send "" to arg-3
-                                            send "&eYou have been invited to join &6%arg-2% " to arg-3
-                                            json("%arg-3%", "&e&m===== &6Click to Join &e&m===== ||ttp:&cClick to Join &a%arg-2%&c.||cmd:/team join %arg-2%")
-                                            send "" to arg-3
+                                    if {teams.owner::%player%} is not set:
+                                        if {teams.member::%player%} is not set:
+                                            if arg 3 is online:
+                                                if arg 3 is not executor:
+                                                    send "{@prefix} &8- &eYou have invited &6%arg-3% &eto &6%arg-2%" to player
+                                                    set {teams.invite.%arg-2%::%arg-3%} to true
+                                                    send "" to arg-3
+                                                    send "{@prefix} &8- &eYou have been invited to join &6%arg-2% " to arg-3
+                                                    json("%arg-3%", "&e&m===== &6Click to Join &e&m===== ||ttp:&cClick to Join &a%arg-2%&c.||cmd:/team join %arg-2%")
+                                                    send "" to arg-3
+                                                else:
+                                                    send "{@prefix} &8- &eYou cannot invite yourself to your team." to player  
+                                            else:
+                                                send "{@prefix} &8- &eThe player you are trying to invite is not online." to player
                                         else:
-                                            send "&eYou cannot invite yourself to your team." to player
+                                            send "{@prefix} &8- &eThe player you are trying to invite is already in a team." to player
                                     else:
-                                        send "&eThe player you are trying to invite is not online." to player
+                                        send "{@prefix} &8- &eThe player you are trying to add is the owner of a team." to player
                                 else:
-                                    send "&ePlease enter a player name." to player
+                                    send "{@prefix} &8- &ePlease enter a player name." to player
                             else:
-                                send "&eYou already have 2 members in your team." to player
+                                send "{@prefix} &8- &eYou already have 2 members in your team." to player
                         else:
-                            send "&eYou are not the owner of &6%arg-2% &eand therefore cannot invite players to it." to player
+                            send "{@prefix} &8- &eYou are not the owner of &6%arg-2% &eand therefore cannot invite players to it." to player
                     else:
-                        send "&eYou are not a member of the team &6%arg-2% &eand therefore cannot invite players to it." to player
+                        send "{@prefix} &8- &eYou are not a member of the team &6%arg-2% &eand therefore cannot invite players to it." to player
                 else:
-                    send "&eThe team &6%arg-2% &edoes not exist." to player
+                    send "{@prefix} &8- &eThe team &6%arg-2% &edoes not exist." to player
             else:
-                send "&ePlease enter a team name" to player
+                send "{@prefix} &8- &ePlease enter a team name" to player
         
         if arg-1 is "join":
             if {teams::*} contains arg-2:
@@ -99,12 +112,12 @@ command /team [<text>] [<text>] [<player>]:
                     set {teams.member::%player%} to true
                     set {teams.amount.players.%arg-2%} to 2
                     clear {teams.invite.%arg-2%::%player%}
-                    send "&eYou have joined team &6%arg-2%" to player
-                    send "&6%executor% &ehad joined &6%arg-2%" to {teams.%arg-2%.owner::*}
+                    send "{@prefix} &8- &eYou have joined team &6%arg-2%" to player
+                    send "{@prefix} &8- &6%executor% &ehad joined &6%arg-2%" to {teams.%arg-2%.owner::*}
                 else:
-                    send "&eYou have not been invited to join the team &6%arg-2%." to player
+                    send "{@prefix} &8- &eYou have not been invited to join the team &6%arg-2%." to player
             else:
-                send "&eThe team &6%arg-2% &edoes not exist." to player
+                send "{@prefix} &8- &eThe team &6%arg-2% &edoes not exist." to player
 
 
         if arg-1 is "leave":
@@ -113,19 +126,19 @@ command /team [<text>] [<text>] [<player>]:
                     if {teams.%arg-2%::*} contains player:
                         if {teams.owner::%player%} is true:
                             if {teams.%arg-2%.owner::*} contains player:
-                                send "&eYou cannot leave a team if you are the owner. Please use &6/team disband %arg-2%" to player
+                                send "{@prefix} &8- &eYou cannot leave a team if you are the owner. Please use &6/team disband %arg-2%" to player
                         if {teams.member::%player%} is true:
                             remove player from {teams.%arg-2%::*}
                             clear {teams.member::%player%}
                             set {teams.amount.players.%arg-2%} to 1
-                            send "&eYou have left the team &6%arg-2%" to player
-                            send "&6%player% &6has left your team" to {teams.%arg-2%.owner::*}
+                            send "{@prefix} &8- &eYou have left the team &6%arg-2%" to player
+                            send "{@prefix} &8- &6%player% &6has left your team" to {teams.%arg-2%.owner::*}
                     else:
-                        send "&eYou are not a member of the team &6%arg-2% &etherefore you cannot leave it." to player
+                        send "{@prefix} &8- &eYou are not a member of the team &6%arg-2% &etherefore you cannot leave it." to player
                 else:
-                    send "&eThe team &6%arg-2% &edoes not exist." to player
+                    send "{@prefix} &8- &eThe team &6%arg-2% &edoes not exist." to player
             else:
-                send "&ePlease enter a team name" to player
+                send "{@prefix} &8- &ePlease enter a team name" to player
         
         if arg-1 is "remove":
             if arg-2 is set:
@@ -139,22 +152,22 @@ command /team [<text>] [<text>] [<player>]:
                                             remove arg-3 from {teams.%arg-2%::*}
                                             clear {teams.member::%arg-3%}
                                             set {teams.amount.players.%arg-2%} to 1
-                                            send "&eYou have removed &6%arg-3% &efrom the team &6%arg-2%" to player
-                                            send "&eYou have been removed from the team &6%arg-2%" to arg-3
+                                            send "{@prefix} &8- &eYou have removed &6%arg-3% &efrom the team &6%arg-2%" to player
+                                            send "{@prefix} &8- &eYou have been removed from the team &6%arg-2%" to arg-3
                                     else:
-                                        send "&eYou are not the owner of the team &6%arg-2% &etherefore cannot disband it." to player 
+                                        send "{@prefix} &8- &eYou are not the owner of the team &6%arg-2% &etherefore cannot disband it." to player 
                                 else:
-                                    send "&eYou cannot remove yourself from your team." to player
+                                    send "{@prefix} &8- &eYou cannot remove yourself from your team." to player
                             else:
-                                send "&eThe player &6%arg-3% &eis not in your team therefore cannot be removed." to player 
+                                send "{@prefix} &8- &eThe player &6%arg-3% &eis not in your team therefore cannot be removed." to player 
                         else:
-                            send "&ePlease enter a player name." to player
+                            send "{@prefix} &8- &ePlease enter a player name." to player
                     else:
-                        send "&eYou are not a member of the team &6%arg-2% &etherefore you cannot disbant it." to player
+                        send "{@prefix} &8- &eYou are not a member of the team &6%arg-2% &etherefore you cannot disband it." to player
                 else:
-                    send "&eThe team &6%arg-2% &edoes not exist." to player
+                    send "{@prefix} &8- &eThe team &6%arg-2% &edoes not exist." to player
             else:
-                send "&ePlease enter a team name" to player
+                send "{@prefix} &8- &ePlease enter a team name" to player
 
         if arg-1 is "disband":
             if arg-2 is set:
@@ -162,19 +175,22 @@ command /team [<text>] [<text>] [<player>]:
                     if {teams.%arg-2%::*} contains player:
                         if {teams.owner::%player%} is true:
                             if {teams.%arg-2%.owner::*} contains player:
-                                clear {teams.%arg-2%::*}
-                                clear {teams.owner::%player%}
-                                clear {teams.amount.players.%arg-2%}
-                                remove arg-2 from {teams::*}
-                                send "&eYour team &6%arg-2% &ehas been disbanded" to player
+                                if {teams.amount.players.%arg-2%} is 2:
+                                    clear {teams.%arg-2%::*}
+                                    clear {teams.owner::%player%}
+                                    clear {teams.amount.players.%arg-2%}
+                                    remove arg-2 from {teams::*}
+                                    send "{@prefix} &8- &eYour team &6%arg-2% &ehas been disbanded" to player
+                                else:
+                                    send "{@prefix} &8- &eYou cannot disband a team whilst another player is in it." to player
                         else:
-                            send "&eYou are not the owner of the team &6%arg-2% &etherefore cannot disband it." to player 
+                            send "{@prefix} &8- &eYou are not the owner of the team &6%arg-2% &etherefore cannot disband it." to player 
                     else:
-                        send "&eYou are not a member of the team &6%arg-2% &etherefore you cannot disband it." to player
+                        send "{@prefix} &8- &eYou are not a member of the team &6%arg-2% &etherefore you cannot disband it." to player
                 else:
-                    send "&eThe team &6%arg-2% &edoes not exist." to player
+                    send "{@prefix} &8- &eThe team &6%arg-2% &edoes not exist." to player
             else:
-                send "&ePlease enter a team name" to player
+                send "{@prefix} &8- &ePlease enter a team name" to player
                         
 
 
@@ -186,16 +202,104 @@ command /team [<text>] [<text>] [<player>]:
             clear {teams::*}
             clear {teams.member::*}
             clear {teams.owner::*}
-            send "&eTeams have been cleared" to player
+            send "{@prefix} &8- &eTeams have been cleared" to player
 
 
-#command /plot [<text>] [<player>]:
-#    aliases: /p, /plotme, /plotsquared
-#    permission: op
-#    trigger:
-#        if arg-1 is "add":
-#            if arg-2 is set:
-#                loop {teams::*}:
-#                    loop loop-value:
-#                        if loop-value contains arg-2:
-#                            send "hi"
+command /plot [<text>] [<player>]:
+    trigger:
+        if arg-1 is "add":
+            if arg-2 is set:
+                loop {teams::*}:
+                    if {teams.%loop-value%::*} contains arg-2:
+                        set {teams.plot.add::%player%} to true
+                        make player say "/p add %arg-2%"
+                    else:
+                        send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
+                        send "&8[&6P2&8] &6You can only add members of your team." to player
+            else:
+                send "&8[&6P2&8] &6Usage: &7/plot add <player|*>" to player
+        
+        if arg-1 is "trust":
+            if arg-2 is set:
+                loop {teams::*}:
+                    if {teams.%loop-value%::*} contains arg-2:
+                        set {teams.plot.trust::%player%} to true
+                        make player say "/p trust %arg-2%"
+                    else:
+                        send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
+                        send "&8[&6P2&8] &6You can only trust members of your team." to player
+            else:
+                send "&8[&6P2&8] &6Usage: &7/plot trust <player|*>" to player
+        if arg-1 is not set:
+            send "&8&m---------&r &6Plot² Help &8&m---------" to player
+            send "&6/plot help claiming &8- &7Claiming" to player
+            send "&6/plot help teleport &8- &7Teleport" to player
+            send "&6/plot help protection &8- &7Protection" to player
+            send "&6/plot help chat &8- &7Chat" to player
+            send "&6/plot help web &8- &7Web" to player
+            send "&6/plot help cosmetic &7&8- Cosmetic" to player
+            send "&6/plot help info &8- &7Info" to player
+            send "&6/plot help debug &8- &7Debug" to player
+            send "&6/plot help admin &8- &7Admin" to player
+            send "&6/plot help all &8- &7Display all commands" to player
+            send "&8&m---------&r &6Plot² Help &8&m---------" to player       
+
+on command "/p add":
+    if player has permission "op":
+        stop
+    else if {teams.plot.add::%player%} is true:
+        set {teams.plot.add::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
+        cancel event
+
+on command "/p trust":
+    if player has permission "op":
+        stop
+    else if {teams.plot.trust::%player%} is true:
+        set {teams.plot.trust::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/plotme add":
+    if player has permission "op":
+        stop
+    else if {teams.plot.add::%player%} is true:
+        set {teams.plot.add::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
+        cancel event
+
+on command "/plotme trust":
+    if player has permission "op":
+        stop
+    else if {teams.plot.trust::%player%} is true:
+        set {teams.plot.trust::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/plotsquared add":
+    if player has permission "op":
+        stop
+    else if {teams.plot.add::%player%} is true:
+        set {teams.plot.add::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot add <player|*>" to player
+        cancel event
+
+on command "/plotsquared trust":
+    if player has permission "op":
+        stop
+    else if {teams.plot.trust::%player%} is true:
+        set {teams.plot.trust::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
