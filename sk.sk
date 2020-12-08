@@ -1,33 +1,43 @@
 options:
-	tag: &f[&b&lFast&3&lGens&f]
+	tag: &8[&b&lFast&3&lGens&8]
 
-command /runner [<text>] [<text>] [<text>] [<int>]:
+command /minigame [<text>] [<text>] [<text>] [<int>]:
+	aliases: /mg, /mini, /game
 	trigger:
 		if arg 1 isn't set:
-			send "{@tag} &7Help for &c/runner help"
+			send "{@tag} &7Help for &c/minigame help"
 		if arg 1 is "help":
-			player has permission "runner.admin":
+			player has permission "minigame.admin":
+				send ""
 				send "&8&m---------- &6HELP &8&m----------"
-				send "{@tag} &7/runner create [arena]"
-				send "{@tag} &7/runner remove [arena]"
-				send "{@tag} &7/runner setting"
-				send "{@tag} &7/runner join"
-				send "{@tag} &7/runner list"
+				send ""
+				send "&7/minigame create [arena]"
+				send "&7/minigame remove [arena]"
+				send "&7/minigame settings"
+				send "&7/minigame join"
+				send "&7/minigame list"
+				send ""
 			else:
+				send ""
 				send "&8&m---------- &6HELP &8&m----------"
-				send "{@tag} &7/runner join"
-				send "{@tag} &7/runner list"
+				send ""
+				send "&7/minigame join"
+				send "&7/minigame list"
+				send ""
 		if arg 1 is "list":
 			size of {arenas::*} = 0:
 				send "{@tag} &cThere is no arena."
 			size of {arenas::*} > 0:
-				send "&8&m---------- &6List &8&m----------"
+				send ""
+				send "&8&m-------- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m--------"
+				send ""
 				loop {arenas::*}:
-					send "&a* &7- &a%loop-value% &7- &a%{status.%loop-value%}% &7- &c%{player.%loop-value%}%&7/&c%{maxplayer.%loop-value%}%"
+					send "&7[&6%{gamemode::%loop-value%}%&7] &7- &a%loop-value% &7- &a%{status.%loop-value%}% &7- &c%{player.%loop-value%}%&7/&c%{maxplayer.%loop-value%}%"
+				send ""
 		if arg 1 is "create":
-			player has permission "runner.admin":
+			player has permission "minigame.admin":
 				if arg 2 is set:
-					if arg 3 is "parkour" or "race":
+					if arg 3 is "parkour", "maze" or "race":
 						{arenas::*} contains arg 2:
 							send "{@tag} &cArena is already set!"
 						else:
@@ -36,16 +46,18 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 							set {status.%arg 2%} to "&aWAITING"
 							set {maxplayer.%arg 2%} to 0
 							set {player.%arg 2%} to 0
+							set {entryfee.%arg 2%} to 0
+							set {prize.%arg 2%} to 0
 							send "{@tag} &7Arena has been created"
 					else:
 						send "{@tag} &cPlease select a valid arena type"
-						send "{@tag} &8(&6Parkour, Race&8)"
+						send "{@tag} &8(&6Parkour, Maze, Race&8)"
 				else:
 					send "{@tag} &cPlease select a arena name"
 			else:
 				send "{@tag} &cYou don't have permission"
 		if arg 1 is "remove":
-			player has permission "runner.admin":
+			player has permission "minigame.admin":
 				if arg 2 is set:
 					if {arenas::%arg 2%} is set:
 						delete {arenas::%arg 2%}
@@ -54,6 +66,11 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 						delete {player.%arg 2%}
 						delete {status.%arg 2%}
 						delete {players.%arg 2%::*}
+						delete {winner.%arg 2%}
+						delete {gamemode::%arg 2%}
+						delete {prize.%arg 2%}
+						delete {entryfee1.%arg 2%}
+						delete {entryfee2.%arg 2%}
 						send "{@tag} &7Arena has been removed"
 					else:
 						send "{@tag} &7Arena isn't found"
@@ -62,19 +79,19 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 			else:
 				send "{@tag} &cYou don't have permission"
 		if arg 1 is "settings":
-			player has permission "runner.admin":
+			player has permission "minigame.admin":
 				if arg 2 isn't set:
-					send "{@tag} &7/runner settings &c(lobby-waitinglobby-spawn-maxplayer) [arena]"
+					send "{@tag} &7/minigame settings &c(lobby-waitinglobby-spawn-winner-maxplayer-entryfee) [arena] [integer]"
 				else:
-					if arg 3 isn't set:
+					if arg 2 is "lobby":
+						set {gameslobby} to location of player
+						send "{@tag} &7Lobby has been set! &b%location of player%"
+					else if arg 3 isn't set:
 						send "{@tag} &cPlease select a arena name"
 					else:
 						if {arenas::%arg 3%} isn't set:
 							send "{@tag} &7Arena isn't found"
 						else:
-							if arg 2 is "lobby":
-								set {gameslobby} to location of player
-								send "{@tag} &7Lobby has been set! &b%location of player%"
 							if arg 2 is "waitinglobby":
 								set {waitinglobby.%arg 3%} to location of player
 								send "{@tag} &7Waiting lobby has been set! &b%location of player%"
@@ -85,9 +102,19 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 								set {winner.%arg 3%} to location of player
 								send "{@tag} &7Winner location has been set! &b%location of player%"
 							if arg 2 is "maxplayer":
-								set {maxplayer.%arg 3%} to arg 4
-								send "{@tag} &7MaxPlayers has been set"
-								gameSign({gamemode::%arg 3%})
+								if arg 4 is not set:
+									send "{@tag} &7MaxPlayers can not be set to nothing!"
+								else:
+									set {maxplayer.%arg 3%} to arg 4
+									send "{@tag} &7MaxPlayers has been set"
+									gameSign(arg 3)
+							if arg 2 is "entryfee":
+								if arg 4 is not set:
+									send "{@tag} &7Entry Fee can not be set to nothing!"
+								else:
+									set {entryfee.%arg 3%} to arg 4
+									send "{@tag} &7Entry Fee has been set"
+									formatNum(arg 3, arg 4)
 			else:
 				send "{@tag} &cYou don't have permission"
 		if arg 1 is "join":
@@ -98,37 +125,54 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 					send "{@tag} &cYou already in game!"
 				else:
 					if {arenas::%arg 2%} is set:
-						if {status.%arg 2%} is "&4INGAME":
-							send "{@tag} &cArena already in game"
-						if {status.%arg 2%} is "&aWAITING":
-							if {player.%arg 2%} is greater than or equal to {maxplayer.%arg 2%}:
-								send "{@tag} &cArena Full"
-							else:
-								clear player's inventory
-								teleport player to {waitinglobby.%arg 2%}
-								set player's game mode to adventure
-								add player to {player.%arg 2%::*}
-								add 1 to {player.%arg 2%}
-								set {ingame.%player%} to true
-								loop {player.%arg 2%::*}:
-									send "{@tag} &2%player% &ahas joined the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
-								gameSign({gamemode::%arg 2%})
-								if {player.%arg 2%} is equal to {maxplayer.%arg 2%}:
-									send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
-									wait 1 seconds
-									send "{@tag} &aGame Starting in &b4 Seconds" to {player.%arg 2%::*}
-									wait 1 seconds
-									send "{@tag} &aGame Starting in &b3 Seconds" to {player.%arg 2%::*}
-									wait 1 seconds
-									send "{@tag} &aGame Starting in &b2 Seconds" to {player.%arg 2%::*}
-									wait 1 seconds
-									send "{@tag} &aGame Starting in &b1 Seconds" to {player.%arg 2%::*}
-									wait 1 seconds
-									send "{@tag} &aGOOOOOOOO!!!" to {player.%arg 2%::*}
+						if player's balance is not more than or equal to {entryfee.%arg 2%}:
+							send "{@tag} &cYou require &2$&a%{entryfee.%arg 2%}%&c join this game."
+						else:
+							send "{@tag} &2$&a%{entryfee.%arg 2%}% &chad been paid for your entry."
+							remove {entryfee.%arg 2%} from player's balance
+							add {entryfee.%arg 2%} to {prize.%arg 2%}
+							if {status.%arg 2%} is "&4INGAME":
+								send "{@tag} &cYou are already already in a game."
+							if {status.%arg 2%} is "&aWAITING":
+								if {player.%arg 2%} is greater than or equal to {maxplayer.%arg 2%}:
+									send "{@tag} &cArena Full"
+								else:
+									clear player's inventory
+									teleport player to {waitinglobby.%arg 2%}
+									set player's game mode to adventure
+									add player to {player.%arg 2%::*}
+									add 1 to {player.%arg 2%}
+									set {ingame.%player%} to true
 									loop {player.%arg 2%::*}:
-										teleport loop-value to {spawn.%arg 2%}
-										set {status.%arg 2%} to "&4INGAME"
-									gameSign({gamemode::%arg 2%})
+										send "{@tag} &2%player% &ahas joined the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+									gameSign(arg 2)
+									set {_timer} to 5
+									if {player.%arg 2%} is equal to {maxplayer.%arg 2%}:
+										send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
+										set {status.%arg 2%} to "&d5"
+										gameSign(arg 2)
+										wait 1 seconds
+										send "{@tag} &aGame Starting in &b4 Seconds" to {player.%arg 2%::*}
+										set {status.%arg 2%} to "&d4"
+										gameSign(arg 2)
+										wait 1 seconds
+										send "{@tag} &aGame Starting in &b3 Seconds" to {player.%arg 2%::*}
+										set {status.%arg 2%} to "&d3"
+										gameSign(arg 2)
+										wait 1 seconds
+										send "{@tag} &aGame Starting in &b2 Seconds" to {player.%arg 2%::*}
+										set {status.%arg 2%} to "&d2"
+										gameSign(arg 2)
+										wait 1 seconds
+										send "{@tag} &aGame Starting in &b1 Seconds" to {player.%arg 2%::*}
+										set {status.%arg 2%} to "&d1"
+										gameSign(arg 2)
+										wait 1 seconds
+										send "{@tag} &aGOOOOOOOO!!!" to {player.%arg 2%::*}
+										loop {player.%arg 2%::*}:
+											teleport loop-value to {spawn.%arg 2%}
+											set {status.%arg 2%} to "&4INGAME"
+										gameSign(arg 2)
 		if arg 1 is "leave":
 			if arg 2 isn't set:
 				send "{@tag} &cPlease select a arena name"
@@ -136,83 +180,153 @@ command /runner [<text>] [<text>] [<text>] [<int>]:
 				if {ingame.%player%} is false:
 					send "{@tag} &cYou are not in a game!"
 				else:
+					set {_refund} to (({entryfee.%arg 2%}/100) * 90)
+					add {_refund} to player's balance
+					remove {entryfee.%arg 2%} from {prize.%arg 2%}
+					send "{@tag} &2$&a%{_refund}% &chad been refunded for your for leaving."
+					send "{@tag} &cTen Percent of the entry fee has been kept."
 					clear player's inventory
-					teleport player to {lobby.%arg 2%}
+					teleport player to {gameslobby}
 					set player's game mode to survival
 					remove player from {player.%arg 2%::*}
 					remove 1 from {player.%arg 2%}
-					set {ingame.%player%} to false
+					clear {ingame.%player%}
 					loop {player.%arg 2%::*}:
 						send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
 					send "{@tag} &aYou have left the game!"
-					#gameSign({gamemode::%arg 2%})
+					gameSign(arg 2)
+		
+		if arg 1 is "sign":
+			if arg 2 isn't set:
+				send "{@tag} &cPlease select a arena name"
+			else:
+				if {arenas::*} contains arg 2:
+					targeted block is a sign
+					set {gamesign::%arg-2%} to targeted block
+					gameSign(arg 2)
+				else:
+					send "{@tag} &cPlease select a valid arena name"
 
+on tab complete of "/minigame", "/mg", "/mini" or "/game":
+	set tab completions for position 1 to "help", "sign", "list", "create", "join", "remove", "settings" and "leave"
+	if tab arg-1 = "join", "remove", "leave" or "sign":
+		set tab completions for position 2 to (indexes of {arenas::*})
+	else if tab arg-1 = "create":
+		set tab completions for position 3 to "parkour", "maze" and "race"
+	else if tab arg-1 = "settings":
+		set tab completions for position 2 to "lobby", "waitinglobby", "spawn", "entryfee", "winner" and "maxplayer"
+		set tab completions for position 3 to (indexes of {arenas::*})
 
-command /gamesign [<text>]:
+command /fwork:
 	trigger:
-		if {arenas::*} contains arg 1:
-			targeted block is a sign
-			set {gamesign::%arg-1%} to targeted block
-			gameSign({gamemode::%arg 1%})
-		else:
-			send "{@tag} &cPlease select a valid arena name"
-			
+		launch flickering ball firework colored red at player's location timed 1
+
+
+function formatNum(game: text, n: number) :: string:
+	set {_l::*} to split "k,M,B,T,Qn,Qi,Sx" at ","
+	set {_i} to min(floor(log({_n})/3), size of {_l::*})
+	return "%{_n}%" if {_i} <= 0
+	set {_i2} to 1000^{_i}
+	set {entryfee2.%{_game}%} to "%{_n}/{_i2}%%{_l::%{_i}%}%"
+	gameSign({_game})
+
 
 function gameSign(type: text):
 	loop {arenas::*}:
-		set {_game} to loop-value
-		set {_players} to {player.%loop-value%} 
-		set {_maxplayers} to {maxplayer.%loop-value%}
-		set {_status} to {status.%loop-value%}
-	if {_type} is "parkour":
-		set {_gamemode} to "&7[&6Parkour&7]"
-	if {_type} is "race":
-		set {_gamemode} to "&7[&6Race&7]"
-	set line 1 of {gamesign::%{_game}%} to "&8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]"
+		if loop-value contains {_type}:
+			set {_game} to loop-value
+			set {_players} to {player.%loop-value%} 
+			set {_maxplayers} to {maxplayer.%loop-value%}
+			set {_status} to {status.%loop-value%}
+			set {_gamemode} to {gamemode::%loop-value%}
+			set {_fee} to {entryfee2.%loop-value%}
+	if {_gamemode} is "parkour":
+		set {_gm} to "&7[&6PK&7]    "
+	if {_gamemode} is "race":
+		set {_gm} to "&7[&6Race&7]  "
+	if {_gamemode} is "maze":
+		set {_gm} to "&7[&6Maze&7]  "
+	set line 1 of {gamesign::%{_game}%} to "&8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&r&8(&2$&a%{_fee}%&8)"
 	set line 2 of {gamesign::%{_game}%} to "&6%{_game}%"
 	set line 3 of {gamesign::%{_game}%} to {_status}
-	set line 4 of {gamesign::%{_game}%} to "%{_gamemode}% &8(&a%{_players}%&7/&a%{_maxplayers}%&8)"
+	set line 4 of {gamesign::%{_game}%} to "%{_gm}% &8(&a%{_players}%&7/&a%{_maxplayers}%&8)"
 
 on rightclick on sign:
 	loop {arenas::*}:
 		set {_game} to loop-value
-	line 2 contains {_game}
-	make player say "/runner join %{_game}%"
+	if line 2 contains {_game}:
+		make player say "/minigame join %{_game}%"
+	else:
+		send "{@tag} &7Arena isn't found"
 
 
 on step on red wool:
 	if {ingame.%player%} is true:
 		loop {arenas::*}:
-			{player.%loop-value%::*} contains player:
-				teleport player to {winner.%loop-value%}
-				set {player.%loop-value%} to 0
-				set {status.%loop-value%} to "&aWAITING"
-				loop {player.%loop-value%::*}:
-					delete {ingame.%loop-value-2%}
-				teleport {player.%loop-value%::*} to {lobby.%loop-value%}
-				broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
-				delete {player.%loop-value%::*}
-				set player's game mode to survival
-				gameSign({gamemode::%loop-value%})
+			if {status.%loop-value%} is "&4INGAME":
+				{player.%loop-value%::*} contains player:
+					teleport player to {winner.%loop-value%}
+					add {prize.%loop-value%} to player's balance
+					send "{@tag} &aCongrats! You have won &2$&a%{prize.%loop-value%}%"
+					clear {prize.%loop-value%}
+					set {status.%loop-value%} to "&aWAITING"
+					loop {player.%loop-value%::*}:
+						clear {ingame.%loop-value-2%}
+					remove player from {player.%loop-value%::*}
+					loop {player.%loop-value%::*}:
+						teleport loop-value-2 to {gameslobby}
+						send "{@tag} &aWinning Prize was&8 -  &2$&a%{prize.%loop-value-1%}%" to loop-value-2
+					set {player.%loop-value%} to 0
+					broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
+					delete {player.%loop-value%::*}
+					set player's game mode to survival
+					gameSign(loop-value)
+			else:
+				send "{@tag} &7The game has not started yet." to player
 	else:
 		send "{@tag} &7You are not in game." to player
+
+on quit:
+	if {ingame.%player%} is true:
+		loop {arenas::*}:
+			if {status.%loop-value%} is "&aWAITING":
+				{player.%loop-value%::*} contains player:
+					set player's game mode to survival
+					remove player from {player.%loop-value%::*}
+					remove 1 from {player.%loop-value%}
+					set {_refund} to (({entryfee.%loop-value%}/100) * 90)
+					add {_refund} to player's balance
+					remove {entryfee.%loop-value%} from {prize.%loop-value%}
+					set {ingame.%player%} to false
+					loop {player.%loop-value%::*}:
+						send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%loop-value-2%}%&7/&c%{maxplayer.%loop-value-2%}%&8)" to loop-value-1
+					gameSign(loop-value)
+
 
 on break:
 	if {ingame.%player%} is set:
 		cancel event
 
 on place:
-	if {ingame.%player%} is set:
+	if {ingame.%player%} is true:
 		cancel event
 
 on damage:
-	if {ingame.%attacker%} is set:
+	if {ingame.%attacker%} is true:
 		cancel event
  
 on drop:
-	if {ingame.%player%} is set:
+	if {ingame.%player%} is true:
 		cancel event
 
-command /test:
+command /clearg:
 	trigger:
-		delete {ingame.%player%}
+		loop {arenas::*}:
+			loop {player.%loop-value%::*}:
+				clear {ingame.%loop-value-2%}
+
+command /testing:
+	trigger:
+		loop {arenas::*}:
+			loop {player.%loop-value%::*}:
+				set {ingame.%loop-value-2%} to false

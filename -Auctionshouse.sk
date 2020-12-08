@@ -1,0 +1,420 @@
+options:
+	prefix: §8▌ §a§lAuctionhouse§r §8┃
+	upline: §a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+	downline: §a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+			
+on inventory click:
+	if inventory name of current inventory of player contains "§1§8Auctionhouse":
+		if lore of clicked item contains "(AID)":
+			set {_l} to "%lore of clicked item%"
+			set {_l::*} to {_l} split at "§8(AID) "
+			set {_AID} to uncoloured "%{_l::2}%"
+			set {_player} to "%player's name%" parsed as offline player
+			set {_lore} to "%lore of clicked item%" parsed as a text
+			replace all "§8(AID) %{_AID}%" with "" in {_lore}
+			set lore of clicked item to ""
+			delete {a_delayed::%{_player}%::%{_AID}%}
+
+on store:
+	if inventory name of current inventory of player contains "§1§8Auctionhouse":
+		cancel event
+			
+command /auctionhouse [<text = 1>] [<text>]:
+	aliases: a, ah, auction, auctions, see
+	trigger:
+		if arg 1 is "sell":
+			if arg 2 is set:
+				if "%arg-2%" regex matches "\d+":
+					set {_argument} to "%argument 2%" parsed as number
+					if {_argument} is between 50 and 1000000:
+						set {_auctions} to 0
+						set {_AID} to "%random integer between 0 and 9%%random 1 char string from `a-zA-Z`%%random integer between 100 and 999%%random 1 char string from `a-zA-Z`%%random integer between 10 and 99%_%random 1 char string from `a-zA-Z0-9`%"
+						if player's tool is air:
+							send "{@prefix} §7Halte das gewünschte Item in der Hand und versuche es erneut."
+						else:
+							if player's game mode is not creative:
+								if name of player's tool contains "Menü" or "Warper":
+									send "{@prefix} §7Nein."
+									stop
+								set lore of player's tool to ""
+								set {a_current::%{_AID}%} to player's tool
+								set player's tool to air
+								set {a_current.price::%{_AID}%} to "%argument 2%" parsed as number
+								set {a_current.owner::%{_AID}%} to "%player's name%"
+								set {a_current.cooldown::%{_AID}%} to now
+								send "{@prefix} §7Auktion erfolgreich erstellt."
+							else:
+								send "{@prefix} §7Gesperrter Spielmodus."
+					else:
+						if {_argument} is less than 50:
+							send "{@prefix} §7Der Mindestpreis liegt bei §a$§f50§7."
+						else:
+							if {_argument} is bigger than 1000000:
+								send "{@prefix} §7Der Maximalpreis liegt bei §a$§f1'000'000§7."
+				else:
+					send "{@prefix} §7Ungültiger Preis."
+			else:
+				send "{@prefix} §7Nutzung: §a/ah sell <§bprice§a>"
+		else if arg 1 is "own":
+			if arg 2 is set:
+				if "%arg-2%" regex matches "\d+":
+					set {_p} to 1
+					set {_s} to 0
+					loop {a_current::*}:
+						set {_AID} to "%loop-index%"
+						if "%{a_current.owner::%{_AID}%}%" is equal to "%player's name%":
+							set {_page.%{_p}%::%{_s}%} to loop-index
+							add 1 to {_s}
+							if {_s} is 36:
+								set {_s} to 0
+								add 1 to {_p}
+					set {_a} to "%arg-2%" parsed as a number
+					if {_a} is bigger than {_p}:
+						send "{@prefix} §7Diese Seite ist nicht verfügbar."
+						stop
+					open chest with 6 rows named "§2§8Auctionhouse (%arg-2%/%{_p}%)" to player
+					wait a tick
+					set {_slot} to 36
+					loop 9 times:
+						set slot {_slot} of current inventory of player to light green stained glass pane named " "
+						add 1 to {_slot}
+					set slot 49 of current inventory of player to ender chest named "§6§lAuktionshaus" with lore "§7Zurück zum Auktionshaus."
+					set {_skull} to "MHF_Question" parsed as offline player
+					set slot 44 of current inventory of player to {_skull}'s skull named "§a§lAuctionhouse" with lore "§b§lVerkaufen:||§7Halte ein beliebiges Item||§7und gebe den Befehl||§a/ah §bsell §a<§bprice§a> §7im Chat ein.||||§b§lKaufen:||§7Linksklick auf die Auktion.||||§b§lEntfernen:||§7Mache einen Rechtsklick auf||§7deine Auktion um die Auktion||§7zu entfernen.||||§aPlugin by §lAvaplays"
+					set {_slot} to 0
+					set {_t} to {_a} + 1
+					if {_page.%{_t}%::*} is set:
+						set slot 50 of current inventory of player to paper named "§a§lWeiter" with lore "§7Seite %{_t}%"
+					else:
+						set slot 50 of current inventory of player to paper named "§c§lWeiter"
+					set {_t} to {_t} - 2
+					if {_page.%{_t}%::*} is set:
+						set slot 48 of current inventory of player to paper named "§a§lZurück" with lore "§7Seite %{_t}%"
+					else:
+						set slot 48 of current inventory of player to paper named "§c§lZurück"
+					set {_slot} to 0
+					loop {_page.%arg-2%::*}:
+						set {_AID} to "%loop-value%"
+						set {_future} to {a_current.cooldown::%{_AID}%}
+						add 2 days to {_future}
+						set {_d} to difference between now and {_future}
+						set {_d} to "%{_d}%" parsed as a text
+						set {_n} to 0
+						loop 10 times:
+							replace all "%{_n}%" with "§e%{_n}%§f" in {_d}
+							add 1 to {_n}
+						replace all "days" with "Tage" in {_d}
+						replace all "day" with "Tag" in {_d}
+						replace all "minutes" with "Minuten" in {_d}
+						replace all "minute" with "Minute" in {_d}
+						replace all "hours" with "Stunden" in {_d}
+						replace all "hour" with "Stunde" in {_d}
+						replace all "seconds" with "Sekunden" in {_d}
+						replace all "second" with "Sekunde" in {_d}
+						replace all " and " with " " in {_d}
+						set {_d::*} to {_d} split at "."
+						set {_de} to "%{_d::2}%" parsed as text
+						replace all "0", "1", "2", "3", "4", "5", "6", "7", "8" and "9" with "" in {_de}
+						set {_da} to "%{_d::1}%" parsed as text
+						replace all "<none>" with "" in {_de}
+						replace all "<none>" with "" in {_da}
+						if {a_current::%{_AID}%} is set:
+							set slot {_slot} of current inventory of player to {a_current::%{_AID}%} with lore "||§7Preis: §a$§f%{a_current.price::%{_AID}%}%||§7Verkäufer: §a%{a_current.owner::%{_AID}%}%||§7Ablauf: §f%{_da}%%{_de}%||||§8(AID) %{_AID}%"
+						else:
+							set slot {_slot} of current inventory of player to 0 of red stained glass pane named "§c§l-"
+						add 1 to {_slot}
+				else:
+					send "{@prefix} §7Ungültige Seitennummer."
+			else:
+				execute player command "/auctionhouse own 1"
+		else if arg 1 is "delayed":
+			if arg 2 is set:
+				if "%arg-2%" regex matches "\d+":
+					set {_p} to 1
+					set {_s} to 0
+					set {_player} to "%player's name%" parsed as offline player
+					loop {a_delayed::%{_player}%::*}:
+						set {_page.%{_p}%::%{_s}%} to loop-index #or loop-index?!
+						add 1 to {_s}
+						if {_s} is 36:
+							set {_s} to 0
+							add 1 to {_p}
+					set {_a} to "%arg-2%" parsed as a number
+					if {_a} is bigger than {_p}:
+						send "{@prefix} §7Diese Seite ist nicht verfügbar."
+						stop
+					open chest with 6 rows named "§1§8Auctionhouse (%arg-2%/%{_p}%)" to player
+					wait a tick
+					set {_slot} to 36
+					loop 9 times:
+						set slot {_slot} of current inventory of player to light green stained glass pane named " "
+						add 1 to {_slot}
+					set slot 49 of current inventory of player to ender chest named "§6§lAuktionshaus" with lore "§7Zurück zum Auktionshaus."
+					set {_skull} to "MHF_Question" parsed as offline player
+					set slot 44 of current inventory of player to {_skull}'s skull named "§a§lAuctionhouse" with lore "§b§lVerkaufen:||§7Halte ein beliebiges Item||§7und gebe den Befehl||§a/ah §bsell §a<§bprice§a> §7im Chat ein.||||§b§lKaufen:||§7Linksklick auf die Auktion.||||§b§lEntfernen:||§7Mache einen Rechtsklick auf||§7deine Auktion um die Auktion||§7zu entfernen.||||§aPlugin by §lAvaplays"
+					set {_slot} to 0
+					set {_t} to {_a} + 1
+					if {_page.%{_t}%::*} is set:
+						set slot 50 of current inventory of player to paper named "§a§lWeiter" with lore "§7Seite %{_t}%"
+					else:
+						set slot 50 of current inventory of player to paper named "§c§lWeiter"
+					set {_t} to {_t} - 2
+					if {_page.%{_t}%::*} is set:
+						set slot 48 of current inventory of player to paper named "§a§lZurück" with lore "§7Seite %{_t}%"
+					else:
+						set slot 48 of current inventory of player to paper named "§c§lZurück"
+					loop {_page.%arg-2%::*}:
+						set {_AID} to "%loop-value%"
+						set {_lore} to "%lore of {a_delayed::%{_player}%::%{_AID}%}%"
+						set slot {_slot} of current inventory of player to {a_delayed::%{_player}%::%{_AID}%} with lore "%{_lore}%||§8(AID) %{_AID}%"
+						add 1 to {_slot}
+				else:
+					send "{@prefix} §7Ungültige Seitennummer."
+			else:
+				execute player command "/auctionhouse delayed 1"
+		else if arg 1 is "search":
+			if arg 2 is set:
+				loop {a_current::*}:
+					set {_AID} to "%loop-index%"
+					if "%{a_current::%{_AID}%}%" contains "%arg 2%":
+						add 1 to {_founds}
+				if {_founds} is bigger than 0:
+					if {_founds} is 1:
+						send "{@prefix} §7Es wurde eine übereinstimmende Auktion gefunden."
+					else:
+						send "{@prefix} §7Es wurden §f%{_founds}% §7übereinstimmende Auktionen gefunden."
+				else:
+					send "{@prefix} §7Es wurde keine Auktion mit diesem Item gestartet."
+			else:
+				send "{@prefix} §7Nutzing: §a/ah search <§bitem§a>"
+		else if arg 1 is "help" or "?":
+			send "{@upline}%new line% "
+			send "  §2§lAuctionhouse §7von §a§lAvaplays"
+			send "  §7Version: §f§l1.2"
+			send " %new line%{@upline}"
+			send " %new line%  §7Liste aller Befehle §8━ §7Seite §b§l1 §7von §b§l1%new line% "
+			send "   §8◆ §a/ah §8━ §7Alle Auktionen auflisten."
+			send "   §8◆ §a/ah §a<§bhelp§a|§b?§a> §8━ §7Diese Seite anzeigen."
+			send "   §8◆ §a/ah §bsearch §a<§bitem§a> §8━ §7Suche ein Item."
+			send "   §8◆ §a/ah §bsell §a<§bprice§a> §8━ §7Neue Auktion starten.%new line% "
+			send "  §7Aliases: §2/auctionhouse, /auctions, /auction, /a, /see"
+			send " %new line%{@downline}"
+		else:
+			set {_p} to 1
+			set {_s} to 0
+			loop {a_current::*}:
+				set {_page.%{_p}%::%{_s}%} to loop-index #or loop-index?!
+				add 1 to {_s}
+				if {_s} is 36:
+					set {_s} to 0
+					add 1 to {_p}
+			if arg 1 is set:
+				if "%arg-1%" regex matches "\d+":
+					set {_a} to "%arg-1%" parsed as a number
+					if {_a} is bigger than {_p}:
+						send "{@prefix} §7Diese Seite ist nicht verfügbar."
+						send "§fDer Befehl um eine Auktion zu starten wurde in der letzten Version geändert auf §a/ah §f(oder §a/a§f) §asell <price>§f."
+						stop
+				else:
+					send "{@prefix} §7Ungültige Seitennummer."
+					send "§fDer Befehl um eine Auktion zu starten wurde in der letzten Version geändert auf §a/ah §f(oder §a/a§f) §asell <price>§f."
+					stop
+			open chest with 6 rows named "§0§8Auctionhouse (%arg-1%/%{_p}%)" to player
+			wait a tick
+			set {_slot} to 36
+			loop 9 times:
+				set slot {_slot} of current inventory of player to light green stained glass pane named " "
+				add 1 to {_slot}
+			set slot 45 of current inventory of player to cauldron named "§6§lAbgelaufen" with lore "§7Hier befinden sich abgelaufene||§7Auktionen."
+			set slot 46 of current inventory of player to chest named "§6§lEigene Auktionen" with lore "§7Siehe deine Auktionen||§7auf den ersten Blick.||||§7Rechtsklick um eine Auktion||§7zu entfernen."
+			set {_skull} to "MHF_Question" parsed as offline player
+			set slot 44 of current inventory of player to {_skull}'s skull named "§a§lAuctionhouse" with lore "§b§lVerkaufen:||§7Halte ein beliebiges Item||§7und gebe den Befehl||§a/ah §bsell §a<§bprice§a> §7im Chat ein.||||§b§lKaufen:||§7Linksklick auf die Auktion.||||§b§lEntfernen:||§7Mache einen Rechtsklick auf||§7deine Auktion um die Auktion||§7zu entfernen.||||§aPlugin by §lAvaplays"
+			set slot 49 of current inventory of player to sunflower named "§6§lAktualisieren" with lore "§7Entfernt gekaufte und abgelaufene||§7Auktionen aus dem Menü."
+			set {_slot} to 0
+			set {_a} to arg 1 parsed as a number
+			set {_t} to {_a} + 1
+			if {_page.%{_t}%::*} is set:
+				set slot 50 of current inventory of player to paper named "§a§lWeiter" with lore "§7Seite %{_t}%"
+			else:
+				set slot 50 of current inventory of player to paper named "§c§lWeiter"
+			set {_t} to {_t} - 2
+			if {_page.%{_t}%::*} is set:
+				set slot 48 of current inventory of player to paper named "§a§lZurück" with lore "§7Seite %{_t}%"
+			else:
+				set slot 48 of current inventory of player to paper named "§c§lZurück"
+			while inventory name of current inventory of player contains "§0§8Auctionhouse (%arg-1%":
+				set {_slot} to 0
+				set {_se} to 0
+				loop {_page.%arg-1%::*}:
+					set {_AID} to "%loop-value%"
+					if "%{a_current.owner::%{_AID}%}%" is equal to "%player's name%":
+						add 1 to {_se}
+					set {_future} to {a_current.cooldown::%{_AID}%}
+					add 2 days to {_future}
+					set {_d} to difference between now and {_future}
+					set {_d} to "%{_d}%" parsed as a text
+					set {_n} to 0
+					loop 10 times:
+						replace all "%{_n}%" with "§e%{_n}%§f" in {_d}
+						add 1 to {_n}
+					replace all "days" with "Tage" in {_d}
+					replace all "day" with "Tag" in {_d}
+					replace all "minutes" with "Minuten" in {_d}
+					replace all "minute" with "Minute" in {_d}
+					replace all "hours" with "Stunden" in {_d}
+					replace all "hour" with "Stunde" in {_d}
+					replace all "seconds" with "Sekunden" in {_d}
+					replace all "second" with "Sekunde" in {_d}
+					replace all " and " with " " in {_d}
+					set {_d::*} to {_d} split at "."
+					set {_de} to "%{_d::2}%" parsed as text
+					replace all "0", "1", "2", "3", "4", "5", "6", "7", "8" and "9" with "" in {_de}
+					set {_da} to "%{_d::1}%" parsed as text
+					replace all "<none>" with "" in {_de}
+					replace all "<none>" with "" in {_da}
+					if {a_current::%{_AID}%} is set:
+						set slot {_slot} of current inventory of player to {a_current::%{_AID}%} with lore "||§7Preis: §a$§f%{a_current.price::%{_AID}%}%||§7Verkäufer: §a%{a_current.owner::%{_AID}%}%||§7Ablauf: §f%{_da}%%{_de}%||||§8(AID) %{_AID}%"
+					else:
+						set slot {_slot} of current inventory of player to 0 of red stained glass pane named "§c§l-"
+					add 1 to {_slot}
+				set {_player} to "%player's name%" parsed as offline player
+				set {_sd} to size of {a_delayed::%{_player}%::*}
+				set slot 45 of current inventory of player to {_sd} of cauldron named "§6§lAbgelaufen" with lore "§7Hier befinden sich abgelaufene||§7Auktionen."
+				set slot 46 of current inventory of player to {_se} of chest named "§6§lEigene Auktionen" with lore "§7Siehe deine Auktionen||§7auf den ersten Blick.||||§7Rechtsklick um eine Auktion||§7zu entfernen."
+				wait a tick
+			
+			
+on inventory click:
+	if inventory name of current inventory of player contains "§0§8Auctionhouse":
+		cancel event
+		if name of clicked item is "§a§lWeiter" or "§a§lZurück":
+			set {_n} to "%uncolored lore of clicked item%"
+			replace all "Seite " with "" in {_n}
+			execute player command "/auctionhouse %{_n}%"
+	else if inventory name of current inventory of player contains "§1§8Auctionhouse":
+		if clicked slot is not between 0 and 35:
+			cancel event
+			if name of clicked item is "§a§lWeiter" or "§a§lZurück":
+				set {_n} to "%uncolored lore of clicked item%"
+				replace all "Seite " with "" in {_n}
+				execute player command "/auctionhouse delayed %{_n}%"
+			else if name of clicked item is "§6§lAuktionshaus":
+				close player's inventory
+				wait a tick
+				execute player command "/auctionhouse"
+	else if inventory name of current inventory of player contains "§2§8Auctionhouse":
+		if clicked slot is not between 0 and 35:
+			cancel event
+			if name of clicked item is "§a§lWeiter" or "§a§lZurück":
+				set {_n} to "%uncolored lore of clicked item%"
+				replace all "Seite " with "" in {_n}
+				execute player command "/auctionhouse own %{_n}%"
+			else if name of clicked item is "§6§lAuktionshaus":
+				close player's inventory
+				wait a tick
+				execute player command "/auctionhouse"
+				
+every 2 minutes:
+	loop {a_current::*}:
+		set {_AID} to "%loop-index%"
+		if {a_current::%{_AID}%} is set:
+			if difference between {a_current.cooldown::%{_AID}%} and now is bigger than 2 days:
+				set {_p} to "%{a_current.owner::%{_AID}%}%" parsed as offline player
+				set {a_delayed::%{_p}%::%{_AID}%} to {a_current::%{_AID}%}
+				delete {a_current::%{_AID}%}
+				delete {a_current.cooldown::%{_AID}%}
+				delete {a_current.owner::%{_AID}%}
+				delete {a_current.price::%{_AID}%}
+				
+on join:
+	set {_p} to "%player's name%" parsed as offline player
+	if {a_balstore::%{_p}%} is set:
+		add {a_balstore::%{_p}%} to balance of player
+		send "{@prefix} §7Während du offline warst hat jemand deine Auktionen ersteigert. Dir wurden §a$§f%{a_balstore::%{_p}%}% §7deinem Konto hinzugefügt."
+		set {a_balstore::%{_p}%} to 0
+	else:
+		set {a_balstore::%{_p}%} to 0
+			
+on inventory click:
+	if inventory name of current inventory of player contains "§2§8Auctionhouse":
+		cancel event
+		if clicked slot is between 0 and 35:
+			set {_l} to "%lore of clicked item%"
+			set {_l::*} to {_l} split at "§8(AID) "
+			set {_AID} to uncoloured "%{_l::2}%"
+			if {a_current::%{_AID}%} is set:
+				add {a_current::%{_AID}%} to player's inventory
+				set {_s} to clicked slot
+				set slot {_s} of current inventory of player to air
+				delete {a_current::%{_AID}%}
+				delete {a_current.price::%{_AID}%}
+				delete {a_current.cooldown::%{_AID}%}
+				delete {a_current.owner::%{_AID}%}
+				send "{@prefix} §7Auktion erfolgreich entfernt."
+				execute player command "/auctionhouse own 1"
+			else:
+				set {_s} to clicked slot
+				set slot {_s} of current inventory of player to red stained glass pane named "§c§lAbgelaufen" with lore "§7Diese Auktion ist abgelaufen."
+	else if inventory name of current inventory of player contains "§0§8Auctionhouse":
+		cancel event
+		if clicked slot is between 0 and 35:
+			set {_l} to "%lore of clicked item%"
+			set {_l::*} to {_l} split at "§8(AID) "
+			set {_AID} to uncoloured "%{_l::2}%"
+			if {a_current::%{_AID}%} is set:
+				if balance of player is less than {a_current.price::%{_AID}%}:
+					send "{@prefix} §7Du hast nicht genügend Guthaben."
+					close player's inventory
+				else:
+					if "%{a_current.owner::%{_AID}%}%" is equal to "%player's name%":
+						if "%click type%" is "right mouse button":
+							add {a_current::%{_AID}%} to player's inventory
+							set {_s} to clicked slot
+							set slot {_s} of current inventory of player to air
+							delete {a_current::%{_AID}%}
+							delete {a_current.price::%{_AID}%}
+							delete {a_current.cooldown::%{_AID}%}
+							delete {a_current.owner::%{_AID}%}
+							send "{@prefix} §7Auktion erfolgreich entfernt."
+						else:
+							send "{@prefix} §7Du kannst deine eigene Auktion nicht aufkaufen."
+					else:
+						if "%click type%" is "RIGHT":
+							send "{@prefix} §7Du kannst diese Auktion nicht entfernen."
+						else:
+							delete {a_buying::%player%}
+							delete {a_accept::%player%}
+							add {a_current::%{_AID}%} to player's inventory
+							set {_price} to "%{a_current.price::%{_AID}%}%" parsed as integer
+							remove {_price} from balance of player
+							loop all players:
+								if "%loop-player's name%" is equal to "%{a_current.owner::%{_AID}%}%":
+									add {_price} to balance of loop-player
+								set {_p} to "%{a_current.owner::%{_AID}%}%" parsed as offline player
+								set {_online} to true
+							if {_online} is not true:
+								add {_price} to {a_balstore::%{_p}%}
+							send "{@prefix} §7Spieler §a%player's name% §7hat ein Item von §adir §7gekauft." to {_p}
+							send "{@prefix} §7Kauf bestätigt."
+							delete {a_current::%{_AID}%}
+							delete {a_current.price::%{_AID}%}
+							delete {a_current.cooldown::%{_AID}%}
+							delete {a_current.owner::%{_AID}%}
+							close player's inventory
+							stop
+			else:
+				set {_s} to clicked slot
+				set slot {_s} of current inventory of player to 0 of red stained glass pane named "§c§l-"
+		else:
+			if name of clicked item is "§6§lAktualisieren":
+				close player's inventory
+				wait a tick
+				execute player command "/auctionhouse"
+			else if name of clicked item is "§6§lEigene Auktionen":
+				close player's inventory
+				wait a tick
+				execute player command "/auctionhouse own 1"
+			else if name of clicked item is "§6§lAbgelaufen":
+				close player's inventory
+				wait a tick
+				execute player command "/auctionhouse delayed 1"

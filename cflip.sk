@@ -2,7 +2,7 @@
 
 options:
 	Name.GUI: &6» &b&n&lCoin&r&3&n&lFlip&r
-	Name.GUI.Loading: &eCoinFlip
+	Name.GUI.Loading: &B&lC&3&lF&r
 	Prefix: &b&lFast&3&lGens &c&l»
 	
 #________________________________________________________________________________________________________#
@@ -38,87 +38,78 @@ function roomToggle(p: player, type: int = 0):
 			set {coinflip.room.selected::%{_p}%} to "&8[&eLow&8]"
 			make {_p} execute command "cf"
 
+command /addd [<text>]:
+	trigger:
+		clear {coinflip.low::*}
+
+function coinFlip(p: player, page: number):
+	set {_pageStart} to 27*{_page}
+	set {_i} to 1
+	set {_a} to 0
+	set {_bal} to {_p}'s balance
+	open chest with 4 rows named "{@Name.GUI} %{coinflip.room.selected::%{_p}%}%" to {_p}
+	format slot 27 of {_p} with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%{_bal}%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%{_p}%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%{_p}%}%" to be unstealable
+	format slot 31 of {_p} with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
+	format gui slot 35 of {_p} with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%{_p}%}%" to run function roomToggle({_p}, 0)	
+	set {_slot} to 0
+	wait 2 ticks
+	if {coinflip.roomtoggle::%{_p}%} is 0:
+		loop {coinflip.low::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 1:
+		loop {coinflip.med::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 2:
+		loop {coinflip.high::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 3:
+		loop {coinflip.mega::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 4:
+		loop {coinflip.ultra::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 5:
+		loop {coinflip.insane::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 6:
+		loop {coinflip.ludicrous::*}:
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			wait 6 ticks
+			if {_slot} = ((27*{_i})):
+				exit loop
+	format gui slot 35 of {_p} with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%{_p}%}%" to run function roomToggle({_p}, 0)	
+
+
 command /cf [<text>] [<int>] [<player>]:
 	aliases: /coinflip
 	trigger:
 		if arg 1 is not set:
-			if {coinflip.roomtoggle::%player%} is 0:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.low::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)",  "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
-			else if {coinflip.roomtoggle::%player%} is 1:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.med::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)",  "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
-			else if {coinflip.roomtoggle::%player%} is 2:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.high::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)",  "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
-			else if {coinflip.roomtoggle::%player%} is 3:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.mega::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
-			else if {coinflip.roomtoggle::%player%} is 4:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.ultra::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
-			else if {coinflip.roomtoggle::%player%} is 5:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.insane::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
-			else if {coinflip.roomtoggle::%player%} is 6:
-				wait 2 ticks
-				open chest with 6 rows named "{@Name.GUI} %{coinflip.room.selected::%player%}%" to player
-				wait 2 ticks
-				set {_slot} to 0
-				loop {coinflip.ludicrous::*}:
-					format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make player execute command "cf play 12 %loop-value%"]
-					add 1 to {_slot}
-				format slot 45 of player with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%player's balance%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%" to be unstealable
-				format slot 49 of player with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
-				format gui slot 53 of player with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%player%}%" to run function roomToggle(player, 0)
+			coinFlip(player, 0)
 			
 		if arg 1 is "h" or "help":
 			send ""
@@ -131,7 +122,7 @@ command /cf [<text>] [<int>] [<player>]:
 			send "&c&l» &eA number between &8(&b0&8) &eand &8(&b100&8) &ewill be selected"
 			send "&c&l» &eIf the number lands on &8(&b50&8) &eneither of you win"
 			send ""
-			send "&c&l» &eIf you log off before your &b&lC&3&lF &r&eif played, your money will be returned."
+			send "&c&l» &eIf you log off before your &b&lC&3&lF &r&eis played, your money will be returned."
 			send ""
 
 			
@@ -144,16 +135,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 0:	
 						if arg 2 is between 250 and 499999:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.low::*}	
+								if (amount of {coinflip.low::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.low::*}	
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."	
 						else:
@@ -166,16 +160,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 1:
 						if arg 2 is between 500000 and 4999999:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.med::*}
+								if (amount of {coinflip.med::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.med::*}
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."		
 						else:
@@ -188,16 +185,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 2:
 						if arg 2 is between 5000000 and 249999999:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.high::*}
+								if (amount of {coinflip.high::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.high::*}
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."		
 						else:
@@ -210,16 +210,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 3:
 						if arg 2 is between 250000000 and 99999999:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.mega::*}
+								if (amount of {coinflip.mega::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.mega::*}
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."		
 						else:
@@ -231,16 +234,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 4:
 						if arg 2 is between 1000000000 and 1999999999:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.ultra::*}
+								if (amount of {coinflip.ultra::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.ultra::*}
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."		
 						else:
@@ -252,16 +258,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 5:
 						if arg 2 is between 2000000000 and 9999999999:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.insane::*}
+								if (amount of {coinflip.insane::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.insane::*}
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."		
 						else:
@@ -273,16 +282,19 @@ command /cf [<text>] [<int>] [<player>]:
 					if {coinflip.roomtoggle::%player%} is 6:
 						if arg 2 is more than 10000000000:
 							if {cf.%player%} is not set:
-								set {cf.%player%} to true
-								send "{@Prefix} &7&oLoading..."
-								wait 1 seconds
-								send "{@Prefix} &7&oCreating your CoinFlip..."
-								wait 2 seconds
-								send "{@Prefix} &7&oCoinFlip Created "
-								send "{@Prefix} &7&oWaiting for a player."
-								set {coinflip.bet.%player%} to arg 2
-								add player to {coinflip::*}
-								add player to {coinflip.ludicrous::*}
+								if (amount of {coinflip.ludicrous::*}) < 27:
+									set {cf.%player%} to true
+									send "{@Prefix} &7&oLoading..."
+									wait 1 seconds
+									send "{@Prefix} &7&oCreating your CoinFlip..."
+									wait 2 seconds
+									send "{@Prefix} &7&oCoinFlip Created "
+									send "{@Prefix} &7&oWaiting for a player."
+									set {coinflip.bet.%player%} to arg 2
+									add player to {coinflip::*}
+									add player to {coinflip.ludicrous::*}
+								else:
+									send "{@Prefix} &eYou cannot create one at the moment, the room is full."
 							else:
 								send "{@Prefix} &eYou cannot create another one at the moment."		
 						else:

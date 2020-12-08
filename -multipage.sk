@@ -1,0 +1,102 @@
+
+options:
+	Name.GUI: &6» &b&n&lCoin&r&3&n&lFlip&r
+	Name.GUI.Loading: &B&lC&3&lF&r
+	Prefix: &b&lFast&3&lGens &c&l»
+
+function coinFlip(p: player, page: number):
+    set {_pageStart} to 26*{_page}
+    set {_i} to 1
+    set {_a} to 0
+    set {_bal} to {_p}'s balance
+    open chest with 4 rows named "{@Name.GUI} %{coinflip.room.selected::%{_p}%}%" to {_p}
+    format slot 27 of {_p} with nether star named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%{_bal}%", "&6» &eNumber of CoinFlips won&7: &c%{coinflip.win::%{_p}%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%{_p}%}%" to be unstealable
+    format slot 31 of {_p} with potato named "&6» &eUsage" with lore "" and "&6» &e&o/cf create <amount>" to be unstealable
+    format gui slot 35 of {_p} with unpowered stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&a$250 &e» &a$499k&8)", "&6» &6Med &eRoller &8(&a$500k &e» &a$4.9M&8)", "&6» &cHigh &eRoller &8(&a$5M &e» &a249M&8)", "&6» &4Mega &eRoller &8(&a250M &e» &a$999M&8)", "&6» &dUltra &eRoller &8(&a1B &e» &a$1.9B&8)", "&6» &5Insane &eRoller &8(&a2B &e» &a$9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&a10B &eand up&8)", "" and "&6» &eCurrent %{coinflip.room.selected::%{_p}%}%" to run function roomToggle({_p}, 0)	
+    set {_slot} to 0
+    wait 2 ticks
+    if {coinflip.roomtoggle::%{_p}%} is 0:
+        loop {coinflip.low::*}:
+            set {_cfroom::*} to {coinflip.low::*}
+            (loop-index parsed as integer) > {_pageStart}
+            format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+            add 1 to {_slot}
+            wait 6 ticks
+            if {_slot} = ((26*{_i})):
+                exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 1:
+		loop {coinflip.med::*}:
+            set {_cfroom::*} to {coinflip.med::*}
+            (loop-index parsed as integer) > {_pageStart}
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			if {_slot} = ((26*{_i})):
+                exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 2:
+		loop {coinflip.high::*}:
+            set {_cfroom::*} to {coinflip.high::*}
+            (loop-index parsed as integer) > {_pageStart}
+			format slot {_slot} of player with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			if {_slot} = ((26*{_i})):
+                exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 3:
+		loop {coinflip.mega::*}:
+            set {_cfroom::*} to {coinflip.mega::*}
+            (loop-index parsed as integer) > {_pageStart}
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			if {_slot} = ((26*{_i})):
+                exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 4:
+		loop {coinflip.ultra::*}:
+            set {_cfroom::*} to {coinflip.ultra::*}
+            (loop-index parsed as integer) > {_pageStart}
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			if {_slot} = ((26*{_i})):
+                exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 5:
+		loop {coinflip.insane::*}:
+            set {_cfroom::*} to {coinflip.insane::*}
+            (loop-index parsed as integer) > {_pageStart}
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			if {_slot} = ((26*{_i})):
+                exit loop
+	else if {coinflip.roomtoggle::%{_p}%} is 6:
+		loop {coinflip.ludicrous::*}:
+            set {_cfroom::*} to {coinflip.ludicrous::*}
+            (loop-index parsed as integer) > {_pageStart}
+			format slot {_slot} of {_p} with skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%" to run [make {_p} execute command "cf play 12 %loop-value%"]
+			add 1 to {_slot}
+			if {_slot} = ((26*{_i})):
+                exit loop
+    format gui slot 33 of {_p} with book named "&eMain Page" to run function coinFlip({_p}, 0)
+    if (amount of {_cfroom::*}) > {_pageStart} + 1:
+        format gui slot 34 of {_p} with arrow named "&9Next Page" to run function coinFlip({_p}, ({_page} + 1))
+    if {_page} > 0:
+    format gui slot 32 of {_p} with arrow named "&9Previous Page" to run function coinFlip({_p}, ({_page} - 1))
+    #loop {bans::*}:
+    #    (loop-index parsed as integer) > {_pageStart}
+    #    set {_player} to "%loop-value%" parsed as offline player
+    #    set slot {_a} of {_p}'s current inventory to skull of {_player} named "&7Player &8» &c%loop-value%" with lore "&7Ban ID &8» &7(&c##%loop-index%&7)" 
+    #    add 1 to {_a}
+    #    if {_a} = ((18*{_i})):
+    #        exit loop
+    #format gui slot 51 of {_p} with book named "&eMain Page" to run function coinFlip({_p}, 0)
+    #if (amount of {bans::*}) > {_pageStart} + 9:
+    #    format gui slot 52 of {_p} with arrow named "&9Next Page" to run function coinFlip({_p}, ({_page} + 1))
+    #if {_page} > 0:
+    #    format gui slot 50 of {_p} with arrow named "&9Previous Page" to run function coinFlip({_p}, ({_page} - 1))
+	
+ 
+command /bans [<text>] [<int>]:
+    trigger:
+        if arg-1 is not set:
+            coinFlip(player, 0)
+        if arg-1 is "add":
+            if arg-2 is set:
+                add arg-2 to {bans::*}
+        if arg-1 is "clear":
+            clear {bans::*}

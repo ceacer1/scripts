@@ -1,0 +1,3 @@
+command /chest:
+    trigger:
+        open virtual chest inventory with size 6 with title "test" to player

@@ -2,11 +2,29 @@
 options:
     prefix: &b&lFast&3&lGens
 
-command /team [<text>] [<text>] [<player>]:
+function teamList(p: player, page: number):
+    set {_tt} to amount of {teams::*}
+    message "&7&m      &7< &a&lTeams List &7>&7&m      " to {_p}
+    message "&7&m    &7< &eTotal Teams &8(&6%{_tt}%&8) &7>&7&m   " to {_p}
+    send "" to {_p}
+    set {_n} to 1
+#    set {_test} to {_page} * ({_n} + 9)
+    loop {teams::*}:
+#        loop-index > {_test}
+        send "&6%{_n}% &8- &3%loop-value%" to {_p}
+        add 1 to {_n}
+#        if {_n} = 2:
+#            stop loop
+    send "" to {_p}
+#    send "&7&m        &7< &ePage &8(&6%{_page}%&8) &7>&7&m        " to {_p}
+    send "&7&m       &7< {@prefix} &7>&7&m       " to {_p}
+
+
+command /team [<text>] [<string>] [<player>]:
     trigger:
         if arg-1 is not set:
             send ""
-            send "&7&m      &7< &a&l{@prefix} &7>&7&m      "
+            send "&7&m      &7< {@prefix} &7>&7&m      "
             send ""
             send "&cInvalid Usage: &6/team <text> <text> <player>" to player
             send "&eUse &6/team help &efor more info." to player
@@ -35,6 +53,7 @@ command /team [<text>] [<text>] [<player>]:
                         set {teams.amount.players.%arg-2%} to 1
                         add 1 to {teams.amount.total}
                         add player to {teams.%arg-2%.owner::*}
+                        add player to {team.plot.members.%arg-2%::*}
                         send "{@prefix} &8- &eYou have created a team named &6%arg-2%"
                     else:
                         send "{@prefix} &8- &eYou are already the owner of a team!" to player
@@ -50,30 +69,39 @@ command /team [<text>] [<text>] [<player>]:
                         set {teams.balance::%loop-value%} to balance of loop-value
                         replace every "$" with "" in {teams.balance::%loop-value%}
                         set {teams.balance::%loop-value%} to {teams.balance::%loop-value%} parsed as number
+                        set {teams.gens::%loop-value%} to {gens.%uuid of loop-value%.gencount}
+                        set {teams.gencap::%loop-value%} to {gens.%uuid of loop-value%.gencap}
                     loop {teams.balance::*}:
                         add loop-value to {_total}
+                    loop {teams.gens::*}:
+                        add loop-value to {_gentotal}
+                    loop {teams.gencap::*}:
+                        add loop-value to {_gencaptotal}
                 else:
                     loop {teams.%arg-2%::*}:
                         set {_total} to the balance of loop-value
+                        set {_gentotal} to {gens.%uuid of loop-value%.gencount}
+                        set {_gencaptotal} to {gens.%uuid of loop-value%.gencap}
                 message "&7&m      &7< &a&l%arg-2% &7>&7&m      "
-                message ""
-                loop {teams.%arg-2%::*}:
-                    send "&6%loop-value%" 
                 message ""
                 message "&eTotal Team Balance:"
                 message "&a%{_total}%"
+                message ""
+                message "&eTotal Gen Amount"
+                message "&8(&a%{_gentotal}%&7/&a%{_gencaptotal}%&8)"
+                message ""
+                loop {teams.%arg-2%::*}:
+                    send "&6%loop-value% &8(&a%{gens.%uuid of loop-value%.gencount}%&7/&a%{gens.%uuid of loop-value%.gencap}%&8)" 
+                message ""
+                message "&7&m                    "
+                
                 
             else:
-                message "&7&m      &7< &a&lTeams List &7>&7&m      "
-                send ""
-                set {_n} to 0
-                loop {teams::*}:
-                    add 1 to {_n}
-                    send "&6%loop-value%"
-                    if {_n} > 10:
-                        stop
-                send ""
-                send "&eAmount of Teams &8(&6%{_n}%&8)"
+                if arg-2 is not set:
+                    teamList(player, 1)
+                else:
+                    if arg-2 is a number:
+                        teamList(player, (arg-2 parsed as number))
         
         if arg-1 is "invite":
             if arg-2 is set:
@@ -183,14 +211,18 @@ command /team [<text>] [<text>] [<player>]:
                     if {teams.%arg-2%::*} contains player:
                         if {teams.owner::%player%} is true:
                             if {teams.%arg-2%.owner::*} contains player:
-                                if {teams.amount.players.%arg-2%} is 1:
-                                    clear {teams.%arg-2%::*}
-                                    clear {teams.owner::%player%}
-                                    clear {teams.amount.players.%arg-2%}
-                                    remove arg-2 from {teams::*}
-                                    send "{@prefix} &8- &eYour team &6%arg-2% &ehas been disbanded" to player
+                                if {team.plot.members.amount.%arg-2%} is 1:
+                                    if {teams.amount.players.%arg-2%} is 1:
+                                        clear {teams.%arg-2%::*}
+                                        clear {teams.owner::%player%}
+                                        clear {teams.amount.players.%arg-2%}
+                                        clear {team.plot.members.%arg-2%::*}
+                                        remove arg-2 from {teams::*}
+                                        send "{@prefix} &8- &eYour team &6%arg-2% &ehas been disbanded" to player
+                                    else:
+                                        send "{@prefix} &8- &eYou cannot disband a team whilst another player is in it." to player
                                 else:
-                                    send "{@prefix} &8- &eYou cannot disband a team whilst another player is in it." to player
+                                    send "{@prefix} &8- &eYou cannot disband a team whilst another player is added to your plot." to player
                         else:
                             send "{@prefix} &8- &eYou are not the owner of the team &6%arg-2% &etherefore cannot disband it." to player 
                     else:
@@ -223,6 +255,38 @@ command /team [<text>] [<text>] [<player>]:
                 send "%{teams.member::*}%" to player
                 send "%{teams.owner::*}%" to player
 
+command /gen [<text>] [<offline player>] [<int>]:
+    trigger:
+        if arg-1 is "add":
+            if arg-2 is set:
+                if arg-3 is set:
+                    add arg-3 to {gens.%uuid of arg-2%.gencount}
+        
+        if arg-1 is "capadd":
+            if arg-2 is set:
+                if arg-3 is set:
+                    add arg-3 to {gens.%uuid of arg-2%.gencap}
+        
+        if arg-1 is "remove":
+            if arg-2 is set:
+                if arg-3 is set:
+                    remove arg-3 from {gens.%uuid of arg-2%.gencount}
+
+        if arg-1 is "capremove":
+            if arg-2 is set:
+                if arg-3 is set:
+                    remove arg-3 from {gens.%uuid of arg-2%.gencap}
+        
+        if arg-1 is "list":
+            if arg-2 is not set:
+                send "You have &8(&a%{gens.%uuid of player%.gencount}%&7/&a%{gens.%uuid of player%.gencap}%&8)"
+            else:
+                send "You have &8(&a%{gens.%uuid of arg-2%.gencount}%&7/&a%{gens.%uuid of arg-2%.gencap}%&8)"
+
+
+#{gens.%uuid of player%.gencount}
+#{gens.%uuid of player%.gencap}
+
 
 command /plot [<text>] [<player>]:
     trigger:
@@ -230,8 +294,18 @@ command /plot [<text>] [<player>]:
             if arg-2 is set:
                 loop {teams::*}:
                     if {teams.%loop-value%::*} contains arg-2:
-                        set {teams.plot.add::%player%} to true
-                        make player say "/p add %arg-2%"
+                        if {team.plot.members.%arg-2%::*} does not contain arg-2:
+                            if {gens.%uuid of arg-2%.gencount} is not 0:
+                                send "&8[&6P2&8] &6The player &7%arg-2% &6has placed gens." to player
+                                send "&8[&6P2&8] &6All gens must be picked up before they can be added." to player
+                            else:
+                                set {teams.plot.add::%player%} to true
+                                add arg-2 to {team.plot.members.%arg-2%::*}
+                                set {team.plot.has-members.%uuid of player%} to true
+                                make player say "/p add %arg-2%"
+                        else:
+                            set {teams.plot.add::%player%} to true
+                            make player say "/p add %arg-2%"
                     else:
                         send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
                         send "&8[&6P2&8] &6You can only add members of your team." to player
@@ -242,13 +316,53 @@ command /plot [<text>] [<player>]:
             if arg-2 is set:
                 loop {teams::*}:
                     if {teams.%loop-value%::*} contains arg-2:
-                        set {teams.plot.trust::%player%} to true
-                        make player say "/p trust %arg-2%"
+                        if {team.plot.members.%arg-2%::*} does not contain arg-2:
+                            if {gens.%uuid of arg-2%.gencount} is not 0:
+                                send "&8[&6P2&8] &6The player &7%arg-2% &6has placed gens." to player
+                                send "&8[&6P2&8] &6All gens must be picked up before they can be trusted." to player
+                            else:
+                                set {teams.plot.add::%player%} to true
+                                add arg-2 to {team.plot.members.%arg-2%::*}
+                                set {team.plot.has-members.%uuid of player%} to true
+                                make player say "/p trust %arg-2%"
+                        else:
+                            set {teams.plot.add::%player%} to true
+                            make player say "/p trust %arg-2%"
                     else:
                         send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
                         send "&8[&6P2&8] &6You can only trust members of your team." to player
             else:
                 send "&8[&6P2&8] &6Usage: &7/plot trust <player|*>" to player
+        
+        if arg-1 is "remove":
+            if arg-2 is set:
+                loop {teams::*}:
+                    if {teams.%loop-value%::*} contains arg-2:
+                        if {team.plot.members.%arg-2%::*} does not contain arg-2:
+                            send "&8[&6P2&8] &6The player &7%arg-2% &6is not on your plot therefore cannot be removed." to player
+                        else:
+                            if {gens.%uuid of arg-2%.gencount} is not 0:
+                                send "&8[&6P2&8] &6The player &7%arg-2% &6has placed gens." to player
+                                send "&8[&6P2&8] &6All gens must be picked up before they can be removed." to player
+                            else:
+                                set {teams.plot.remove::%player%} to true
+                                remove arg-2 from {team.plot.members.%arg-2%::*}
+                                set {team.plot.has-members.%uuid of player%} to false
+                                make player say "/p remove %arg-2%"
+                    else:
+                        send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
+                        send "&8[&6P2&8] &6You can only trust members of your team." to player
+        
+        if arg-1 is "delete":
+            if {team.plot.has-members.%uuid of player%} is false:
+                if {gens.%uuid of player%.gencount} is not 0:
+                    send "&8[&6P2&8] &6You still have gens places, please remove them." to player
+                else:
+                    set {teams.plot.delete::%player%} to true
+                    make player say "/p delete"
+            else:
+                send "&8[&6P2&8] &6You can not delete a plot that has players added to it." to player
+
         if arg-1 is not set:
             send "&8&m---------&r &6Plot² Help &8&m---------" to player
             send "&6/plot help claiming &8- &7Claiming" to player
@@ -262,17 +376,21 @@ command /plot [<text>] [<player>]:
             send "&6/plot help admin &8- &7Admin" to player
             send "&6/plot help all &8- &7Display all commands" to player
             send "&8&m---------&r &6Plot² Help &8&m---------" to player   
-        else if arg-1 is not "add" or "trust":
+        else if arg-1 is not "add", "delete", "remove" or "trust":
             send "&8&m---------&r &c&l!!NOTICE!! &8&m---------"
             send "&6Team functionality is being used," to player
             send "&6for all commands please replace" to player
             send "&o&7""/plot"" &r&6with &o&7""/p, /plotme, /plotsquared"" " to player
             send "&8&m---------&r &c&l!!NOTICE!! &8&m---------"    
 
+on tab complete of "/team":
+	set tab completions for position 1 to "help", "list", "create", "invite", "remove", "disband" and "join"
+
+
 on command "/p add":
     if player has permission "op":
         stop
-    else if {teams.plot.add::%player%} is true:
+    if {teams.plot.add::%player%} is true:
         set {teams.plot.add::%player%} to false
         stop
     else:
@@ -282,11 +400,31 @@ on command "/p add":
 on command "/p trust":
     if player has permission "op":
         stop
-    else if {teams.plot.trust::%player%} is true:
+    if {teams.plot.trust::%player%} is true:
         set {teams.plot.trust::%player%} to false
         stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/p remove":
+    if player has permission "op":
+        stop
+    if {teams.plot.remove::%player%} is true:
+        set {teams.plot.remove::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot remove <player|*>" to player
+        cancel event
+
+on command "/p delete":
+    if player has permission "op":
+        stop
+    if {teams.plot.delete::%player%} is true:
+        set {teams.plot.delete::%player%} to false
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot delete <player|*>" to player
         cancel event
 
 on command "/plotme add":
@@ -303,6 +441,13 @@ on command "/plotme trust":
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
         cancel event
 
+on command "/plotme remove":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot remove <player|*>" to player
+        cancel event
+
 on command "/plotsquared add":
     if player has permission "op":
         stop
@@ -315,6 +460,13 @@ on command "/plotsquared trust":
         stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/plotsquared remove":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot remove <player|*>" to player
         cancel event
 
 on command "/p2 add":
@@ -331,6 +483,13 @@ on command "/p2 trust":
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
         cancel event
 
+on command "/p2 remove":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot remove <player|*>" to player
+        cancel event
+
 on command "/2 add":
     if player has permission "op":
         stop
@@ -345,6 +504,13 @@ on command "/2 trust":
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
         cancel event
 
+on command "/2 remove":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot remove <player|*>" to player
+        cancel event
+
 on command "/ps add":
     if player has permission "op":
         stop
@@ -357,4 +523,11 @@ on command "/ps trust":
         stop
     else:
         send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot trust <player|*>" to player
+        cancel event
+
+on command "/ps remove":
+    if player has permission "op":
+        stop
+    else:
+        send "&8[&6P2&8] &6Due to the team functionality being used, please use: &7/plot remove <player|*>" to player
         cancel event
