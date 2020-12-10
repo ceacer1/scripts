@@ -146,7 +146,6 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 									loop {player.%arg 2%::*}:
 										send "{@tag} &2%player% &ahas joined the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
 									gameSign(arg 2)
-									set {_timer} to 5
 									if {player.%arg 2%} is equal to {maxplayer.%arg 2%}:
 										send "{@tag} &aGame Starting in &b5 Seconds" to {player.%arg 2%::*}
 										set {status.%arg 2%} to "&d5"
@@ -302,6 +301,10 @@ on quit:
 						send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%loop-value-2%}%&7/&c%{maxplayer.%loop-value-2%}%&8)" to loop-value-1
 					gameSign(loop-value)
 
+on command "/spawn":
+	if {ingame.%player%} is true:
+		send "{@tag} &cYou are still in a game please use &6&o/minigame leave (game)." 
+		cancel event 
 
 on break:
 	if {ingame.%player%} is set:

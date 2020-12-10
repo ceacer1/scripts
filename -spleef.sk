@@ -1,0 +1,264 @@
+# » Spleef «
+# Created By: ReportCards (@Riley#9202 On Discord)
+# » Spleef «
+# Usage:
+# /spleef setmap | Generate arena
+# /spleef setlobby | Set spawn location
+# /spleef join | Join queue
+# Game time: ~4 Minutes
+# Made in: ~3 Hours
+ 
+ 
+on script load:
+  if {spleef::game} is set:
+    broadcast "&4&l• &cThe script has reloaded, the game has been forcefully stopped"
+    clear {spleef::game::*}
+    clear {spleef::queue::*}
+    delete {spleef::game}
+    delete {spleef::game.decay}
+  if {spleef::queue::*} is set:
+    broadcast "&4&l• &cThe script has reloaded, the game has been forcefully stopped"
+    clear {spleef::queue::*}
+    delete {spleef::game}
+    delete {spleef::game.decay}
+ 
+on quit:
+  if {spleef::queue::%player%} is set:
+    delete {spleef::queue::%player%}
+    broadcast "&bSpleef &3&l• &b%player% &fhas left whilst in the queue!"
+  if {spleef::game::*} contains player:
+    remove player from {spleef::game::*}
+    loop {spleef::game::*}:
+      send "&bSpleef &3&l• &b%player% &fhas been eliminated. &3(&b%size of {spleef::game::*}% &bPlayers Left&3)" to loop-value
+    send "&bSpleef &3&l• &fYou have been eliminated."
+    checkWinner()
+    
+ 
+function buildMap(ploc: Location, world: World):
+  set {_loc1} to location at x coord of {_ploc} + 25, y coord of {_ploc} - 20, z coord of {_ploc} + 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} - 25, y coord of {_ploc} + 5, z coord of {_ploc} - 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to air
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} + 25, y coord of {_ploc} - 1, z coord of {_ploc} + 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} - 25, y coord of {_ploc} - 1, z coord of {_ploc} - 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to snow block
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} + 25, y coord of {_ploc} - 5, z coord of {_ploc} - 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} - 25, y coord of {_ploc} + 5, z coord of {_ploc} - 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to black concrete
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} - 25, y coord of {_ploc} - 5, z coord of {_ploc} + 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} - 25, y coord of {_ploc} + 5, z coord of {_ploc} - 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to black concrete
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} + 25, y coord of {_ploc} - 5, z coord of {_ploc} + 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} + 25, y coord of {_ploc} + 5, z coord of {_ploc} - 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to black concrete
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} - 25, y coord of {_ploc} - 5, z coord of {_ploc} + 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} + 25, y coord of {_ploc} + 5, z coord of {_ploc} + 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to black concrete
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} + 25, y coord of {_ploc} - 5, z coord of {_ploc} + 25 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} - 25, y coord of {_ploc} - 15, z coord of {_ploc} - 25 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to red concrete
+  wait 1 tick
+  set {_loc1} to location at x coord of {_ploc} + 24, y coord of {_ploc} + 5, z coord of {_ploc} + 24 in world {_world}
+  set {_loc2} to location at x coord of {_ploc} - 24, y coord of {_ploc} + 5, z coord of {_ploc} - 24 in world {_world}
+  set all blocks within {_loc1} and {_loc2} to light gray stained glass
+  set {_loc1} to location at x coord of {_ploc}, y coord of {_ploc} + 5, z coord of {_ploc} in world {_world}
+  set block at {_loc1} to gold block
+ 
+function checkWinner():
+  if size of {spleef::game::*} is less than 2:
+    set {_winner} to first element out of {spleef::game::*}
+    broadcast "&bSpleef &3&l• &b%{_winner}% &fhas won &bSpleef&f!"
+    play sound "ui.toast.challenge_complete" with volume 1 and pitch 2 to all players
+    teleport all players to {spleef::lobby}
+    set {_lobby} to {spleef::lobby}
+    set {_map} to {spleef::map}
+    clear {spleef::*}
+    set {spleef::map} to {_map}
+    set {spleef::lobby} to {_lobby}
+    buildMap({_map}, world of {_map})
+    loop all players:
+      clear loop-player's inventory
+      set loop-player's gamemode to adventure
+    make console execute "/effect clear @a"
+ 
+function startGame():
+  loop {spleef::queue::*}:
+    set {_random} to random number between -20 and 20
+    set {_loc1} to location at x coord of {spleef::map} + {_random}, y coord of {spleef::map} + 1, z coord of {spleef::map} + {_random} in world of {spleef::map}
+    teleport loop-value to {_loc1}
+    add loop-value to {spleef::game::*}
+    remove loop-value from {spleef::queue::*}
+  delete {spleef::queue}
+  clear {spleef::queue::*}
+  broadcast "&bSpleef &3&l• &fThe game is starting!"
+  loop {spleef::game::*}:
+    send "&bSpleef &3&l• &fDestroy snow blocks from underneath other players!" to loop-value
+    send "&bSpleef &3&l• &fYou will get your shovel in 5 seconds!" to loop-value
+    play sound "block.snow.fall" with volume 1 and pitch 0.75 to loop-value
+    clear loop-value's inventory
+    giveItems(loop-value)
+  set {spleef::game} to 0
+function giveItems(p: Player):
+  wait 5 seconds
+  add diamond shovel of efficiency 3 to inventory of {_p}
+  set {_p}'s gamemode to survival
+  apply potion of saturation 10 without particles to {_p} for 1 day
+on damage:
+  cancel event
+ 
+every 20 seconds:
+  if {spleef::queue} is not set:
+    if size of {spleef::queue::*} is greater than 0:
+      if {spleef::game} is not set:
+        broadcast "&7"
+        broadcast "&3&l » &bThe queue currently has %size of {spleef::queue::*}% &bplayer(s)! &3(&b/spleef join&3)"
+        broadcast "&7"
+ 
+every second:
+  if {spleef::game} is not set:
+    if size of {spleef::queue::*} >= 2:
+      if {spleef::queue} is not set:
+        broadcast "&bSpleef &3&l• &fThe game is starting in 20 seconds, join with &b/sp join"
+        set {spleef::queue} to 20
+      else:
+        remove 1 from {spleef::queue}
+        if {spleef::queue} is 0:
+          startGame()
+          stop
+        send action bar "&bSpleef &3&l• &7Starting in &b%{spleef::queue}% &bSeconds &3(&b/sp join&3)" to all players
+        if {spleef::queue} <= 5:
+          play sound "block.note_block.bit" with volume 0.5 and pitch 5 to all players
+    else:
+      if {spleef::queue} is set:
+        broadcast "&bSpleef &3&l• &fThe queue has been cancelled since there are not enough players."
+        delete {spleef::queue}
+        delete {spleef::queue::*}
+  else:
+    add 1 to {spleef::game}
+    checkWinner()
+    if {spleef::game} < 30:
+      set {_next} to "Speed I"
+    else if {spleef::game} is 30:
+      loop {spleef::game::*}:
+        apply potion of speed 1 without particles to loop-value for 1 day
+        send "&bSpleef &3&l• &fYou've received Speed I!" to loop-value
+    else if {spleef::game} is between 31 and 59:
+      set {_next} to "Speed II"
+    else if {spleef::game} is 60:
+      loop {spleef::game::*}:
+        apply potion of speed 2 without particles to loop-value for 1 day
+        send "&bSpleef &3&l• &fYou've received Speed II!" to loop-value
+    else if {spleef::game} is between 61 and 119:
+      set {_next} to "Map Decay"
+    else if {spleef::game} is 120:
+      set {spleef::game.decay} to true
+      loop {spleef::game::*}:
+        send "&bSpleef &3&l• &fThe map will now start slowly decaying!" to loop-value
+      
+    set {_time} to "%{spleef::game}% Seconds" parsed as timespan
+    loop {spleef::game::*}:
+      send action bar "&3Spleef &b&l• &7The game has been running for &3%{_time}%&7. &b(&3Next Event: &7%{_next} ? ""None""%&b)" to loop-value
+  if {spleef::game.decay} is set:
+    set {_world} to world of {spleef::map}
+    set {_loc1} to location at x coord of {spleef::map} + 25, y coord of {spleef::map} - 1, z coord of {spleef::map} + 25 in world {_world}
+    set {_loc2} to location at x coord of {spleef::map} - 25, y coord of {spleef::map} - 1, z coord of {spleef::map} - 25 in world {_world}
+    loop all blocks within {_loc1} and {_loc2}:
+      if loop-block is packed ice:
+        set loop-block to ice
+      else if loop-block is ice:
+        set loop-block to air
+      if loop-block is a snow block:
+        set {_random} to random integer between 1 and (600 - (({spleef::game} - 120) * 1.5))
+        if {_random} is 1:
+          set loop-block to packed ice
+    
+ 
+command /spleef [<text = "help">] [<text>]:
+  aliases: /sp
+  trigger:
+    if arg-1 is "help":
+      send "&b/sp help &3&l• &fList all of the available commands"
+      send "&b/sp join &3&l• &fJoin the queue"
+      send "&b/sp leave &3&l• &fLeave the queue"
+      if player has permission "spleef.admin":
+        send "&c/sp setmap &3&l• &fSets the center of all maps to your location"
+        send "&c/sp setlobby &3&l• &fSets the lobby location (Server spawn location)"
+    else if arg-1 is "join":
+      if {spleef::queue::%player%} is not set:
+        if {spleef::map} is not set:
+          if {spleef::lobby} is not set:
+            send "&bSpleef &3&l• &fThe game is not set up correctly. Please ask an admin to finish the setup!"
+            stop
+          else:
+            send "&bSpleef &3&l• &fThe game is not set up correctly. Please ask an admin to finish the setup!"
+            stop
+        else if {spleef::lobby} is not set:
+          send "&bSpleef &3&l• &fThe game is not set up correctly. Please ask an admin to finish the setup!"
+          stop
+        set {spleef::queue::%player%} to player
+        send "&bSpleef &3&l• &fYou have joined the queue for &bSpleef"
+      else:
+        send "&4&l • &cYou are already queued!"
+    else if arg-1 is "leave":
+      if {spleef::queue::%player%} is set:
+        delete {spleef::queue::%player%}
+        send "&bSpleef &3&l• &fYou have left the queue."
+      else:
+        send "&bSpleef &3&l• &fYou're not in the queue, to join the queue please use &b/mhp join"
+    else if arg-1 is "setmap":
+      if player has permission "spleef.admin":
+        if {confirm.%player%} is not set:
+          send "&cSetting a new map location will clear the area around you, please use this with caution! Type the command again to set the map location."
+          set {confirm.%player%} to false
+          wait 10 seconds
+          if {confirm.%player%} is set:
+            delete {confirm.%player%}
+        else:
+          if y coord of location of player is greater than 245:
+            send "&4&l • &cYou are too high up to set the map here!"
+            stop
+          else if y coord of location of player is less than 10:
+            send "&4&l • &cYou are too low up to set the map here!"
+            stop
+          set {spleef::map} to location of player
+          send "&bSpleef &3&l• &fYou have set the main map location to %player's location%"
+          delete {confirm.%player%}
+          set {_ploc} to player's location
+          send "%{spleef::map}%"
+          buildMap({_ploc}, event-world)
+    else if arg-1 is "setlobby":
+      if player has permission "spleef.admin":
+        send "&bSpleef &3&l• &fYou have set the lobby location to %player's location%"
+        set {spleef::lobby} to location of player
+ 
+on step on red concrete:
+  if {spleef::game::*} contains player:
+    remove player from {spleef::game::*}
+    loop {spleef::game::*}:
+      send "&bSpleef &3&l• &b%player% &fhas been eliminated. &3(&b%size of {spleef::game::*}% &bPlayers Left&3)" to loop-value
+    send "&bSpleef &3&l• &fYou have been eliminated."
+    make console execute "/effect clear %player%"
+    checkWinner()
+    teleport player to {spleef::lobby}
+    clear player's inventory
+ 
+on break: 
+  if player's gamemode is creative:
+    stop
+  if event-block is not snow block:
+    cancel event
+  else:
+    clear drops
+ 
+command /lobby:
+  trigger:
+    teleport player to {spleef::lobby}
+ 
+on join:
+  teleport player to {spleef::lobby}
+  make console execute "/effect clear %player%"

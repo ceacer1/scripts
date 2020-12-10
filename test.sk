@@ -1,9 +1,0 @@
-on swap hand items:
-	cancel event
-
-on inventory click:
-    if event-inventory is player's inventory:
-        if clicked slot is 40:
-            close player's inventory
-            cancel event
-        

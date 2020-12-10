@@ -1,0 +1,220 @@
+# ################################################################ #
+#																   #
+#				  BalanceTOP GUI | YesIamAPeanut				   #
+#			    ( YesIamAPeanut (つ ◕‿◕ )つ━━✫・*#5567 )		       #
+#							   V1.0							       #
+#																   #
+# ################################################################ #
+
+import:
+
+	java.util.Arrays
+	org.bukkit.event.server.TabCompleteEvent
+	org.bukkit.entity.Player
+	java.io.File
+
+options:
+	
+	GUI-Row: 4
+	GUI-Title: &8&nBalance Top
+
+	GUI-Sound-Open: true
+	GUI-Sound-Sound-Open: ENTITY_BAT_TAKEOFF
+	GUI-Sound-Volume-Sound-Open: 0.5
+	GUI-Sound-Pitch-Sound-Open: 1
+
+	GUI-Sound-Sound-Refresh: BLOCK_NOTE_BLOCK_BELL
+	GUI-Sound-Volume-Sound-Refresh: 1
+	GUI-Sound-Pitch-Sound-Refresh: 1
+
+
+	GUI-Item-Filler-1: gray stained glass pane named " "
+
+	GUI-Item-Refresh: paper named "&eRefresh" with lore "&3► &7Click to refresh balance top"
+	GUI-Item-Refresh-Slot: 8
+
+	GUI-Item-PlayerBal: {_p}'s head named "&e&n%{_p}%" with lore "", " &3&l* &7Rank: &b##%{_r}%", " &3&l* &7Balance: &6%{_b}%" and ""
+	GUI-Item-PlayerBal-Slot: 4
+
+	GUI-Item-TopBal1: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##1", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal1-Slot: 12
+	GUI-Item-TopBal2: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##2", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal2-Slot: 13
+	GUI-Item-TopBal3: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##3", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal3-Slot: 14
+	GUI-Item-TopBal4: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##4", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal4-Slot: 19
+	GUI-Item-TopBal5: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##5", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal5-Slot: 20
+	GUI-Item-TopBal6: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##6", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal6-Slot: 21
+	GUI-Item-TopBal7: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##7", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal7-Slot: 22
+	GUI-Item-TopBal8: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##8", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal8-Slot: 23
+	GUI-Item-TopBal9: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##9", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal9-Slot: 24
+	GUI-Item-TopBal10: {_topbp}'s head named "&e&n%{_topbp}%" with lore "", " &3&l* &7Rank: &b##10", " &3&l* &7Balance: &6%{_topb}%" and ""
+	GUI-Item-TopBal10-Slot: 25
+
+	MPrefix: &a&lBTG &8&l► &r
+	MessageNoPermission: &cSorry, you don't have permission to use this command.
+	MessageBaltopEnable: &7Balance Top GUI has been enabled by &a%{_player}%&7.
+	MessageBaltopDisable: &7Balance Top GUI has been disabled by &a%{_player}%&7.
+	MessageBaltopAlreadyEnabled: &7Balance Top GUI already enabled. Type &e'/baltop disable' &7to disable balance top gui.
+	MessageBaltopAlreadyDisabled: &7Balance Top GUI already disabled. Type &e'/baltop enable' &7to enable balance top gui.
+	MessageSkriptReloading: &3Reloading the &6skript&3. . .
+	MessageSkriptReloaded: &3Successfully reloaded the &6skript&3.
+
+	PermissionManage: baltopgui.manage
+
+on skript load:
+	set {baltop.gui} to true
+
+function Baltop_GUI(p: player):
+	
+	open chest with {@GUI-Row} row named "{@GUI-Title}" to {_p}
+	set {_x} to {@GUI-Sound-Open}
+	{_x} = true:
+		play sound "{@GUI-Sound-Sound-Open}" with volume {@GUI-Sound-Volume-Sound-Open} and pitch {@GUI-Sound-Pitch-Sound-Open} to {_p}
+
+function Baltop_Item_GUI(p: player):
+	set {_loop} to {@GUI-Row} * 9
+	set {_item} to {@GUI-Item-Filler-1}
+	set {_s} to 0
+	loop {_loop} times:
+		set slot {_s} of {_p}'s current inventory to {_item}
+		add 1 to {_s}
+
+	set slot {@GUI-Item-Refresh-Slot} of {_p}'s current inventory to {@GUI-Item-Refresh}
+
+	set {_b} to placeholder "vault_eco_balance_formatted" from {_p}
+	set {_r} to placeholder "vault_eco_top_rank" from {_p}
+	set slot {@GUI-Item-PlayerBal-Slot} of {_p}'s current inventory to {@GUI-Item-PlayerBal}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_1" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_1" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal1-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal1}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_2" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_2" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal2-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal2}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_3" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_3" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal3-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal3}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_4" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_4" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal4-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal4}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_4" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_4" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal4-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal4}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_5" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_5" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal5-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal5}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_6" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_6" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal6-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal6}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_7" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_7" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal7-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal7}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_8" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_8" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal8-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal8}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_9" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_9" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal9-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal9}
+
+	set {_topb} to placeholder "vault_eco_top_balance_formatted_10" from {_p}
+	set {_topbp} to placeholder "vault_eco_top_player_10" from {_p}
+	set {_topbp} to {_topbp} parsed as an offline player
+	set slot {@GUI-Item-TopBal10-Slot} of {_p}'s current inventory to {@GUI-Item-TopBal10}
+
+on inventory click:
+	inventory name of player's current inventory is "{@GUI-Title}":
+		cancel event
+
+		clicked item = {@GUI-Item-Refresh}:
+			Baltop_Item_GUI(player)
+			play sound "{@GUI-Sound-Sound-Refresh}" with volume {@GUI-Sound-Volume-Sound-Refresh} and pitch {@GUI-Sound-Pitch-Sound-Refresh} to player
+
+command /baltopgui [<text>]:
+	aliases: /btg
+	trigger:
+		player have permission "{@PermissionManage}":
+			arg-1 is "enable" or "on":
+				{baltop.gui} is not set:
+					set {_player} to player
+					set {baltop.gui} to true
+					broadcast "{@MPrefix}{@MessageBaltopEnable}"
+				else:
+					send "{@MPrefix}{@MessageBaltopAlreadyEnabled}"
+			arg-1 is "disable" or "off":
+				{baltop.gui} is set:
+					set {_player} to player
+					delete {baltop.gui}
+					broadcast "{@MPrefix}{@MessageBaltopDisable}"
+				else:
+					send "{@MPrefix}{@MessageBaltopAlreadyDisabled}"
+			arg-1 is "reload":
+				execute console command "sk reload BaltopGUI"
+				send "{@MPrefix}{@MessageSkriptReloading}"
+				wait a second
+				send "{@MPrefix}{@MessageSkriptReloaded}"
+			arg-1 is "about":
+				Baltop_AboutPage(player)
+			arg-1 is "help":
+				Baltop_HelpPage(player)
+			arg-1 is not  "enable" or "on" or "disable" or "off" or "reload" or "help" or "about":
+				Baltop_HelpPage(player)
+				stop
+		else:
+			send "{@MessageNoPermission}"
+
+on command:
+	command is "baltop" or "ebaltop" or "essentials:baltop" or "essentials:ebaltop" or "balancetop" or "ebalancetop" or "essentials:balancetop" or "essentials:ebalancetop":
+		{baltop.gui} is set:
+			cancel event
+			Baltop_GUI(player)
+			Baltop_Item_GUI(player)
+
+function Baltop_HelpPage(p: player):
+	send "" to {_p}
+	send "&r                    &6&lBALTOP GUI &8| &7By Vino" to {_p}
+	send "&r                &6[ ] &f= Required, &7( ) &f= Optional" to {_p}
+	send "" to {_p}
+	send "&3* &6/btg &f[Enable/Disable] &8| &7Manage the Balance Top GUI" to {_p}
+	send "&3* &6/btg about &8| &7About the skript" to {_p}
+	send "&3* &6/btg help &8| &7Show the skript help" to {_p}
+	send "&3* &6/btg reload &8| &7Reload the skript" to {_p}
+	send "" to {_p}
+
+function Baltop_AboutPage(p: player):
+	send "" to {_p}
+	send " &8► &fChange the look of your old baltop to the better one!." to {_p}
+	json("%{_p}%", " &8► &7Author: &bYesIamAPeanut ||&8[&aDiscord&8]||sgt:YesIamAPeanut (つ ◕‿◕ )つ━━✫・*##5567||ttp:&7Click to copy ID!")
+	send " &8► &7Version: &61.0.0" to {_p}
+	send "" to {_p}
+	
+on TabCompleteEvent:
+	tabbed command is "/baltopgui" or "/btg":
+		sender has permission "{@PermissionManage}":
+			tab arg 2 is not set:
+				set completions to "enable", "disable", "about", "help", "reload" at tab arg 1

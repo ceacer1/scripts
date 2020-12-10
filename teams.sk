@@ -2,22 +2,22 @@
 options:
     prefix: &b&lFast&3&lGens
 
-function teamList(p: player, page: number):
-    set {_tt} to amount of {teams::*}
-    message "&7&m      &7< &a&lTeams List &7>&7&m      " to {_p}
-    message "&7&m    &7< &eTotal Teams &8(&6%{_tt}%&8) &7>&7&m   " to {_p}
-    send "" to {_p}
-    set {_n} to 1
-#    set {_test} to {_page} * ({_n} + 9)
-    loop {teams::*}:
-#        loop-index > {_test}
-        send "&6%{_n}% &8- &3%loop-value%" to {_p}
-        add 1 to {_n}
-#        if {_n} = 2:
-#            stop loop
-    send "" to {_p}
-#    send "&7&m        &7< &ePage &8(&6%{_page}%&8) &7>&7&m        " to {_p}
-    send "&7&m       &7< {@prefix} &7>&7&m       " to {_p}
+ #function teamList(p: player, page: number):
+ #    set {_tt} to amount of {teams::*}
+ #    message "&7&m      &7< &a&lTeams List &7>&7&m      " to {_p}
+ #    message "&7&m    &7< &eTotal Teams &8(&6%{_tt}%&8) &7>&7&m   " to {_p}
+ #    send "" to {_p}
+ #    set {_n} to 1
+ #    set {_test} to {_page} * ({_n} + 9)
+ #    loop {teams::*}:
+ #        loop-index > {_test}
+ #        send "&6%{_n}% &8- &3%loop-value%" to {_p}
+ #        add 1 to {_n}
+ #        if {_n} = 2:
+ #            stop loop
+ #    send "" to {_p}
+ #    send "&7&m        &7< &ePage &8(&6%{_page}%&8) &7>&7&m        " to {_p}
+ #    send "&7&m       &7< {@prefix} &7>&7&m       " to {_p}
 
 
 command /team [<text>] [<string>] [<player>]:
@@ -97,11 +97,7 @@ command /team [<text>] [<string>] [<player>]:
                 
                 
             else:
-                if arg-2 is not set:
-                    teamList(player, 1)
-                else:
-                    if arg-2 is a number:
-                        teamList(player, (arg-2 parsed as number))
+                send "{@prefix} &8- &ePlease enter a team name" to player
         
         if arg-1 is "invite":
             if arg-2 is set:
