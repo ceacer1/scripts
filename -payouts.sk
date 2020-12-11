@@ -37,19 +37,12 @@ options:
 	S4F3: RussPlays
 	S4F3bal: $10,397,937,959
 	#Season 5 Winners
-	S5F1: DJOverTime
-	S5F1bal: $42,069,420,420
-	S5F2: Girly_gamer_xo
-	S5F2bal: $31,811,692,787
-	S5F3: Krievs
-	S5F3bal: $26,801,006,817
-	#Season 6 Winners
-	S6F1: Not yet Announced
-	S6F1bal: Not yet Announced
-	S6F2: Not yet Announced
-	S6F2bal: Not yet Announced
-	S6F3: Not yet Announced
-	S6F3bal: Not yet Announced
+	S5F1: Not yet Announced
+	S5F1bal: Not yet Announced
+	S5F2: Not yet Announced
+	S5F2bal: Not yet Announced
+	S5F3: Not yet Announced
+	S5F3bal: Not yet Announced
 	#Current Season
 	TopBal1: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lFirst Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and ""
 	TopBal1-Slot: 11
@@ -60,18 +53,16 @@ options:
 
 
 command /payouts:
-    trigger:
-        send "" to player
-        send "&8&m--------&8[&b&lFast&3Gens &2&lPayouts&8]&8&m--------"
-        send "" to player
-        send "&b1. {@first}" to player
-        send "&b2. {@second}" to player
-        send "&b3. {@third}" to player
-        send "" to player
-        send "&bWant to see previous winners?" to player
-        send "&bType &6/winners &bor <command:/winners>&a&l(Click Here)<reset>" to player
+	trigger:
 		send "" to player
-        send "&8&m-------- <command:/discord>&8[&d&lJoin the Discord&8]<reset>&8&m--------"
+		send "&8&m-------- &8[&b&lFast&3Gens &2&lPayouts&8]&8&m --------"
+		send "" to player
+		send "&b1. {@first}" to player
+		send "&b2. {@second}" to player
+		send "&b3. {@third}" to player
+		send "" to player
+		send "&bWant to see previous winners?" to player
+		send "&bType &6/winners &bor <command:/winners>&a&l(Click Here)<reset>" to player
 
 		
 command /winners:
@@ -109,8 +100,8 @@ function payoutWinners(p: player, type: int = 0):
 		format gui slot 11 of {_p} with glowing book named "&6&lSeason 2" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 2)
 		format gui slot 12 of {_p} with glowing book named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 3)
 		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 4)
-		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&aAvailable&r&8)" to run function payoutWinners({_p}, 5)
-		format gui slot 15 of {_p} with glowing nether star named "&6&lSeason 6" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
+		format gui slot 14 of {_p} with glowing nether star named "&6&lSeason 5" with lore "" and "&8(&2&lCurrent Season&r&8)" to run function currentSeason({_p})
+		format gui slot 15 of {_p} with glowing barrier block named "&6&lSeason 6" with lore "" and "&8(&cNot Avaliable&8)" to close
 		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 7" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 	if {_type} is 1:

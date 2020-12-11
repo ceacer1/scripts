@@ -1,0 +1,543 @@
+#  ___  | | __ 
+# / __| | |/ / 
+# \__ \ |   <  
+# |___/ |_|\_\ Crates©
+#
+
+#Author: TheRacer2x2x2
+#Version: 1.0 First Release
+
+
+
+command /Crates [<text>] [<text>]:
+	permission: Crates.*
+	trigger:
+		if arg 1 is not set:
+			message "&7&m]-------- &8» &bSimpleCrates &8«&7&m--------["
+			
+			message "&b/Crates help &8*&7 Open Help Page"
+			message "&b/Crates key <name> &8*&7 Gives you the Key"
+			
+			message "&b/Crates list &8*&7 Tells you all Crates"
+			message "&b/Crates create <name> &8*&7 Create a Crates"
+			message "&b/Crates delete <name> &8*&7 Delete A Crates"
+					
+			message "&b/Crates chest <name> &8*&7 Gives you the Chest (Place it)"
+			message "&b/Crates tp <name> &8*&7 Teleport you to the Crates"
+			message "&b/Crates index <name> &8*&7 Open a Gui where you can add Items to the Crates"
+
+
+			message "&7&m]-------- &8» &bSimpleCrates &8«&7&m--------["	
+		if arg 1 is not "key" or "list" or "create" or "delete" or "chest" or "tp" or "index":
+			message "&7&m]-------- &8» &bSimpleCrates &8«&7&m--------["
+			
+			message "&b/Crates help &8*&7 Open Help Page"
+			message "&b/Crates key <name> &8*&7 Gives you the Key"
+			
+			message "&b/Crates list &8*&7 Tells you all Crates"
+			message "&b/Crates create <name> &8*&7 Create a Crates"
+			message "&b/Crates delete <name> &8*&7 Delete A Crates"
+					
+			message "&b/Crates chest <name> &8*&7 Gives you the Chest (Place it)"
+			message "&b/Crates tp <name> &8*&7 Teleport you to the Crates"
+			message "&b/Crates index <name> &8*&7 Open a Gui where you can add Items to the Crates"
+
+
+			message "&7&m]-------- &8» &bSimpleCrates &8«&7&m--------["			
+		if arg 1 is "key":
+			if arg 2 is set:
+
+			
+				if {Crates.Exist.%arg 2%} is true:
+					give player glowing 1 Tripwire Hook named "&f✳&3 %arg 2% &f✳" with lore "&f✳&3 %arg 2% &bCrates Key &f✳"
+					message "&8[&bCrates&8] &7You got a Key ""&f✳&3 %arg 2% &bCrates Key &f✳"""
+				else:
+					message "&8[&bCrates&8] &cError:&7 The Crate does not exist."
+			else:
+				message "&8[&bCrates&8] &cError:&7 Need a Crate. &f(/Crates create <name>)"			
+		if arg 1 is "chest":
+			if arg 2 is set:
+
+			
+				if {Crates.Exist.%arg 2%} is true:
+					give player 1 chest named "%arg 2%" with lore "&f✳&3 &bCrates Chest &f✳"
+					message "&8[&bCrates&8] &7You got the Chest ""&f✳&3 %arg 2% &bCrates Chest &f✳"""
+				else:
+					message "&8[&bCrates&8] &cError:&7 The crate does not exist."
+			else:
+				message "&8[&bCrates&8] &cError:&7 Need a Crate. &f(/Crates create <name>)"				
+		if arg 1 is "create":
+			if arg 2 is set:
+
+			
+				if {Crates.Exist.%arg 2%} is true:
+					message "&8[&bCrates&8] &cError:&7 The Crate does not exist."
+				else:
+					set {Crates.Exist.%arg 2%} to true
+					add arg 2 to {Crates.Lsit::*}
+					message "&8[&bCrates&8] &7The Crate &a%arg 2%&7 was created."
+			else:
+				message "&8[&bCrates&8] &cError:&7 Need a Crate. &f(/Crates create <name>)"
+		if arg 1 is "delete":
+			if arg 2 is set:
+				if {Crates.Exist.%arg 2%} is true:
+					set {Crates.Exist.%arg 2%} to false
+					clear {Crates.Exist.%arg 2%}
+					delete {Crates.Exist.%arg 2%}
+					remove arg 2 from {Crates.Lsit::*}
+					message "&8[&bCrates&8] &7The Crate &a%arg 2%&7 was deleted."
+					
+					set {Crates.Chest.%{Crates.Chest.T.%arg 2%}%} to false
+					set block at {Crates.Chest.T.%arg 2%} to air
+					clear {Crates.Chest.T.%arg 2%}
+					delete {Crates.Chest.T.%arg 2%}
+				else:
+					message "&8[&bCrates&8] &cError:&7 The Crate does not exist."
+			else:
+				message "&8[&bCrates&8] &cError:&7 Need a Crate. &f(/Crates delete <name>)"				
+		if arg 1 is "tp":
+			if arg 2 is set:
+				if {Crates.Exist.%arg 2%} is true:
+					teleport player to {Crates.Chest.T.%arg 2%}
+					message "&8[&bCrates&8] &7You have been teleported to the Crate &a%arg 2%&7."
+					
+
+				else:
+					message "&8[&bCrates&8] &cError:&7 The Crate does not exist."
+			else:
+				message "&8[&bCrates&8] &cError:&7 Need a Crate. &f(/Crates tp <name>)"					
+		if arg 1 is "list":
+			set {Crates.L.%player%} to 0
+			loop {Crates.Lsit::*}:
+				add 1 to {Crates.L.%player%}
+			wait 1 tick
+			if {Crates.L.%player%} is 0:
+				message "&8[&bCrates&8] &7No Crates does exist."
+			else:
+				set {Crates.L.%player%} to "%{Crates.Lsit::*}%"
+				replace all "," in {Crates.L.%player%} with "&f,&3"
+				replace all "and" in {Crates.L.%player%} with "&fund&3"
+				message "&8[&bCrates&8] &7All Crates&8: &3%{Crates.L.%player%}%&f."
+		if arg 1 is "index":
+			if arg 2 is set:
+				if {Crates.Exist.%arg 2%} is true:
+					open chest with 5 rows named "&bCrates&8¦ &3%colored arg 2%" to player
+					wait 1 tick
+					set {Crates.Trigger.%arg 2%} to -1
+					loop 45 times:
+						add 1 to {Crates.Trigger.%arg 2%}
+					
+						set gui slot {Crates.Trigger.%arg 2%} of player's current inventory to {Crates.%arg 2%.gui slot.%{Crates.Trigger.%arg 2%}%}
+							
+					set {Crates.%arg 2%.Trigger.%player%} to true				
+					set {Crates.%player%.S} to "%arg 2%"
+				else:
+					message "&8[&bCrates&8] &cError:&7 The Crate does not exist."
+			else:
+				message "&8[&bCrates&8] &cError:&7 Need a Crate. &f(/Crates index <name>)"
+	
+on inventory close:
+	if {Crates.%{Crates.%player%.S}%.Trigger.%player%} is true:
+		
+		set {Crates.Trigger.%{Crates.%player%.S}%} to -1
+		loop 45 times:
+			add 1 to {Crates.Trigger.%{Crates.%player%.S}%}
+			set {Crates.%{Crates.%player%.S}%.gui slot.%{Crates.Trigger.%{Crates.%player%.S}%}%} to gui slot {Crates.Trigger.%{Crates.%player%.S}%} of player's current inventory
+			if {Crates.%{Crates.%player%.S}%.gui slot.%{Crates.Trigger.%{Crates.%player%.S}%}%} is air:
+				
+				clear {Crates.%{Crates.%player%.S}%.gui slot.%{Crates.Trigger.%{Crates.%player%.S}%}%}
+		message "&8[&bCrates&8] &7The Items of &a%{Crates.%player%.S}%&7 was savedt."
+		
+		set {Crates.%{Crates.%player%.S}%.Trigger.%player%} to false
+
+
+on inventory close:
+	if {Crates.Use.In.%player%} is true:	
+		set {Crates.Use.X.%player%} to false
+		wait 1 tick
+		open chest with 3 rows named "&bCrates&8¦&3%{Crates.InUse.%player%}%" to player
+		unformat gui slot 9 of player
+		unformat gui slot 10 of player
+		unformat gui slot 11 of player
+		unformat gui slot 12 of player
+		unformat gui slot 13 of player
+		unformat gui slot 14 of player
+		unformat gui slot 15 of player
+		unformat gui slot 16 of player
+		unformat gui slot 17 of player
+		format gui slot 9 of player with {Crates.Use.%player%.Item.8} 
+		format gui slot 10 of player with {Crates.Use.%player%.Item.9} 
+		format gui slot 11 of player with {Crates.Use.%player%.Item.1} 
+		format gui slot 12 of player with {Crates.Use.%player%.Item.2} 
+		format gui slot 13 of player with {Crates.Use.%player%.Item.3} 
+		format gui slot 14 of player with {Crates.Use.%player%.Item.4} 
+		format gui slot 15 of player with {Crates.Use.%player%.Item.5} 
+		format gui slot 16 of player with {Crates.Use.%player%.Item.6} 
+		format gui slot 17 of player with {Crates.Use.%player%.Item.7} 
+		format gui slot 0 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 1 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 2 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 3 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 5 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 6 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 7 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 8 of player with Lime Stained Glass Pane named "&a⬛" 
+
+		format gui slot 18 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 19 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 20 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 21 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 23 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 24 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 25 of player with Lime Stained Glass Pane named "&a⬛" 
+		format gui slot 26 of player with Lime Stained Glass Pane named "&a⬛" 
+		play "CLICK" to player at volume 2	
+		unformat gui slot 4 of player
+		unformat gui slot 22 of player
+		format gui slot 4 of player with Torch named "&9▼" 
+		format gui slot 22 of player with Torch named "&9▲" 
+		wait 3 tick
+		play "ORB_PICKUP" to player at volume 2	
+		wait 3 tick
+		play "ORB_PICKUP" to player at volume 2	
+		wait 3 tick
+		play "ORB_PICKUP" to player at volume 2	
+		wait 3 tick
+		play "NOTE_PLING" to player at volume 2					
+		set {Crates.Use.In.%player%} to false
+	
+		give player {Crates.Use.%player%.Item.3}
+
+		
+		
+on rightclick on a chest:
+	if {Crates.Chest.%location of block%} is true:
+		if {Crates.Exist.%{Crates.Name.L.%location of block%}%} is true:
+			if player's tool is glowing 1 Tripwire Hook named "&f✳&3 %{Crates.Name.L.%location of block%}% &f✳" with lore "&f✳&3 %{Crates.Name.L.%location of block%}% &bCrates Key &f✳":
+				cancel event
+				message "&8[&bCrates&8] &7You open a Crate."
+				set {Crates.InUse.%player%} to "%{Crates.Name.L.%location of block%}%"
+				remove glowing 1 Tripwire Hook named "&f✳&3 %{Crates.Name.L.%location of block%}% &f✳" with lore "&f✳&3 %{Crates.Name.L.%location of block%}% &bCrates Key &f✳" from player
+				
+				# Go
+				set {Crates.Use.In.%player%} to true
+				set {Crates.Use.X.%player%} to true
+				open chest with 3 rows named "&bCrates&8¦&3%{Crates.InUse.%player%}%" to player
+				wait 1 tick
+				#▲▼
+				if {Crates.Use.X.%player%} is true:
+					format gui slot 4 of player with Redstone Torch (on) named "&9▼" 
+					format gui slot 22 of player with Redstone Torch (on) named "&9▲" 
+					#
+					format gui slot 0 of player with Lime Stained Glass Pane named "&a⬛" 
+					format gui slot 1 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 2 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 3 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 5 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 6 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 7 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 8 of player with Lime Stained Glass Pane named "&a⬛" 
+
+					format gui slot 18 of player with Lime Stained Glass Pane named "&a⬛" 
+					format gui slot 19 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 20 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 21 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 23 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 24 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 25 of player with Red Stained Glass Pane named "&c⬛" 
+					format gui slot 26 of player with Lime Stained Glass Pane named "&a⬛" 
+					
+					set {Crates.Use.%player%.T} to 0
+					set {Crates.Use.%player%.T1} to -1
+					clear {Crates.Use.%player%.List::*}
+					delete {Crates.Use.%player%.Item.1}
+					delete {Crates.Use.%player%.Item.2}
+					delete {Crates.Use.%player%.Item.3}
+					delete {Crates.Use.%player%.Item.4}
+					delete {Crates.Use.%player%.Item.5}
+					delete {Crates.Use.%player%.Item.6}
+					delete {Crates.Use.%player%.Item.7}
+					delete {Crates.Use.%player%.Item.8}
+					delete {Crates.Use.%player%.Item.9}
+					loop 45 times:
+						add 1 to {Crates.Use.%player%.T1}
+						if {Crates.%{Crates.InUse.%player%}%.gui slot.%{Crates.Use.%player%.T1}%} is set:
+							add {Crates.%{Crates.InUse.%player%}%.gui slot.%{Crates.Use.%player%.T1}%} to {Crates.Use.%player%.List::*}
+					loop 9 times:
+						add 1 to {Crates.Use.%player%.T}
+						set {Crates.Use.%player%.Item.%{Crates.Use.%player%.T}%} to a random element out of {Crates.Use.%player%.List::*}
+					
+					format gui slot 9 of player with {Crates.Use.%player%.Item.1} 
+					format gui slot 10 of player with {Crates.Use.%player%.Item.2} 
+					format gui slot 11 of player with {Crates.Use.%player%.Item.3} 
+					format gui slot 12 of player with {Crates.Use.%player%.Item.4} 
+					format gui slot 13 of player with {Crates.Use.%player%.Item.5} 
+					format gui slot 14 of player with {Crates.Use.%player%.Item.6} 
+					format gui slot 15 of player with {Crates.Use.%player%.Item.7} 
+					format gui slot 16 of player with {Crates.Use.%player%.Item.8} 
+					format gui slot 17 of player with {Crates.Use.%player%.Item.9} 
+					play "CLICK" to player at volume 2
+					wait 3 tick
+					if {Crates.Use.X.%player%} is true:
+						unformat gui slot 9 of player
+						unformat gui slot 10 of player
+						unformat gui slot 11 of player
+						unformat gui slot 12 of player
+						unformat gui slot 13 of player
+						unformat gui slot 14 of player
+						unformat gui slot 15 of player
+						unformat gui slot 16 of player
+						unformat gui slot 17 of player
+						format gui slot 9 of player with {Crates.Use.%player%.Item.2} 
+						format gui slot 10 of player with {Crates.Use.%player%.Item.3} 
+						format gui slot 11 of player with {Crates.Use.%player%.Item.4} 
+						format gui slot 12 of player with {Crates.Use.%player%.Item.5} 
+						format gui slot 13 of player with {Crates.Use.%player%.Item.6} 
+						format gui slot 14 of player with {Crates.Use.%player%.Item.7} 
+						format gui slot 15 of player with {Crates.Use.%player%.Item.8} 
+						format gui slot 16 of player with {Crates.Use.%player%.Item.9} 
+						format gui slot 17 of player with {Crates.Use.%player%.Item.1} 
+						play "CLICK" to player at volume 2
+						# #
+						unformat gui slot 1 of player
+						unformat gui slot 7 of player
+						unformat gui slot 19 of player
+						unformat gui slot 25 of player
+						format gui slot 1 of player with Lime Stained Glass Pane named "&a⬛" 
+						format gui slot 7 of player with Lime Stained Glass Pane named "&a⬛" 
+						format gui slot 19 of player with Lime Stained Glass Pane named "&a⬛" 
+						format gui slot 25 of player with Lime Stained Glass Pane named "&a⬛" 
+						# #
+						wait 3 tick
+						if {Crates.Use.X.%player%} is true:
+							unformat gui slot 9 of player
+							unformat gui slot 10 of player
+							unformat gui slot 11 of player
+							unformat gui slot 12 of player
+							unformat gui slot 13 of player
+							unformat gui slot 14 of player
+							unformat gui slot 15 of player
+							unformat gui slot 16 of player
+							unformat gui slot 17 of player
+							format gui slot 9 of player with {Crates.Use.%player%.Item.3} 
+							format gui slot 10 of player with {Crates.Use.%player%.Item.4} 
+							format gui slot 11 of player with {Crates.Use.%player%.Item.5} 
+							format gui slot 12 of player with {Crates.Use.%player%.Item.6} 
+							format gui slot 13 of player with {Crates.Use.%player%.Item.7} 
+							format gui slot 14 of player with {Crates.Use.%player%.Item.8} 
+							format gui slot 15 of player with {Crates.Use.%player%.Item.9} 
+							format gui slot 16 of player with {Crates.Use.%player%.Item.1} 
+							format gui slot 17 of player with {Crates.Use.%player%.Item.2} 
+							play "CLICK" to player at volume 2		
+							wait 3 tick
+							if {Crates.Use.X.%player%} is true:
+								unformat gui slot 9 of player
+								unformat gui slot 10 of player
+								unformat gui slot 11 of player
+								unformat gui slot 12 of player
+								unformat gui slot 13 of player
+								unformat gui slot 14 of player
+								unformat gui slot 15 of player
+								unformat gui slot 16 of player
+								unformat gui slot 17 of player
+								format gui slot 9 of player with {Crates.Use.%player%.Item.4} 
+								format gui slot 10 of player with {Crates.Use.%player%.Item.5} 
+								format gui slot 11 of player with {Crates.Use.%player%.Item.6} 
+								format gui slot 12 of player with {Crates.Use.%player%.Item.7} 
+								format gui slot 13 of player with {Crates.Use.%player%.Item.8} 
+								format gui slot 14 of player with {Crates.Use.%player%.Item.9} 
+								format gui slot 15 of player with {Crates.Use.%player%.Item.1} 
+								format gui slot 16 of player with {Crates.Use.%player%.Item.2} 
+								format gui slot 17 of player with {Crates.Use.%player%.Item.3} 
+								play "CLICK" to player at volume 2	
+								# #
+								unformat gui slot 2 of player
+								unformat gui slot 6 of player
+								unformat gui slot 20 of player
+								unformat gui slot 24 of player
+								format gui slot 2 of player with Lime Stained Glass Pane named "&a⬛" 
+								format gui slot 6 of player with Lime Stained Glass Pane named "&a⬛" 
+								format gui slot 20 of player with Lime Stained Glass Pane named "&a⬛" 
+								format gui slot 24 of player with Lime Stained Glass Pane named "&a⬛" 
+								# #
+								wait 3 tick
+								if {Crates.Use.X.%player%} is true:
+									unformat gui slot 9 of player
+									unformat gui slot 10 of player
+									unformat gui slot 11 of player
+									unformat gui slot 12 of player
+									unformat gui slot 13 of player
+									unformat gui slot 14 of player
+									unformat gui slot 15 of player
+									unformat gui slot 16 of player
+									unformat gui slot 17 of player
+									format gui slot 9 of player with {Crates.Use.%player%.Item.5} 
+									format gui slot 10 of player with {Crates.Use.%player%.Item.6} 
+									format gui slot 11 of player with {Crates.Use.%player%.Item.7} 
+									format gui slot 12 of player with {Crates.Use.%player%.Item.8} 
+									format gui slot 13 of player with {Crates.Use.%player%.Item.9} 
+									format gui slot 14 of player with {Crates.Use.%player%.Item.1} 
+									format gui slot 15 of player with {Crates.Use.%player%.Item.2} 
+									format gui slot 16 of player with {Crates.Use.%player%.Item.3} 
+									format gui slot 17 of player with {Crates.Use.%player%.Item.4} 
+									play "CLICK" to player at volume 2	
+									wait 3 tick
+									if {Crates.Use.X.%player%} is true:
+										unformat gui slot 9 of player
+										unformat gui slot 10 of player
+										unformat gui slot 11 of player
+										unformat gui slot 12 of player
+										unformat gui slot 13 of player
+										unformat gui slot 14 of player
+										unformat gui slot 15 of player
+										unformat gui slot 16 of player
+										unformat gui slot 17 of player
+										format gui slot 9 of player with {Crates.Use.%player%.Item.6} 
+										format gui slot 10 of player with {Crates.Use.%player%.Item.7} 
+										format gui slot 11 of player with {Crates.Use.%player%.Item.8} 
+										format gui slot 12 of player with {Crates.Use.%player%.Item.9} 
+										format gui slot 13 of player with {Crates.Use.%player%.Item.1} 
+										format gui slot 14 of player with {Crates.Use.%player%.Item.2} 
+										format gui slot 15 of player with {Crates.Use.%player%.Item.3} 
+										format gui slot 16 of player with {Crates.Use.%player%.Item.4} 
+										format gui slot 17 of player with {Crates.Use.%player%.Item.5} 
+										play "CLICK" to player at volume 2	
+										# #
+										unformat gui slot 3 of player
+										unformat gui slot 5 of player
+										unformat gui slot 21 of player
+										unformat gui slot 23 of player
+										format gui slot 3 of player with Lime Stained Glass Pane named "&a⬛" 
+										format gui slot 5 of player with Lime Stained Glass Pane named "&a⬛" 
+										format gui slot 21 of player with Lime Stained Glass Pane named "&a⬛" 
+										format gui slot 23 of player with Lime Stained Glass Pane named "&a⬛" 
+										# #
+										wait 3 tick
+										if {Crates.Use.X.%player%} is true:
+											unformat gui slot 9 of player
+											unformat gui slot 10 of player
+											unformat gui slot 11 of player
+											unformat gui slot 12 of player
+											unformat gui slot 13 of player
+											unformat gui slot 14 of player
+											unformat gui slot 15 of player
+											unformat gui slot 16 of player
+											unformat gui slot 17 of player
+											format gui slot 9 of player with {Crates.Use.%player%.Item.7} 
+											format gui slot 10 of player with {Crates.Use.%player%.Item.8} 
+											format gui slot 11 of player with {Crates.Use.%player%.Item.9} 
+											format gui slot 12 of player with {Crates.Use.%player%.Item.1} 
+											format gui slot 13 of player with {Crates.Use.%player%.Item.2} 
+											format gui slot 14 of player with {Crates.Use.%player%.Item.3} 
+											format gui slot 15 of player with {Crates.Use.%player%.Item.4} 
+											format gui slot 16 of player with {Crates.Use.%player%.Item.5} 
+											format gui slot 17 of player with {Crates.Use.%player%.Item.6} 
+											play "CLICK" to player at volume 2	
+											wait 3 tick
+											if {Crates.Use.X.%player%} is true:
+												unformat gui slot 9 of player
+												unformat gui slot 10 of player
+												unformat gui slot 11 of player
+												unformat gui slot 12 of player
+												unformat gui slot 13 of player
+												unformat gui slot 14 of player
+												unformat gui slot 15 of player
+												unformat gui slot 16 of player
+												unformat gui slot 17 of player
+												format gui slot 9 of player with {Crates.Use.%player%.Item.8} 
+												format gui slot 10 of player with {Crates.Use.%player%.Item.9} 
+												format gui slot 11 of player with {Crates.Use.%player%.Item.1} 
+												format gui slot 12 of player with {Crates.Use.%player%.Item.2} 
+												format gui slot 13 of player with {Crates.Use.%player%.Item.3} 
+												format gui slot 14 of player with {Crates.Use.%player%.Item.4} 
+												format gui slot 15 of player with {Crates.Use.%player%.Item.5} 
+												format gui slot 16 of player with {Crates.Use.%player%.Item.6} 
+												format gui slot 17 of player with {Crates.Use.%player%.Item.7} 
+												play "CLICK" to player at volume 2	
+												# #
+												unformat gui slot 4 of player
+												unformat gui slot 22 of player
+												format gui slot 4 of player with Torch named "&9▼" 
+												format gui slot 22 of player with Torch named "&9▲" 
+												wait 3 tick
+												play "ORB_PICKUP" to player at volume 2	
+												wait 3 tick
+												play "ORB_PICKUP" to player at volume 2	
+												wait 3 tick
+												play "ORB_PICKUP" to player at volume 2	
+												wait 3 tick
+												play "NOTE_PLING" to player at volume 2	
+												# #
+												
+												set {Crates.Use.In.%player%} to false
+											
+												give player {Crates.Use.%player%.Item.3}
+										
+											else:
+												stop
+										else:
+											stop										
+									else:
+										stop	
+								else:
+									stop
+							else:
+								stop
+						else:
+							stop
+					else:
+						stop
+				else:
+					stop	
+			else:
+				cancel event
+				message "&8[&bCrates&8] &7You need a &f✳&3%{Crates.Name.L.%location of block%}% &f✳ &7Key to open this Crate."
+							
+every 5 second:
+	loop {Crates.Lsit::*}:
+		create hologram "&8« &b&lCrates&8 »;&3%colored loop-var%;&e&lRightclick" at {Crates.LST.%loop-var%} for 5 second
+		
+		
+on break of a chest:
+	if {Crates.Chest.%location of block%} is true:
+		if player has permission "Crates.*":
+			if player is sneaking:
+				clear {Crates.LST.%{Crates.Name.L.%location of block%}%}
+				delete {Crates.LST.%{Crates.Name.L.%location of block%}%}
+				clear {Crates.Chest.T.%{Crates.Name.L.%location of block%}%}
+				delete {Crates.Chest.T.%{Crates.Name.L.%location of block%}%}
+				set {Crates.Chest.%location of block%} to false
+				cancel event
+				set block to air
+				
+			else:
+				cancel event
+				message "&8[&bCrates&8] &cError:&7 This is a Crate, sneak to break."
+		else:
+			cancel event
+			
+on place:
+	if player has permission "Crates.*":
+		if lore of player's tool is "&f✳&3 &bCrates Chest &f✳":
+			if {Crates.Exist.%name of player's tool%} is true:
+				set {Crates.Chest.%{Crates.Chest.T.%name of player's tool%}%} to false
+				set block at {Crates.Chest.T.%name of player's tool%} to air
+				clear {Crates.Chest.T.%name of player's tool%}
+				delete {Crates.Chest.T.%name of player's tool%}
+				wait 1 tick
+				set {Crates.Name.L.%location of block%} to "%name of player's tool%"
+				set {Crates.Chest.%location of block%} to true
+				set {Crates.Chest.T.%name of player's tool%} to location of block
+				message "&8[&bCrates&8] &7 You Placed the Crate_Chest."
+				
+				set {Crates.LST.%name of player's tool%} to {Crates.Chest.T.%name of player's tool%}
+				add 1.2 to y-location of {Crates.LST.%name of player's tool%}
+			else:
+				message "&8[&bCrates&8] &cError:&7 The Crate does not exist.."
+		
+
+		
+on rightclick with a Tripwire Hook:
+	if lore of player's tool contains "&bCrates Key &f✳":
+		cancel event
+		

@@ -1,0 +1,56 @@
+on join:
+    loop {crates::amount::%player%::*}:
+        if {crates::amount::%player%::%loop-value%} is not set:
+            set {crates::amount::%player%::%loop-value%} to 0
+
+function cratesGUI(p: player):
+    set {_crates} to virtual chest inventory with 3 rows named "&1Blue &7Crate"
+    open {_crates} to {_p}
+    loop integers between 0 and menu size of {_p}'s current inventory - 1:
+        format slot loop-number of {_p} with gray glass pane named "&8" to close
+
+command /crates [<text>] [<text>] [<text>]:
+    trigger:
+        set {bluecrate} to blue shulker box named "&1Blue &7Crate" with lore " ", "&eYou have &7(&f%{crates::amount::%player%::blue}%&7) &1Blue &7Crate &ekeys", " ", "&a&lLeft Click to Open", "&a&lRight Click to View" and " "
+        set {greencrate} to green shulker box named "&2Green &7Crate" with lore " ", "&eYou have &7(&f%{crates::amount::%player%::green}%&7) &2Green &7Crate &ekeys", " ", "&a&lLeft Click to Open", "&a&lRight Click to View" and " "
+        set {magentacrate} to magenta shulker box named "&dMagenta &7Crate" with lore " ", "&eYou have &7(&f%{crates::amount::%player%::magenta}%&7) &dMagenta &7Crate &ekeys", " ", "&a&lLeft Click to Open", "&a&lRight Click to View" and " "
+        if arg-1 is not set:
+            set {_crates} to virtual chest inventory with 3 rows named "&3&lCrates"
+            open {_crates} to player
+            format gui slot 11 of player with {bluecrate} to close then run function cratesGUI(player) with "left" click
+            format gui slot 11 of player with {bluecrate} to close with "right" click 
+            format gui slot 13 of player with {greencrate}
+            format gui slot 15 of player with {magentacrate}
+            
+
+command /cratesadmin [<text>] [<text>] [<player>] [<int>]:
+    trigger:
+        if arg-1 is not set:
+            send "no"
+        else if arg-1 is "give":
+            if arg-2 is not set:
+                send "2"
+            else:
+                if arg-2 is not "blue", "green" or "magenta":
+                    send "3"
+                else:
+                    if arg-3 is not set:
+                        send "4"
+                    else:
+                        if arg-3 is not online:
+                            send "5"
+                        else:
+                            if arg-4 is not set:
+                                send "6"
+                            else:
+                                add arg-4 to {crates::amount::%arg-3%::%arg-2%}
+                                send "&eYou have given %arg-4% %arg-2% crates to %arg-3%"
+        else if arg-1 is "set":
+            if arg-2 is not set:
+                send "2"
+            else:
+                if arg-2 is not "blue", "green" or "magenta":
+                    send "3"
+                else:
+                    give {%arg-2%crate} to player
+                    send "hi"

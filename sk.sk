@@ -13,27 +13,114 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 				send ""
 				send "&7/minigame create [arena]"
 				send "&7/minigame remove [arena]"
+				send "&7/minigame sign [arena]"
 				send "&7/minigame settings"
+				send "&7/minigame help"
 				send "&7/minigame join"
+				send "&7/minigame leave"
 				send "&7/minigame list"
+				
 				send ""
 			else:
 				send ""
 				send "&8&m---------- &6HELP &8&m----------"
 				send ""
+				send "&7/minigame help"
 				send "&7/minigame join"
+				send "&7/minigame leave"
 				send "&7/minigame list"
 				send ""
 		if arg 1 is "list":
-			size of {arenas::*} = 0:
-				send "{@tag} &cThere is no arena."
-			size of {arenas::*} > 0:
+			if arg 2 is not set:
+				size of {arenas::*} = 0:
+					send "{@tag} &cThere is no arena."
+				size of {arenas::*} > 0:
+					send ""
+					send "&8&m----- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&b&ls&r&8]&8&m -----"
+					send ""#
+					set {_parkour} to 0
+					set {_maze} to 0
+					set {_race} to 0
+					loop {arenas::*}:
+						if {gamemode::%loop-value%} contains "parkour":
+							add 1 to {_parkour}
+						if {gamemode::%loop-value%} contains "maze":
+							add 1 to {_maze}
+						if {gamemode::%loop-value%} contains "race":
+							add 1 to {_race}
+					send "&b&lGamemodes:"
+					send ""
+					json("%player%", "&6Parkour &7- &a%{_parkour}% ||ttp:&cClick to view more&c.||cmd:/minigame list parkour")
+					json("%player%", "&6Maze &7- &a%{_maze}% ||ttp:&cClick to view more&c.||cmd:/minigame list maze")
+					json("%player%", "&6Race &7- &a%{_race}% ||ttp:&cClick to view more&c.||cmd:/minigame list race")
+					send ""
+					send "&8&m- &8[&eHover for more Info&8]&8&m -"
+			else if arg 2 is "parkour", "maze" or "race":
 				send ""
-				send "&8&m-------- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m--------"
+				send "&8&m----- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&b&ls&r&8]&8&m -----"
 				send ""
 				loop {arenas::*}:
-					send "&7[&6%{gamemode::%loop-value%}%&7] &7- &a%loop-value% &7- &a%{status.%loop-value%}% &7- &c%{player.%loop-value%}%&7/&c%{maxplayer.%loop-value%}%"
+					if {gamemode::%loop-value%} contains arg 2:
+						if {gamemode::%{_arg 2}%} is not 0:
+							set {_cmd} to "/minigame join %loop-value%"
+							send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lLobby: %nl% &a%loop-value% %nl%%nl%&r &b&lGamemode: %nl% &6%{gamemode::%loop-value%}%&7 %nl%%nl% &b&lEntry Fee: %nl% &2$&a%{entryfee2.%loop-value%}% %nl%%nl% &b&lPlayers: %nl% &e%{player.%loop-value%}%&7/&e%{maxplayer.%loop-value%}%%nl%%nl% &a&lClick to Join><command:%{_cmd}%>&7- &a%loop-value% &7- &a%{status.%loop-value%}% <reset>"
+					else:
+						send "&cThere is no arena."
+
 				send ""
+				send "&8&m- &8[&eHover for more Info&8]&8&m -"
+
+		if arg-1 is "stats":
+			if arg-2 is not set:
+				set {stats.mg.total::%player%::maze} to {stats.mg.won::%player%::maze} + {stats.mg.lost::%player%::maze}
+				set {stats.mg.total::%player%::race} to {stats.mg.won::%player%::race} + {stats.mg.lost::%player%::race}
+				set {stats.mg.total::%player%::parkour} to {stats.mg.won::%player%::parkour} + {stats.mg.lost::%player%::parkour}
+				set {stats.mg.totalplayed::%player%} to {stats.mg.total::%player%::parkour} + {stats.mg.total::%player%::race} + {stats.mg.total::%player%::maze}
+				set {stats.mg.totalwon::%player%} to {stats.mg.won::%player%::maze} + {stats.mg.won::%player%::parkour} + {stats.mg.won::%player%::race}
+				set {stats.mg.totallost::%player%} to {stats.mg.lost::%player%::maze} + {stats.mg.lost::%player%::parkour} + {stats.mg.lost::%player%::race}
+				set {stats.mg.totalwinnings::%player%} to {stats.mg.winnings::%player%::maze} + {stats.mg.winnings::%player%::parkour} + {stats.mg.winnings::%player%::race}
+				send ""
+				send "&8&m---- &8[&d%player%&d's &r&eStats&r&8]&8&m ----"
+				send ""
+				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Maze&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::maze}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::maze}%&7/&e%{stats.mg.lost::%player%::maze}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::maze}%>&7- &6Maze &7- <reset>"
+				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Parkour&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::parkour}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::parkour}%&7/&e%{stats.mg.lost::%player%::parkour}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::parkour}%>&7- &6Parkour &7- <reset>"
+				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Race&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::race}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::race}%&7/&e%{stats.mg.lost::%player%::race}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::race}%>&7- &6Race &7- <reset>"
+				send ""
+				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &3Total: %nl%%nl% &b&lGames: %nl% &a%{stats.mg.totalplayed::%player%}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.totalwon::%player%}%&7/&e%{stats.mg.totallost::%player%}%%nl%%nl% &b&lTotal Winnings: %nl% &2$&a%{stats.mg.totalwinnings::%player%}%>&7- &eOverall &7- <reset>"
+				
+				send ""
+				send "&8&m--- &8[&eHover for more Info&8]&8&m ---"
+			else if arg-2 is set:
+				if arg-3 is not set:
+					set {stats.mg.total::%arg-2%::maze} to {stats.mg.won::%arg-2%::maze} + {stats.mg.lost::%arg-2%::maze}
+					set {stats.mg.total::%arg-2%::race} to {stats.mg.won::%arg-2%::race} + {stats.mg.lost::%arg-2%::race}
+					set {stats.mg.total::%arg-2%::parkour} to {stats.mg.won::%arg-2%::parkour} + {stats.mg.lost::%arg-2%::parkour}
+					set {stats.mg.totalplayed::%arg-2%} to {stats.mg.total::%arg-2%::parkour} + {stats.mg.total::%arg-2%::race} + {stats.mg.total::%arg-2%::maze}
+					set {stats.mg.totalwon::%arg-2%} to {stats.mg.won::%arg-2%::maze} + {stats.mg.won::%arg-2%::parkour} + {stats.mg.won::%arg-2%::race}
+					set {stats.mg.totallost::%arg-2%} to {stats.mg.lost::%arg-2%::maze} + {stats.mg.lost::%arg-2%::parkour} + {stats.mg.lost::%arg-2%::race}
+					set {stats.mg.totalwinnings::%arg-2%} to {stats.mg.winnings::%arg-2%::maze} + {stats.mg.winnings::%arg-2%::parkour} + {stats.mg.winnings::%arg-2%::race}
+					send ""
+					send "&8&m---- &8[&d%arg-2%&d's &r&eStats&r&8]&8&m ----"
+					send ""
+					send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Maze&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%arg-2%::maze}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%arg-2%::maze}%&7/&e%{stats.mg.lost::%arg-2%::maze}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%arg-2%::maze}%>&7- &6Maze &7- <reset>"
+					send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Parkour&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%arg-2%::parkour}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%arg-2%::parkour}%&7/&e%{stats.mg.lost::%arg-2%::parkour}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%arg-2%::parkour}%>&7- &6Parkour &7- <reset>"
+					send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Race&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%arg-2%::race}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%arg-2%::race}%&7/&e%{stats.mg.lost::%arg-2%::race}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%arg-2%::race}%>&7- &6Race &7- <reset>"
+					send ""
+					send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &3Total: %nl%%nl% &b&lGames: %nl% &a%{stats.mg.totalplayed::%arg-2%}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.totalwon::%arg-2%}%&7/&e%{stats.mg.totallost::%arg-2%}%%nl%%nl% &b&lTotal Winnings: %nl% &2$&a%{stats.mg.totalwinnings::%arg-2%}%>&7- &eOverall &7- <reset>"
+					
+					send ""
+					send "&8&m--- &8[&eHover for more Info&8]&8&m ---"
+				else if arg-3 is "clear":
+					player has permission "minigame.admin": 
+						set {stats.mg.won::%player%::*} to 0
+						set {stats.mg.lost::%player%::*} to 0
+						set {stats.mg.winnings::%player%::*} to 0
+						set {stats.mg.totalwinnings::%player%} to 0
+						set {stats.mg.totallost::%player%} to 0
+						set {stats.mg.totalwon::%player%} to 0
+						set {stats.mg.totalplayed::%player%} to 0 
+
+
 		if arg 1 is "create":
 			player has permission "minigame.admin":
 				if arg 2 is set:
@@ -125,18 +212,18 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 					send "{@tag} &cYou already in game!"
 				else:
 					if {arenas::%arg 2%} is set:
-						if player's balance is not more than or equal to {entryfee.%arg 2%}:
-							send "{@tag} &cYou require &2$&a%{entryfee.%arg 2%}%&c join this game."
-						else:
-							send "{@tag} &2$&a%{entryfee.%arg 2%}% &chad been paid for your entry."
-							remove {entryfee.%arg 2%} from player's balance
-							add {entryfee.%arg 2%} to {prize.%arg 2%}
-							if {status.%arg 2%} is "&4INGAME":
-								send "{@tag} &cYou are already already in a game."
-							if {status.%arg 2%} is "&aWAITING":
-								if {player.%arg 2%} is greater than or equal to {maxplayer.%arg 2%}:
-									send "{@tag} &cArena Full"
+						if {status.%arg 2%} is "&4INGAME":
+							send "{@tag} &cYou are already already in a game."
+						if {status.%arg 2%} is "&aWAITING":
+							if {player.%arg 2%} is greater than or equal to {maxplayer.%arg 2%}:
+								send "{@tag} &cArena Full"
+							else:
+								if player's balance is not more than or equal to {entryfee.%arg 2%}:
+									send "{@tag} &cYou require &2$&a%{entryfee.%arg 2%}%&c join this game."
 								else:
+									send "{@tag} &2$&a%{entryfee.%arg 2%}% &chad been paid for your entry."
+									remove {entryfee.%arg 2%} from player's balance
+									add {entryfee.%arg 2%} to {prize.%arg 2%}
 									clear player's inventory
 									teleport player to {waitinglobby.%arg 2%}
 									set player's game mode to adventure
@@ -172,11 +259,11 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 											teleport loop-value to {spawn.%arg 2%}
 											set {status.%arg 2%} to "&4INGAME"
 										gameSign(arg 2)
-		if arg 1 is "leave":
+		if arg 1 is "leave":	
 			if arg 2 isn't set:
 				send "{@tag} &cPlease select a arena name"
 			else:
-				if {ingame.%player%} is false:
+				if {ingame.%player%} is not set:
 					send "{@tag} &cYou are not in a game!"
 				else:
 					set {_refund} to (({entryfee.%arg 2%}/100) * 90)
@@ -207,7 +294,7 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 					send "{@tag} &cPlease select a valid arena name"
 
 on tab complete of "/minigame", "/mg", "/mini" or "/game":
-	set tab completions for position 1 to "help", "sign", "list", "create", "join", "remove", "settings" and "leave"
+	set tab completions for position 1 to "help", "sign", "stats", "list", "create", "join", "remove", "settings" and "leave"
 	if tab arg-1 = "join", "remove", "leave" or "sign":
 		set tab completions for position 2 to (indexes of {arenas::*})
 	else if tab arg-1 = "create":
@@ -215,10 +302,13 @@ on tab complete of "/minigame", "/mg", "/mini" or "/game":
 	else if tab arg-1 = "settings":
 		set tab completions for position 2 to "lobby", "waitinglobby", "spawn", "entryfee", "winner" and "maxplayer"
 		set tab completions for position 3 to (indexes of {arenas::*})
+	else if tab arg-1 = "stats":
+		set tab completions for position 2 to (indexes of {online.players::*})
 
 command /fwork:
 	trigger:
 		launch flickering ball firework colored red at player's location timed 1
+
 
 
 function formatNum(game: text, n: number) :: string:
@@ -259,22 +349,26 @@ on rightclick on sign:
 		send "{@tag} &7Arena isn't found"
 
 
-on step on red wool:
+on step on green wool:
 	if {ingame.%player%} is true:
 		loop {arenas::*}:
+			set {gametype} to {gamemode::%loop-value%}
 			if {status.%loop-value%} is "&4INGAME":
 				{player.%loop-value%::*} contains player:
 					teleport player to {winner.%loop-value%}
 					add {prize.%loop-value%} to player's balance
+					add 1 to {stats.mg.won::%player%::%{gametype}%}
+					add {prize.%loop-value%} to {stats.mg.winnings::%player%::%{gametype}%}
 					send "{@tag} &aCongrats! You have won &2$&a%{prize.%loop-value%}%"
-					clear {prize.%loop-value%}
 					set {status.%loop-value%} to "&aWAITING"
 					loop {player.%loop-value%::*}:
 						clear {ingame.%loop-value-2%}
 					remove player from {player.%loop-value%::*}
 					loop {player.%loop-value%::*}:
+						add 1 to {stats.mg.lost::%loop-value-2%::%{gametype}%}
 						teleport loop-value-2 to {gameslobby}
 						send "{@tag} &aWinning Prize was&8 -  &2$&a%{prize.%loop-value-1%}%" to loop-value-2
+					clear {prize.%loop-value%}
 					set {player.%loop-value%} to 0
 					broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
 					delete {player.%loop-value%::*}
@@ -285,7 +379,23 @@ on step on red wool:
 	else:
 		send "{@tag} &7You are not in game." to player
 
+on step on red wool:
+	if {ingame.%player%} is true:
+		loop {arenas::*}:
+			if {status.%loop-value%} is "&4INGAME":
+				{player.%loop-value%::*} contains player:
+					teleport player to {spawn.%loop-value%}
+					send "{@tag} &7Try again." to player
+			else:
+				send "{@tag} &7The game has not started yet." to player
+	else:
+		send "{@tag} &7You are not in game." to player
+
+on join:
+	set {online.players::%player%} to player
+
 on quit:
+	delete {online.players::%player%}
 	if {ingame.%player%} is true:
 		loop {arenas::*}:
 			if {status.%loop-value%} is "&aWAITING":

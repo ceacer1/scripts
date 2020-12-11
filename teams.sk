@@ -2,36 +2,23 @@
 options:
     prefix: &b&lFast&3&lGens
 
- #function teamList(p: player, page: number):
- #    set {_tt} to amount of {teams::*}
- #    message "&7&m      &7< &a&lTeams List &7>&7&m      " to {_p}
- #    message "&7&m    &7< &eTotal Teams &8(&6%{_tt}%&8) &7>&7&m   " to {_p}
- #    send "" to {_p}
- #    set {_n} to 1
- #    set {_test} to {_page} * ({_n} + 9)
- #    loop {teams::*}:
- #        loop-index > {_test}
- #        send "&6%{_n}% &8- &3%loop-value%" to {_p}
- #        add 1 to {_n}
- #        if {_n} = 2:
- #            stop loop
- #    send "" to {_p}
- #    send "&7&m        &7< &ePage &8(&6%{_page}%&8) &7>&7&m        " to {_p}
- #    send "&7&m       &7< {@prefix} &7>&7&m       " to {_p}
+on tab complete of "/team":
+	set tab completions for position 1 to "create", "list", "invite", "pay", "join", "leave", "remove", "help" and "disband"
+	if tab arg-1 = "list", "remove", "pay", "invite", "leave", "join" or "disband":
+		set tab completions for position 2 to (indexes of {teams::*})
 
-
-command /team [<text>] [<string>] [<player>]:
+command /team [<text>] [<string>] [<player>] [<int>]:
     trigger:
         if arg-1 is not set:
             send ""
-            send "&7&m      &7< {@prefix} &7>&7&m      "
+            send "&8&m--------&8[&b&lFast&3Gens &6&lTeams&8]&8&m--------"
             send ""
             send "&cInvalid Usage: &6/team <text> <text> <player>" to player
             send "&eUse &6/team help &efor more info." to player
 
         if arg-1 is "help":
             send ""
-            send "&7&m      &7< &a&lTeams Help &7>&7&m      "
+            send "&8&m--------&8[&b&lFast&3Gens &6&lTeams&8]&8&m--------"
             send ""
             send "&6/team create <team name> &8- &eCreate a team."
             send "&6/team list &8- &eList all teams."
@@ -47,7 +34,7 @@ command /team [<text>] [<string>] [<player>]:
             if arg-2 is set:
                 if {teams::*} does not contain arg-2:
                     if {teams.owner::%player%} is not set:
-                        add arg-2 to {teams::*}
+                        set {teams::%arg-2%} to arg-2 
                         add player to {teams.%arg-2%::*}
                         set {teams.owner::%player%} to true
                         set {teams.amount.players.%arg-2%} to 1
@@ -99,6 +86,26 @@ command /team [<text>] [<string>] [<player>]:
             else:
                 send "{@prefix} &8- &ePlease enter a team name" to player
         
+        if arg-1 is "pay":
+            if arg-2 is set:
+                if arg-3 is set:
+                    if arg-4 is set:
+                        loop {teams::*}:
+                            if {teams.%loop-value%::*} contains arg-3:
+                                set {teams.pay::%player%} to true
+                                make player say "/pay %arg-3% %arg-4%"
+
+                            else:
+                                send "{@prefix} &eYou can only pay members of your team." to player
+                    else:
+                        send "{@prefix} &ePlease enter an amount." to player
+                else:
+                    send "{@prefix} &ePlease enter a player name." to player
+            else:
+                send "{@prefix} &ePlease enter a team name." to player
+
+
+
         if arg-1 is "invite":
             if arg-2 is set:
                 if {teams::*} contains arg-2:
@@ -207,7 +214,7 @@ command /team [<text>] [<string>] [<player>]:
                     if {teams.%arg-2%::*} contains player:
                         if {teams.owner::%player%} is true:
                             if {teams.%arg-2%.owner::*} contains player:
-                                if {team.plot.members.amount.%arg-2%} is 1:
+                                if {team.plot.members.amount.%arg-2%} is not set:
                                     if {teams.amount.players.%arg-2%} is 1:
                                         clear {teams.%arg-2%::*}
                                         clear {teams.owner::%player%}
@@ -231,15 +238,16 @@ command /team [<text>] [<string>] [<player>]:
 
 
         if arg-1 is "clear":
-            loop {teams::*}:
-                clear {teams.%loop-value%::*}
-                clear {teams.%loop-value%.owner::*}
-                clear {teams.amount.players.%loop-value%}
-                loop {teams.%loop-value%::*}:
-                    clear {teams::%loop-value-2%}
-                    clear {teams.member::%loop-value-2%}
-                    clear {teams.owner::%loop-value-2%}
-            send "{@prefix} &8- &eTeams have been cleared" to player
+            if player has permission "op":
+                loop {teams::*}:
+                    clear {teams.%loop-value%::*}
+                    clear {teams.%loop-value%.owner::*}
+                    clear {teams.amount.players.%loop-value%}
+                    loop {teams.%loop-value%::*}:
+                        clear {teams::%loop-value-2%}
+                        clear {teams.member::%loop-value-2%}
+                        clear {teams.owner::%loop-value-2%}
+                send "{@prefix} &8- &eTeams have been cleared" to player
         
         if arg-1 is "test":
             send "hi" to player
@@ -251,37 +259,17 @@ command /team [<text>] [<string>] [<player>]:
                 send "%{teams.member::*}%" to player
                 send "%{teams.owner::*}%" to player
 
-command /gen [<text>] [<offline player>] [<int>]:
+command /clear:
     trigger:
-        if arg-1 is "add":
-            if arg-2 is set:
-                if arg-3 is set:
-                    add arg-3 to {gens.%uuid of arg-2%.gencount}
-        
-        if arg-1 is "capadd":
-            if arg-2 is set:
-                if arg-3 is set:
-                    add arg-3 to {gens.%uuid of arg-2%.gencap}
-        
-        if arg-1 is "remove":
-            if arg-2 is set:
-                if arg-3 is set:
-                    remove arg-3 from {gens.%uuid of arg-2%.gencount}
-
-        if arg-1 is "capremove":
-            if arg-2 is set:
-                if arg-3 is set:
-                    remove arg-3 from {gens.%uuid of arg-2%.gencap}
-        
-        if arg-1 is "list":
-            if arg-2 is not set:
-                send "You have &8(&a%{gens.%uuid of player%.gencount}%&7/&a%{gens.%uuid of player%.gencap}%&8)"
-            else:
-                send "You have &8(&a%{gens.%uuid of arg-2%.gencount}%&7/&a%{gens.%uuid of arg-2%.gencap}%&8)"
-
-
-#{gens.%uuid of player%.gencount}
-#{gens.%uuid of player%.gencap}
+        loop {teams::*}:
+            clear {teams.%loop-value%::*}
+            clear {teams.owner::%player%}
+            clear {teams.amount.players.%loop-value%}
+            clear {team.plot.members.%loop-value%::*}
+        clear {teams::*}
+        loop all players:
+            clear {teams.owner::%loop-player%}
+            set {gens.%uuid of loop-value%.gencount} to 0
 
 
 command /plot [<text>] [<player>]:
@@ -379,9 +367,17 @@ command /plot [<text>] [<player>]:
             send "&o&7""/plot"" &r&6with &o&7""/p, /plotme, /plotsquared"" " to player
             send "&8&m---------&r &c&l!!NOTICE!! &8&m---------"    
 
-on tab complete of "/team":
-	set tab completions for position 1 to "help", "list", "create", "invite", "remove", "disband" and "join"
 
+
+on command "/pay":
+    if player has permission "op":
+        stop
+    if {teams.pay::%player%} is true:
+        set {teams.pay::%player%} to false
+        stop
+    else:
+        send "{@prefix} &eDue to the team functionality being used, please use: &7/team pay <player|*>" to player
+        cancel event
 
 on command "/p add":
     if player has permission "op":

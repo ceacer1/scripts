@@ -1,0 +1,383 @@
+# ROCK PAPER SCISSORS BY JTNCRAFTER
+# A GAME FOR PEOPLE WHO ARE BORED!
+# A SIMPLE CONCEPT!
+
+command /rps <text> <player>:
+	trigger:
+		if arg 1 is set:
+			if arg 1 is "invite" or "request":
+				if arg 2 is set:
+					if arg 2 is "%player%":
+						message "&cYou can't send a match request to yourself!" to player
+					else:
+						if {ttt.%player%} is "%arg 2%":
+							message "&cYou already sent a Rock Paper Scissors request to that person!" to player
+						else:
+							message "&a%player%&r&7 has requested a Rock Paper Scissors match to you!" to arg 2
+							message "&7Do '/rps accept &a%player%&a'&r&7 to accept it!" to arg 2
+							set {ttt.%player%} to "%arg 2%"
+							message "&7You have requested a match to &a%arg 2%" to player
+				else:
+					message "&cThat player is not real or not online!"
+			if arg 1 is "accept":
+				if arg 2 is set:
+					if arg 2 is "%player%":
+						message "&cYou can't accept a match of your own!" to player
+					else:
+						if {ttt.%arg 2%} is "%player%":
+							wait 2 ticks
+							set {ttt.%arg 2%} to "NONE"
+							message "&aMatch Accepted!" to player
+							message "&aMatch Accepted!" to arg 2
+							set {rpsc.%player%} to "NONE"
+							set {rpsc.%arg 2%} to "NONE"
+							open chest with 3 rows named "&c&lRPS - Game" to player
+							format slot 0 of player with clock named "&a&lTime Left: &c&l5" to close then run " "
+							format slot 3 of player with stone named "&aRock" to close then run "rpschoice %player% rock"
+							format slot 4 of player with shears named "&aScissors" to close then run "rpschoice %player% scissors"
+							format slot 5 of player with paper named "&aPaper" to close then run "rpschoice %player% paper"
+							format slot 21 of player with red stained glass pane named " " with lore " " to close then run " "
+							format slot 22 of player with red stained glass pane named " " with lore " " to close then run " "
+							format slot 23 of player with red stained glass pane named " " with lore " " to close then run " "
+							open chest with 3 rows named "&c&lRPS - Game" to arg 2
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l5" to close then run " "
+							format slot 3 of arg 2 with red stained glass pane named " " with lore " " to close then run " "
+							format slot 4 of arg 2 with red stained glass pane named " " with lore " " to close then run " "
+							format slot 5 of arg 2 with red stained glass pane named " " with lore " " to close then run " "
+							format slot 21 of arg 2 with stone named "&aRock" to close then run "rpschoice %arg 2% rock"
+							format slot 22 of arg 2 with shears named "&aScissors" to close then run "rpschoice %arg 2% scissors"
+							format slot 23 of arg 2 with paper named "&aPaper" to close then run "rpschoice %arg 2% paper"
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l4" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l4" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l4" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l4" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l3" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l3" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l2" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l2" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l1" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l1" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&lITS UP!" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&lITS UP!" to close then run " "
+							open chest with 3 rows named "&c&lRPS - Results" to player
+							open chest with 3 rows named "&c&lRPS - Results" to arg 2
+							wait 5 ticks
+							format slot 2 of player and arg 2 with skull of player named "&6&l%player%" to close then run " "
+							format slot 6 of player and arg 2 with skull of arg 2 named "&6&l%arg 2%" to close then run " "
+							if {rpsc.%player%} is "paper":
+								format slot 3 of player with paper named "&aPaper" to close then run " "
+							if {rpsc.%player%} is "rock":
+								format slot 3 of player with stone named "&aRock" to close then run " "
+							if {rpsc.%player%} is "scissors":
+								format slot 3 of player with shears named "&aScissors" to close then run " "
+							if {rpsc.%player%} is "NONE":
+								format slot 3 of player with tnt named "&cNone" to close then run " "
+							if {rpsc.%arg 2%} is "paper":
+								format slot 5 of player with paper named "&aPaper" to close then run " "
+							if {rpsc.%arg 2%} is "rock":
+								format slot 5 of player with stone named "&aRock" to close then run " "
+							if {rpsc.%arg 2%} is "scissors":
+								format slot 5 of player with shears named "&aScissors" to close then run " "
+							if {rpsc.%arg 2%} is "NONE":
+								format slot 5 of player with tnt named "&cNone" to close then run " "
+							if {rpsc.%player%} is "paper":
+								format slot 3 of arg 2 with paper named "&aPaper" to close then run " "
+							if {rpsc.%player%} is "rock":
+								format slot 3 of arg 2 with stone named "&aRock" to close then run " "
+							if {rpsc.%player%} is "scissors":
+								format slot 3 of arg 2 with shears named "&aScissors" to close then run " "
+							if {rpsc.%player%} is "NONE":
+								format slot 3 of arg 2 with tnt named "&cNone" to close then run " "
+							if {rpsc.%arg 2%} is "paper":
+								format slot 5 of arg 2 with paper named "&aPaper" to close then run " "
+							if {rpsc.%arg 2%} is "rock":
+								format slot 5 of arg 2 with stone named "&aRock" to close then run " "
+							if {rpsc.%arg 2%} is "scissors":
+								format slot 5 of arg 2 with shears named "&aScissors" to close then run " "
+							if {rpsc.%arg 2%} is "NONE":
+								format slot 5 of arg 2 with tnt named "&cNone" to close then run " "
+							if {rpsc.%player%} is "paper":
+								if {rpsc.%arg 2%} is "paper":
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&cYou lost!" to arg 2
+									message "&aYou won!" to player
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+									message "&cYou lost!" to player
+									message "&aYou won!" to arg 2
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&7As &a%arg 2%&r&7 did nothing." to player
+									message "&aYou won!" to player
+									message "&cYou lost!" to arg 2
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+							if {rpsc.%player%} is "scissors":
+								if {rpsc.%arg 2%} is "paper":
+									message "&cYou lost!" to arg 2
+									message "&aYou won!" to player
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&cYou lost!" to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&7As &a%arg 2%&r&7 did nothing." to player
+									message "&aYou won!" to player
+									message "&cYou lost!" to arg 2
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+							if {rpsc.%player%} is "rock":
+								if {rpsc.%arg 2%} is "paper":
+									message "&cYou lost!" to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									message "&cYou lost!" to arg 2
+									message "&aYou won!" to player
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&7As &a%arg 2%&r&7 did nothing." to player
+									message "&aYou won!" to player
+									message "&cYou lost!" to arg 2
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+							if {rpsc.%player%} is "NONE":
+								if {rpsc.%arg 2%} is "paper":
+									message "&cYou lost!" to player
+									message "&7As &a%player%&r&7 did nothing." to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&cYou lost!" to player
+									message "&7As &a%player%&r&7 did nothing." to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									message "&cYou lost!" to player
+									message "&7As &a%player%&r&7 did nothing." to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&c&lHUH? You guys did not move?" to player and arg 2
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore "You guys did not move?" to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore "You guys did not move?" to close then run " "
+							wait 5 ticks
+							set {rpsc.%player%} to "NONE"
+							set {rpsc.%arg 2%} to "NONE"
+						else:
+							message "&cThat player did not send a request to you!"
+							
+command /rpschoice <player> <text>:
+	permission: jtn.rpsch
+	permission message: Nope! RPS!
+	trigger:
+		set {rpsc.%arg 1%} to arg 2
+	
+command /rpsadmin <text> <player>:
+	permission: jtn.rpsa
+	permission message: Nope! RPS!
+	trigger:
+		if arg 1 is "force":
+			if arg 2 is set:
+				if arg 2 is "%player%":
+					message "&cYou can't go against yourself!" to player
+				else:
+					if player is alive:
+						if player is alive:
+							wait 2 ticks
+							set {ttt.%arg 2%} to "NONE"
+							message "&aYou forced a match against &c%arg 2%&r&a!" to player
+							message "&aYou were forced into a match against &c%player%&a!" to arg 2
+							set {rpsc.%player%} to "NONE"
+							set {rpsc.%arg 2%} to "NONE"
+							open chest with 3 rows named "&c&lRPS - Game" to player
+							format slot 0 of player with clock named "&a&lTime Left: &c&l5" to close then run " "
+							format slot 3 of player with stone named "&aRock" to close then run "rpschoice %player% rock"
+							format slot 4 of player with shears named "&aScissors" to close then run "rpschoice %player% scissors"
+							format slot 5 of player with paper named "&aPaper" to close then run "rpschoice %player% paper"
+							format slot 21 of player with red stained glass pane named " " with lore " " to close then run " "
+							format slot 22 of player with red stained glass pane named " " with lore " " to close then run " "
+							format slot 23 of player with red stained glass pane named " " with lore " " to close then run " "
+							open chest with 3 rows named "&c&lRPS - Game" to arg 2
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l5" to close then run " "
+							format slot 3 of arg 2 with red stained glass pane named " " with lore " " to close then run " "
+							format slot 4 of arg 2 with red stained glass pane named " " with lore " " to close then run " "
+							format slot 5 of arg 2 with red stained glass pane named " " with lore " " to close then run " "
+							format slot 21 of arg 2 with stone named "&aRock" to close then run "rpschoice %arg 2% rock"
+							format slot 22 of arg 2 with shears named "&aScissors" to close then run "rpschoice %arg 2% scissors"
+							format slot 23 of arg 2 with paper named "&aPaper" to close then run "rpschoice %arg 2% paper"
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l4" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l4" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l3" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l3" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l2" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l2" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&l1" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&l1" to close then run " "
+							wait 1 second
+							format slot 0 of player with clock named "&a&lTime Left: &c&lITS UP!" to close then run " "
+							format slot 0 of arg 2 with clock named "&a&lTime Left: &c&lITS UP!" to close then run " "
+							open chest with 3 rows named "&c&lRPS - Results" to player
+							open chest with 3 rows named "&c&lRPS - Results" to arg 2
+							wait 5 ticks
+							format slot 2 of player and arg 2 with skull of player named "&6&l%player%" to close then run " "
+							format slot 6 of player and arg 2 with skull of arg 2 named "&6&l%arg 2%" to close then run " "
+							if {rpsc.%player%} is "paper":
+								format slot 3 of player with paper named "&aPaper" to close then run " "
+							if {rpsc.%player%} is "rock":
+								format slot 3 of player with stone named "&aRock" to close then run " "
+							if {rpsc.%player%} is "scissors":
+								format slot 3 of player with shears named "&aScissors" to close then run " "
+							if {rpsc.%player%} is "NONE":
+								format slot 3 of player with tnt named "&cNone" to close then run " "
+							if {rpsc.%arg 2%} is "paper":
+								format slot 5 of player with paper named "&aPaper" to close then run " "
+							if {rpsc.%arg 2%} is "rock":
+								format slot 5 of player with stone named "&aRock" to close then run " "
+							if {rpsc.%arg 2%} is "scissors":
+								format slot 5 of player with shears named "&aScissors" to close then run " "
+							if {rpsc.%arg 2%} is "NONE":
+								format slot 5 of player with tnt named "&cNone" to close then run " "
+							if {rpsc.%player%} is "paper":
+								format slot 3 of arg 2 with paper named "&aPaper" to close then run " "
+							if {rpsc.%player%} is "rock":
+								format slot 3 of arg 2 with stone named "&aRock" to close then run " "
+							if {rpsc.%player%} is "scissors":
+								format slot 3 of arg 2 with shears named "&aScissors" to close then run " "
+							if {rpsc.%player%} is "NONE":
+								format slot 3 of arg 2 with tnt named "&cNone" to close then run " "
+							if {rpsc.%arg 2%} is "paper":
+								format slot 5 of arg 2 with paper named "&aPaper" to close then run " "
+							if {rpsc.%arg 2%} is "rock":
+								format slot 5 of arg 2 with stone named "&aRock" to close then run " "
+							if {rpsc.%arg 2%} is "scissors":
+								format slot 5 of arg 2 with shears named "&aScissors" to close then run " "
+							if {rpsc.%arg 2%} is "NONE":
+								format slot 5 of arg 2 with tnt named "&cNone" to close then run " "
+							if {rpsc.%player%} is "paper":
+								if {rpsc.%arg 2%} is "paper":
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&cYou lost!" to arg 2
+									message "&aYou won!" to player
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+									message "&cYou lost!" to player
+									message "&aYou won!" to arg 2
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&7As &a%arg 2%&r&7 did nothing." to player
+									message "&aYou won!" to player
+									message "&cYou lost!" to arg 2
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+							if {rpsc.%player%} is "scissors":
+								if {rpsc.%arg 2%} is "paper":
+									message "&cYou lost!" to arg 2
+									message "&aYou won!" to player
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&cYou lost!" to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&7As &a%arg 2%&r&7 did nothing." to player
+									message "&aYou won!" to player
+									message "&cYou lost!" to arg 2
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+							if {rpsc.%player%} is "rock":
+								if {rpsc.%arg 2%} is "paper":
+									message "&cYou lost!" to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									message "&cYou lost!" to arg 2
+									message "&aYou won!" to player
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&7As &a%arg 2%&r&7 did nothing." to player
+									message "&aYou won!" to player
+									message "&cYou lost!" to arg 2
+									format slot 22 of player with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of arg 2 with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+							if {rpsc.%player%} is "NONE":
+								if {rpsc.%arg 2%} is "paper":
+									message "&cYou lost!" to player
+									message "&7As &a%player%&r&7 did nothing." to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "rock":
+									message "&cYou lost!" to player
+									message "&7As &a%player%&r&7 did nothing." to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "scissors":
+									message "&cYou lost!" to player
+									message "&7As &a%player%&r&7 did nothing." to player
+									message "&aYou won!" to arg 2
+									format slot 22 of arg 2 with light green stained glass named "&c&lYou Won!" with lore " " to close then run " "
+									format slot 22 of player with red stained glass named "&c&lYou Lost!" with lore " " to close then run " "
+								else if {rpsc.%arg 2%} is "NONE":
+									message "&c&lHUH? You guys did not move?" to player and arg 2
+									message "&7It's a draw!" to player
+									message "&7It's a draw!" to arg 2
+									format slot 22 of arg 2 with black stained glass named "&7&lIt's a DRAW!" with lore "You guys did not move?" to close then run " "
+									format slot 22 of player with black stained glass named "&7&lIt's a DRAW!" with lore "You guys did not move?" to close then run " "
