@@ -1,56 +1,454 @@
-on join:
-    loop {crates::amount::%player%::*}:
-        if {crates::amount::%player%::%loop-value%} is not set:
-            set {crates::amount::%player%::%loop-value%} to 0
+# crates skript
+# ----------------- #
+#   CONFIGURATION   #
+# ----------------- #
 
-function cratesGUI(p: player):
-    set {_crates} to virtual chest inventory with 3 rows named "&1Blue &7Crate"
-    open {_crates} to {_p}
-    loop integers between 0 and menu size of {_p}'s current inventory - 1:
-        format slot loop-number of {_p} with gray glass pane named "&8" to close
+options:
 
-command /crates [<text>] [<text>] [<text>]:
+    # PREFIX
+    prefix: &e&lWHITTLE &8»&7
+    
+    # COLORS
+    color_first: &7
+    color_second: &e
+    color_third: &6
+    color_fourth: &7
+    color_error: &c
+
+    # MESSAGES | USE (0) FOR ARGUMENTS
+    not_enough_args: &4(!) &cIncorrect Usage! Correct Usage: &e(0)
+    no_console_allowed: &4(!) &cOnly players can execute this command!
+    no_permissions: &4(!) &cI'm sorry, But I can't let you do that! &7&o((0))
+    message_borders: &8&m                                                  &r
+
+    # TEXINATION
+    max_entries_per_message: 5
+
+    # COOLDOWNS
+    open_crate: 1 seconds
+
+# ----------------- #
+#   CONFIGURATION   #
+# ----------------- #
+
+
+
+
+
+
+
+# ------------- #
+#   FUNCTIONS   #
+# ------------- #
+
+function Crates_CrateNameExists(name: string) :: boolean:
+    loop indices of {crates::created_crates::*}:
+        if {crates::created_crates::%loop-value%::name} = {_name}:
+            return true
+    return false
+
+function Crates_CrateIDExists(crate_id: string) :: boolean:
+    loop indices of {crates::created_crates::*}:
+        if loop-value = {_crate_id}:
+            return true
+    return false
+
+function Crates_RewardIDExists(reward_id: string) :: boolean:
+    loop indices of {crates::created_crates::*}:
+        if "%indices of {crates::created_crates::%loop-value%::rewards::*}%" contains {_reward_id}:
+            return true
+    return false
+
+function Crates_CrateLocationExists(crate_loc: location) :: boolean:
+    loop indices of {crates::created_crates::*}:
+        if {crates::created_crates::%loop-value%::loc} = {_crate_loc}:
+            return true
+    return false
+
+function Crates_GetNameFromID(crate_id: string) :: string:
+    loop indices of {crates::created_crates::*}:
+        if loop-value = {_crate_id}:
+            return {crates::created_crates::%loop-value%::name}
+    return "N/A"
+
+function Crates_OpenCrateRewardsGUI(plr: player, crate_id: string, page: number):
+    Sound_Prompt({_plr})
+    set {_page} to 1 if {_page} is not set
+    set {_page} to round {_page}
+    set {_old_page} to {_page} - 1
+    set {_new_page} to {_page} + 1
+    set {_start} to ({_page} * 21) - 20
+    set {_crate_name} to {crates::created_crates::%{_crate_id}%::name}
+    open chest inventory with 5 rows named "{@color_second}Viewing %coloured {_crate_name}%" to {_plr}
+    format gui slot (0, 2, 4, 6, 8, 9, 26, 27, 44, 37, 39, 41, 43) of {_plr} with gray stained glass pane
+    format gui slot (1, 3, 5, 7, 17, 18, 35, 36, 38, 40, 42, 44) of {_plr} with gray stained glass pane
+    if {_page} >= 2:
+        format gui slot 38 of {_plr} with arrow named "{@color_second}Last Page" with lore " " and "{@color_third}Current Page: {@color_second}%{_page}%" to run function Crates_OpenCrateRewardsGUI({_plr}, {_crate_id}, {_old_page})
+    if (size of {crates::created_crates::%{_crate_id}%::rewards::*}) - 21 > {_start}:
+        format gui slot 42 of {_plr} with arrow named "{@color_second}Next Page" with lore " " and "{@color_third}Current Page: {@color_second}%{_page}%" to run function Crates_OpenCrateRewardsGUI({_plr}, {_crate_id}, {_new_page})
+    set {_loops} to 1
+    set {_slot} to 10
+    loop all indices of {crates::created_crates::%{_crate_id}%::rewards::*}:
+        add {crates::created_crates::%{_crate_id}%::rewards::%loop-value%::chance} to {_chances::*}
+        set {_chances::*} to sorted {_chances::*}
+        set {_reward_ids::*} to all indices of {crates::created_crates::%{_crate_id}%::rewards::*}
+    set {_loops_2} to 0
+    loop {_chances::*}:
+        add 1 to {_loops_2}
+        set {_sorted_reward_ids::%{_loops_2}%} to first element out of ({_reward_ids::*} where [{crates::created_crates::%{_crate_id}%::rewards::%input%::chance} = loop-value])
+        remove first element out of ({_reward_ids::*} where [{crates::created_crates::%{_crate_id}%::rewards::%input%::chance} = loop-value]) from {_reward_ids::*}
+    loop reversed {_sorted_reward_ids::*}:
+        add 1 to {_loops}
+        if {_loops} >= {_start}:
+            if {_slot} = 17 or 26:
+                add 2 to {_slot}
+            set {_item} to {crates::created_crates::%{_crate_id}%::rewards::%loop-value%::item}
+            set name of {_item} to coloured {crates::created_crates::%{_crate_id}%::rewards::%loop-value%::name}
+            set lore of {_item} to " ||{@color_third}Chance: {@color_second}%{crates::created_crates::%{_crate_id}%::rewards::%loop-value%::chance}%%%"
+            format gui slot {_slot} of {_plr} with {_item}
+            add 1 to {_slot}
+            if {_slot} = 35:
+                exit loop
+
+# ------------- #
+#   FUNCTIONS   #
+# ------------- #
+
+
+
+
+
+
+
+# ---------- #
+#   EVENTS   #
+# ---------- #
+
+on left click:
+    player is not sneaking
+    targeted block of player is not air
+    loop indices of {crates::created_crates::*}:
+        location of targeted block of player = {crates::created_crates::%loop-value%::loc}
+        Crates_OpenCrateRewardsGUI(player, loop-value, 1)
+
+on right click with prismarine shard:
+    set {_crate_id} to "CrateID" tag of nbt of player's tool
+    {_crate_id} is set
+    targeted block of player is not air
+    set {crates::open_cooldown::%uuid of player%} to now if {crates::open_cooldown::%uuid of player%} is not set
+    set {_item} to tool of player
+    cancel event
+    if difference between {crates::open_cooldown::%uuid of player%} and now is less than 1 second:
+        Sound_Error(player)
+        set {_wait_time} to {crates::open_cooldown::%uuid of player%}
+        add 1 second to {_wait_time}
+        set {_wait} to Time_MakeFancierTime(difference between {_wait_time} and now)
+        send "{@prefix} {@color_error}You must wait {@color_second}%{_wait}% {@color_error}to open a crate again!"
+        stop
+    loop indices of {crates::created_crates::*}:
+        location of targeted block of player = {crates::created_crates::%{_crate_id}%::loc}
+        if {crates::created_crates::%{_crate_id}%::loc} = {crates::created_crates::%loop-value-1%::loc}:
+            set {crates::open_cooldown::%uuid of player%} to now
+            remove 1 of {_item} from inventory of player
+            loop all indices of {crates::created_crates::%{_crate_id}%::rewards::*}:
+                add {crates::created_crates::%{_crate_id}%::rewards::%loop-value-2%::chance} to {_chances::*}
+                set {_chances::*} to sorted {_chances::*}
+                set {_reward_ids::*} to all indices of {crates::created_crates::%{_crate_id}%::rewards::*}
+            set {_loops} to 0
+            loop {_chances::*}:
+                add 1 to {_loops}
+                set {_sorted_reward_ids::%{_loops}%} to first element out of ({_reward_ids::*} where [{crates::created_crates::%{_crate_id}%::rewards::%input%::chance} = loop-value-2])
+                remove first element out of ({_reward_ids::*} where [{crates::created_crates::%{_crate_id}%::rewards::%input%::chance} = loop-value-2]) from {_reward_ids::*}
+            set {_chances::*} to {_chances::*}
+            set {_reward_id} to Random_ActuallyRandom({_chances::*}, {_sorted_reward_ids::*})
+            set {_amount} to {crates::created_crates::%{_crate_id}%::rewards::%{_reward_id}%::amount}
+            set {_item} to {crates::created_crates::%{_crate_id}%::rewards::%{_reward_id}%::item}
+            set {_name} to coloured {crates::created_crates::%{_crate_id}%::rewards::%{_reward_id}%::name}
+            set {_crate_name} to coloured {crates::created_crates::%{_crate_id}%::name}
+            send "{@prefix} {@color_first}You won {@color_second}x%{_amount}% {@color_second}%{_name}% {@color_first}from {@color_second}%{_crate_name}%" to player
+            Utils_BetterBroadcast("{@prefix} {@color_second}%player% {@color_first}won {@color_second}x%{_amount}% {@color_second}%{_name}% {@color_first}from {@color_second}%{_crate_name}%")
+            give {_amount} of {_item} to player
+            stop
+
+# ---------- #
+#   EVENTS   #
+# ---------- #
+
+
+
+
+
+
+
+# ------------ #
+#   COMMANDS   #
+# ------------ #
+
+command /crates [<string>] [<string>] [<string>] [<string>] [<string>]:
+    aliases: /crate
     trigger:
-        set {bluecrate} to blue shulker box named "&1Blue &7Crate" with lore " ", "&eYou have &7(&f%{crates::amount::%player%::blue}%&7) &1Blue &7Crate &ekeys", " ", "&a&lLeft Click to Open", "&a&lRight Click to View" and " "
-        set {greencrate} to green shulker box named "&2Green &7Crate" with lore " ", "&eYou have &7(&f%{crates::amount::%player%::green}%&7) &2Green &7Crate &ekeys", " ", "&a&lLeft Click to Open", "&a&lRight Click to View" and " "
-        set {magentacrate} to magenta shulker box named "&dMagenta &7Crate" with lore " ", "&eYou have &7(&f%{crates::amount::%player%::magenta}%&7) &dMagenta &7Crate &ekeys", " ", "&a&lLeft Click to Open", "&a&lRight Click to View" and " "
         if arg-1 is not set:
-            set {_crates} to virtual chest inventory with 3 rows named "&3&lCrates"
-            open {_crates} to player
-            format gui slot 11 of player with {bluecrate} to close then run function cratesGUI(player) with "left" click
-            format gui slot 11 of player with {bluecrate} to close with "right" click 
-            format gui slot 13 of player with {greencrate}
-            format gui slot 15 of player with {magentacrate}
-            
-
-command /cratesadmin [<text>] [<text>] [<player>] [<int>]:
-    trigger:
-        if arg-1 is not set:
-            send "no"
-        else if arg-1 is "give":
+            Sound_Prompt(player)
+            send "{@message_borders}" to sender
+            send "{@color_second}/[crates/crate] {@color_first}| {@color_fourth}Main Crates Command" to sender
+            send "{@color_second}/crates create (name) {@color_first}| {@color_fourth}Make A Crate" to sender
+            send "{@color_second}/crates delete (crate id) {@color_first}| {@color_fourth}Delete A Crate" to sender
+            send "{@color_second}/crates [additem/addreward] (crate id) (amount) (chance) (reward name) {@color_first}| {@color_fourth}Make A Crate" to sender
+            send "{@color_second}/crates setloc (crate id)" to sender
+            send "{@color_second}/crates removeitem (crate id) {@color_first}| {@color_fourth}Remove a item from a crate" to sender
+            send "{@color_second}/crates listrewards (crate id) {@color_first}| {@color_fourth}Lists all the crates" to sender
+            send "{@color_second}/crates list {@color_first}| {@color_fourth}Lists all the crates" to sender
+            send "{@color_second}/crates [keyall/giveall] (crate id) (amount) {@color_first}| {@color_fourth}Give everyone a key" to sender
+            send "{@color_second}/crates [key/give] (crate id) (amount) (player) {@color_first}| {@color_fourth}Give a key to someone" to sender
+            send "{@message_borders}" to sender
+            stop
+        if sender does not have permission "crates.admin":
+            Sound_Error(sender)
+            send "{@no_permissions}" to sender
+            stop
+        if arg-1 = "setloc":
+            if sender is console:
+                send "{@no_console_allowed}" to sender
+                stop
             if arg-2 is not set:
-                send "2"
-            else:
-                if arg-2 is not "blue", "green" or "magenta":
-                    send "3"
-                else:
-                    if arg-3 is not set:
-                        send "4"
-                    else:
-                        if arg-3 is not online:
-                            send "5"
-                        else:
-                            if arg-4 is not set:
-                                send "6"
-                            else:
-                                add arg-4 to {crates::amount::%arg-3%::%arg-2%}
-                                send "&eYou have given %arg-4% %arg-2% crates to %arg-3%"
-        else if arg-1 is "set":
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates setloc (crate id)"
+                send "%{_message}%" to sender
+                stop
+            set {crates::created_crates::%arg-2%::loc} to location of targeted block of sender
+        if arg-1 = "create":
+            if sender is console:
+                send "{@no_console_allowed}" to sender
+                stop
             if arg-2 is not set:
-                send "2"
-            else:
-                if arg-2 is not "blue", "green" or "magenta":
-                    send "3"
-                else:
-                    give {%arg-2%crate} to player
-                    send "hi"
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates create (name)"
+                send "%{_message}%" to sender
+                stop
+            set {_name} to arg-2
+            replace "_" in {_name} with " "
+            if Crates_CrateNameExists({_name}) = true:
+                Sound_Error(sender)
+                send "{@prefix} {@color_second}%{_name}% {@color_error}already exists!" to sender
+                stop
+            set {_crate_id} to String_CreateRandom(3)
+            set {_tries} to 0
+            while Crates_CrateIDExists({_crate_id}) = true:
+                add 1 to {_tries}
+                Sound_Prompt(sender)
+                send "{@prefix} Generating another Crate ID." to sender
+                set {_crate_id} to String_CreateRandom(3)
+                if {_tries} >= 10:
+                    Sound_Error(sender)
+                    send "{@prefix} You have too many crates!" to sender
+                    stop
+                wait 5 tick
+            set {crates::created_crates::%{_crate_id}%::loc} to location of targeted block of sender
+            set {crates::created_crates::%{_crate_id}%::name} to {_name}
+            Sound_Success(sender)
+            send "{@prefix} {@color_first}You created crate {@color_second}%{_crate_id}% {@color_first}and it's position is at {@color_second}%Location_MakeFancierLocation(location of targeted block of player)%" to sender
+        if arg-1 = "give" or "key":
+            if arg-2 or arg-3 or arg-4 is not set:
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates [give/key] (crate) (player) (amount)"
+                send "%{_message}%" to sender
+                stop
+            set {_player} to (arg-3 parsed as an offline player)
+            if {_player} is not set:
+                Sound_Error(sender)
+                send "{@prefix} {@color_second}%arg-3% {@color_error}never logged on!" to sender
+                stop
+            set {_amount} to (arg-4 parsed as an integer)
+            if {_amount} is not set:
+                Sound_Error(sender)
+                send "{@prefix} {@color_second}%arg-4% {@color_error}is not a integer!" to sender
+                stop
+            set {_item} to shiny prismarine shard with hidden all flags with nbt "{CrateID:""%arg-2%""}"
+            set name of {_item} to coloured {crates::created_crates::%arg-2%::name}
+            set lore of {_item} to " ||{@color_first}Claim this crate at {@color_second}/warp crates||&7&o(( Purchasable at /buy ))"
+            set {_uuid} to uuid of {_player}
+            add "%{_item}%|%{_amount}%" to {crates::pending_crates::%{_uuid}%::*} if {_player} is offline
+            give {_amount} of {_item} to {_player} if {_player} is online
+            send "{@prefix} {@color_second}%sender% {@color_first} gave you {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}% {@color_second}keys!" to {_player} if {_player} is online
+            Staff_AlertStaff("{@color_second}%sender% {@color_fourth}gave {@color_second}%{_player}%  {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%")
+        if arg-1 = "giveall" or "keyall":
+            if arg-2 or arg-3 is not set:
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates [giveall/keyall] (name) (amount)"
+                send "%{_message}%" to sender
+                stop
+            set {_amount} to (arg-3 parsed as an integer)
+            if {_amount} is not set:
+                Sound_Error(sender)
+                send "{@prefix} {@color_second}%arg-4% {@color_error}is not a integer!" to sender
+                stop
+            Staff_AlertStaff("{@color_second}%sender% {@color_fourth}did a keyall of {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%")
+            Sound_PromptAll()
+            Utils_BetterBroadcast("{@prefix} {@color_fourth}Key All")
+            Utils_BetterBroadcast("{@message_borders}")
+            Utils_BetterBroadcast("{@color_second}%sender% {@color_first}is doing a keyall of {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%{@color_second}!")
+            Utils_BetterBroadcast("{@color_first}You'll be getting the key in {@color_second}15s!")
+            Utils_BetterBroadcast("{@message_borders}")
+            wait 10 seconds
+            Sound_PromptAll()
+            Utils_BetterBroadcast("{@prefix} {@color_fourth}Key All")
+            Utils_BetterBroadcast("{@message_borders}")
+            Utils_BetterBroadcast("{@color_second}%sender% {@color_first}is doing a keyall of {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%{@color_second}!")
+            Utils_BetterBroadcast("{@color_first}You'll be getting the key in {@color_second}5s!")
+            Utils_BetterBroadcast("{@message_borders}")
+            wait 5 seconds
+            Sound_PromptAll()
+            Utils_BetterBroadcast("{@prefix} {@color_fourth}Key All")
+            Utils_BetterBroadcast("{@message_borders}")
+            Utils_BetterBroadcast("{@color_second}%sender% {@color_first}is doing a keyall of {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%{@color_second}!")
+            Utils_BetterBroadcast("{@color_first}You'll be getting the key in {@color_second}2s!")
+            Utils_BetterBroadcast("{@message_borders}")
+            wait 1 seconds
+            Sound_PromptAll()
+            Utils_BetterBroadcast("{@prefix} {@color_fourth}Key All")
+            Utils_BetterBroadcast("{@message_borders}")
+            Utils_BetterBroadcast("{@color_second}%sender% {@color_first}is doing a keyall of {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%{@color_second}!")
+            Utils_BetterBroadcast("{@color_first}You'll be getting the key in {@color_second}1s!")
+            Utils_BetterBroadcast("{@message_borders}")
+            wait 1 seconds
+            Sound_SuccessAll()
+            Utils_BetterBroadcast("{@prefix} {@color_fourth}Key All")
+            Utils_BetterBroadcast("{@message_borders}")
+            Utils_BetterBroadcast("{@color_first}Everyone got the keyall of {@color_second}x{@color_second}%{_amount}% %coloured {crates::created_crates::%arg-2%::name}%{@color_second}!")
+            Utils_BetterBroadcast("{@message_borders}")
+            loop all players:
+                execute console command "/crates give %arg-2% %loop-player% %{_amount}%"
+        if arg-1 = "delete":
+            if arg-2 is not set:
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates delete (name)"
+                send "%{_message}%" to sender
+                stop
+            if Crates_CrateIDExists(arg-2) = false:
+                Sound_Error(sender)
+                send "{@prefix} {@color_error}That isn't a crate, Do {@color_second}/crates list" to sender
+                stop
+            delete {crates::created_crates::%arg-2%::*}
+            Sound_Success(sender)
+            send "{@prefix} {@color_first}Deleted crate {@color_second}%arg-2%{@color_second}!" to sender
+            stop
+        if arg-1 = "additem" or "addreward":
+            if arg-2 or arg-3 or arg-4 or arg-5 is not set:
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates [additem/addreward] (crate id) (amount) (chance) (reward name)"
+                send "%{_message}%" to sender
+                stop
+            set {_amount} to arg-3 parsed as an integer
+            set {_chance} to arg-4 parsed as an integer
+            set {_name} to arg-5
+            replace "_" in {_name} with " "
+            if {_amount} is not set:
+                Sound_Error(sender)
+                send "{@prefix} {@color_second}%arg-4% {@color_error}is not a integer!" to sender
+                stop
+            if {_chance} is not set:
+                Sound_Error(sender)
+                send "{@prefix} {@color_second}%arg-4% {@color_error}is not a integer!" to sender
+                stop
+            if held item of player is air:
+                Sound_Error(player)
+                send "{@prefix} {@color_error}You must be holding the item you wanna add!" to sender
+                stop
+            set {_item} to 1 of held item of player
+            set {_reward_id} to String_CreateRandom(5)
+            set {_tries} to 0
+            while Crates_RewardIDExists({_reward_id}) = true:
+                add 1 to {_tries}
+                Sound_Prompt(sender)
+                send "{@prefix} Generating another Reward ID." to sender
+                set {_reward_id} to String_CreateRandom(5)
+                if {_tries} >= 10:
+                    Sound_Error(sender)
+                    send "{@prefix} You have too many rewards!" to sender
+                    stop
+                wait 5 tick
+            set {crates::created_crates::%arg-2%::rewards::%{_reward_id}%::amount} to {_amount}
+            set {crates::created_crates::%arg-2%::rewards::%{_reward_id}%::chance} to {_chance}
+            set {crates::created_crates::%arg-2%::rewards::%{_reward_id}%::item} to {_item}
+            set {crates::created_crates::%arg-2%::rewards::%{_reward_id}%::name} to {_name}
+        if arg-1 = "removeitem":
+            if arg-2 or arg-3 is not set:
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates removeitem (crate) (reward id)"
+                send "%{_message}%" to sender
+                stop
+            if Crates_CrateIDExists(arg-2) = false:
+                Sound_Error(sender)
+                send "{@prefix} {@color_error}That crate doesn't exist!" to sender
+                stop
+            if Crates_RewardIDExists(arg-3) = false:
+                Sound_Error(sender)
+                send "{@prefix} {@color_error}That reward doesn't exist!" to sender
+                stop
+            Sound_Success(player)
+            delete {crates::created_crates::%arg-2%::rewards::%arg-3%::*}
+            send "{@prefix} {@color_first}Successfully deleted reward {@color_second}%arg-3% {@color_first}from crate {@color_second}%coloured Crates_GetNameFromID(arg-2)%{@color_second}!" to sender
+        if arg-1 = "listrewards":
+            if arg-2 is not set:
+                Sound_Error(sender)
+                set {_message} to "{@not_enough_args}"
+                replace "(0)" in {_message} with "/crates listrewards (crate) (page)"
+                send "%{_message}%" to sender
+                stop
+            set {_page} to 1 if arg-3 is not set
+            set {_page} to (arg-3 parsed as an integer) if arg-3 is set
+            set {_start} to ({_page} * {@max_entries_per_message}) - {@max_entries_per_message}
+            set {_loops} to -1
+            set {_num} to 1
+            Sound_Prompt(sender)
+            send "{@prefix} {@color_fourth}Rewards List" to sender
+            send "{@message_borders}" to sender
+            loop indices of {crates::created_crates::%arg-2%::rewards::*}:
+                add 1 to {_loops}
+                if {_loops} >= {_start}:
+                    set {_message} to "{@color_second}%loop-value% {@color_first}| {@color_fourth}<command:/crates removeitem %arg-2% %loop-value%>Remove this reward<reset>"
+                    send formatted {_message} to sender
+                    add 1 to {_num}
+                    if {_num} > {@max_entries_per_message}:
+                        stop loop
+                if size of {crates::created_crates::%arg-2%::rewards::*} <= {_start}:
+                    send "{@color_error}This is the last page!" to sender
+                    send "{@message_borders}" to sender
+                    stop
+            send " " to sender
+            set {_message} to "{@color_second}<command:/crates listrewards %arg-2% %{_page} + 1%>Click me to go to the Next Page!<reset>"
+            send formatted {_message} to sender
+            send "{@message_borders}" to sender
+        if arg-1 = "list":
+            set {_page} to 1 if arg-2 is not set
+            set {_page} to (arg-2 parsed as an integer) if arg-2 is set
+            set {_start} to ({_page} * {@max_entries_per_message}) - {@max_entries_per_message}
+            set {_loops} to -1
+            set {_num} to 1
+            Sound_Prompt(sender)
+            send "{@prefix} {@color_fourth}Crates List" to sender
+            send "{@message_borders}" to sender
+            loop indices of {crates::created_crates::*}:
+                add 1 to {_loops}
+                if {_loops} >= {_start}:
+                    set {_loc} to Location_MakeFancierLocation({crates::created_crates::%loop-value%::loc})
+                    set {_message} to "{@color_second}%loop-value% {@color_first}| {@color_fourth}<tooltip:{@color_second}Location: {@color_fourth}%{_loc}%>%coloured {crates::created_crates::%loop-value%::name}%<reset> {@color_first}| {@color_fourth}<command:/crates give %loop-value% %player% 1>Get a Key<reset> {@color_first}| {@color_fourth}<command:/crates giveall %loop-value% 1>Key All<reset>"
+                    send formatted {_message} to sender
+                    add 1 to {_num}
+                    if {_num} > {@max_entries_per_message}:
+                        stop loop
+                if size of {crates::created_crates::*} <= {_start}:
+                    send "{@color_error}This is the last page!" to sender
+                    send "{@message_borders}" to sender
+                    stop
+            send " " to sender
+            set {_message} to "{@color_second}<command:/crates list %{_page} + 1%>Click me to go to the Next Page!<reset>"
+            send formatted {_message} to sender
+            send "{@message_borders}" to sender

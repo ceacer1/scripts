@@ -51,27 +51,24 @@ options:
 	S6F3: Not yet Announced
 	S6F3bal: Not yet Announced
 	#Current Season
-	TopBal1: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lFirst Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and ""
-	TopBal1-Slot: 11
-	TopBal2: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lSecond Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and ""
-	TopBal2-Slot: 13
-	TopBal3: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lThird Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and ""
-	TopBal3-Slot: 15
+	TopBal1: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lFirst Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and "" 
+	TopBal2: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lSecond Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and "" 
+	TopBal3: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lThird Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and "" 
 
 
 command /payouts:
-    trigger:
-        send "" to player
-        send "&8&m--------&8[&b&lFast&3Gens &2&lPayouts&8]&8&m--------"
-        send "" to player
-        send "&b1. {@first}" to player
-        send "&b2. {@second}" to player
-        send "&b3. {@third}" to player
-        send "" to player
-        send "&bWant to see previous winners?" to player
-        send "&bType &6/winners &bor <command:/winners>&a&l(Click Here)<reset>" to player
+	trigger:
 		send "" to player
-        send "&8&m-------- <command:/discord>&8[&d&lJoin the Discord&8]<reset>&8&m--------"
+		send "&8&m--------&8[&b&lFast&3Gens &2&lPayouts&8]&8&m--------"
+		send "" to player
+		send "&b1. {@first}" to player
+		send "&b2. {@second}" to player
+		send "&b3. {@third}" to player
+		send "" to player
+		send "&bWant to see previous winners?" to player
+		send "&bType &6/winners &bor <command:/winners>&a&l(Click Here)<reset>" to player
+		send "" to player
+		send "&8&m-------- <command:/discord>&8[&d&lJoin the Discord&8]<reset>&8&m--------"
 
 		
 command /winners:
@@ -86,21 +83,25 @@ command /winners:
 
 function currentSeason(p: player):
     open chest with 3 rows named "&b&lCurrent &3&lSeason" to {_p}
-    format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
-    format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+    format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8" to close
+    format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8" to close
     set {_topb} to placeholder "vault_eco_top_balance_commas_1" from {_p}
     set {_topbp} to placeholder "vault_eco_top_player_1" from {_p}
     set {_topbp} to {_topbp} parsed as an offline player
-    set slot {@TopBal1-Slot} of {_p}'s current inventory to {@TopBal1}    
+    set slot 11 of {_p}'s current inventory to {@TopBal1} 
     set {_topb} to placeholder "vault_eco_top_balance_commas_2" from {_p}
     set {_topbp} to placeholder "vault_eco_top_player_2" from {_p}
     set {_topbp} to {_topbp} parsed as an offline player
-    set slot {@TopBal2-Slot} of {_p}'s current inventory to {@TopBal2}    
+    set slot 13 of {_p}'s current inventory to {@TopBal2}
     set {_topb} to placeholder "vault_eco_top_balance_commas_3" from {_p}
     set {_topbp} to placeholder "vault_eco_top_player_3" from {_p}
     set {_topbp} to {_topbp} parsed as an offline player
-    set slot {@TopBal3-Slot} of {_p}'s current inventory to {@TopBal3}
+    set slot 15 of {_p}'s current inventory to {@TopBal3}
     format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+
+on inventory click:
+	if inventory name of event-inventory is "&b&lCurrent &3&lSeason":
+		close player's inventory
 
 function payoutWinners(p: player, type: int = 0):
 	if {_type} is 0:

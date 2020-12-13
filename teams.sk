@@ -7,28 +7,33 @@ on tab complete of "/team":
 	if tab arg-1 = "list", "remove", "pay", "invite", "leave", "join" or "disband":
 		set tab completions for position 2 to (indexes of {teams::*})
 
+on first join:
+    if {team.plot.has-members.%uuid of player%} is not set:
+        set {team.plot.has-members.%uuid of player%} to false
+
 command /team [<text>] [<string>] [<player>] [<int>]:
     trigger:
         if arg-1 is not set:
             send ""
-            send "&8&m--------&8[&b&lFast&3Gens &6&lTeams&8]&8&m--------"
+            send "&8&m--&8[&b&lFast&3Gens &6&lTeams&8]&8&m--"
             send ""
             send "&cInvalid Usage: &6/team <text> <text> <player>" to player
             send "&eUse &6/team help &efor more info." to player
 
         if arg-1 is "help":
             send ""
-            send "&8&m--------&8[&b&lFast&3Gens &6&lTeams&8]&8&m--------"
+            send "&8&m--&8[&b&lFast&3Gens &6&lTeams&8]&8&m--"
             send ""
-            send "&6/team create <team name> &8- &eCreate a team."
-            send "&6/team list &8- &eList all teams."
-            send "&6/team list <team name> &8- &eList all team players."
-            send "&6/team invite <team name> <player> &8- &eInvite a player to your team."
-            send "&6/team join <team name> &8- &eJoin the team that has invited you."
-            send "&6/team leave <team name> &8- &eLeave the team you are in."
-            send "&6/team remove <team name> <player> &8- &eRemove a player from a team."
-            send "&6/team disband <team name> &8- &eDisband a team you are in."
+            send formatted "<tooltip: &dCommand: %nl% &6/team create <team name> %nl%%nl% &dUse: %nl% &eCreates a team.> &6/team create <team name> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team list <team name> %nl%%nl% &dUse: %nl% &eShows a teams information.> &6/team list <team name> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team pay <team name> <player> %nl%%nl% &dUse: %nl% &ePays a team mate.> &6/team pay <team name> <player> <amount> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team invite <team name> <player> %nl%%nl% &dUse: %nl% &eInvites a player to your team. %nl% &eYou can only have 2 member in a team.> &6/team invite <team name> <player> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team join <team name> %nl%%nl% &dUse: %nl% &eJoins a team that has invited you.> &6/team join <team name> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team leave <team name> %nl%%nl% &dUse: %nl% &eLeaves the team you are in.> &6/team leave <team name> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team remove <team name> %nl%%nl% &dUse: %nl% &eRemoves a player from your team.> &6/team remove <team name> <player> <reset>"
+            send formatted "<tooltip: &dCommand: %nl% &6/team disband <team name> %nl%%nl% &dUse: %nl% &eDisbands the team you own.> &6/team disband <team name> <reset>"
             send ""
+            send "&8&m-&8[&eHover for more Info&8]&8&m-"
 
         if arg-1 is "create":
             if arg-2 is set:
@@ -53,23 +58,26 @@ command /team [<text>] [<string>] [<player>] [<int>]:
             if {teams::*} contains arg-2:
                 if {teams.amount.players.%arg-2%} is 2:
                     loop {teams.%arg-2%::*}:
-                        set {teams.balance::%loop-value%} to balance of loop-value
-                        replace every "$" with "" in {teams.balance::%loop-value%}
-                        set {teams.balance::%loop-value%} to {teams.balance::%loop-value%} parsed as number
+                        set {_teams.balance::%loop-value%} to balance of loop-value
+                        replace every "$" with "" in {_teams.balance::%loop-value%}
+                        set {_teams.balance::%loop-value%} to {_teams.balance::%loop-value%} parsed as number
                         set {teams.gens::%loop-value%} to {gens.%uuid of loop-value%.gencount}
                         set {teams.gencap::%loop-value%} to {gens.%uuid of loop-value%.gencap}
-                    loop {teams.balance::*}:
+                    loop {_teams.balance::*}:
                         add loop-value to {_total}
                     loop {teams.gens::*}:
                         add loop-value to {_gentotal}
                     loop {teams.gencap::*}:
                         add loop-value to {_gencaptotal}
-                else:
+                else if {teams.amount.players.%arg-2%} is 1:
                     loop {teams.%arg-2%::*}:
                         set {_total} to the balance of loop-value
                         set {_gentotal} to {gens.%uuid of loop-value%.gencount}
                         set {_gencaptotal} to {gens.%uuid of loop-value%.gencap}
-                message "&7&m      &7< &a&l%arg-2% &7>&7&m      "
+                message "&8&m--&8[&b&lFast&3Gens &6&lTeams&8]&8&m--"
+                message ""
+                message "&eTeam Name:"
+                message "&a&l%arg-2%"
                 message ""
                 message "&eTotal Team Balance:"
                 message "&a%{_total}%"
@@ -80,7 +88,6 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                 loop {teams.%arg-2%::*}:
                     send "&6%loop-value% &8(&a%{gens.%uuid of loop-value%.gencount}%&7/&a%{gens.%uuid of loop-value%.gencap}%&8)" 
                 message ""
-                message "&7&m                    "
                 
                 
             else:
@@ -94,6 +101,7 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                             if {teams.%loop-value%::*} contains arg-3:
                                 set {teams.pay::%player%} to true
                                 make player say "/pay %arg-3% %arg-4%"
+                                stop
 
                             else:
                                 send "{@prefix} &eYou can only pay members of your team." to player
@@ -153,10 +161,13 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                     clear {teams.invite.%arg-2%::%player%}
                     send "{@prefix} &8- &eYou have joined team &6%arg-2%" to player
                     send "{@prefix} &8- &6%executor% &ehad joined &6%arg-2%" to {teams.%arg-2%.owner::*}
+                    stop
                 else:
                     send "{@prefix} &8- &eYou have not been invited to join the team &6%arg-2%." to player
+                    stop
             else:
                 send "{@prefix} &8- &eThe team &6%arg-2% &edoes not exist." to player
+                stop
 
 
         if arg-1 is "leave":
@@ -259,17 +270,6 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                 send "%{teams.member::*}%" to player
                 send "%{teams.owner::*}%" to player
 
-command /clear:
-    trigger:
-        loop {teams::*}:
-            clear {teams.%loop-value%::*}
-            clear {teams.owner::%player%}
-            clear {teams.amount.players.%loop-value%}
-            clear {team.plot.members.%loop-value%::*}
-        clear {teams::*}
-        loop all players:
-            clear {teams.owner::%loop-player%}
-            set {gens.%uuid of loop-value%.gencount} to 0
 
 
 command /plot [<text>] [<player>]:
@@ -282,19 +282,24 @@ command /plot [<text>] [<player>]:
                             if {gens.%uuid of arg-2%.gencount} is not 0:
                                 send "&8[&6P2&8] &6The player &7%arg-2% &6has placed gens." to player
                                 send "&8[&6P2&8] &6All gens must be picked up before they can be added." to player
+                                stop
                             else:
                                 set {teams.plot.add::%player%} to true
                                 add arg-2 to {team.plot.members.%arg-2%::*}
                                 set {team.plot.has-members.%uuid of player%} to true
                                 make player say "/p add %arg-2%"
+                                stop
                         else:
                             set {teams.plot.add::%player%} to true
                             make player say "/p add %arg-2%"
+                            stop
                     else:
                         send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
                         send "&8[&6P2&8] &6You can only add members of your team." to player
+                        stop
             else:
                 send "&8[&6P2&8] &6Usage: &7/plot add <player|*>" to player
+                stop
         
         if arg-1 is "trust":
             if arg-2 is set:
@@ -304,19 +309,24 @@ command /plot [<text>] [<player>]:
                             if {gens.%uuid of arg-2%.gencount} is not 0:
                                 send "&8[&6P2&8] &6The player &7%arg-2% &6has placed gens." to player
                                 send "&8[&6P2&8] &6All gens must be picked up before they can be trusted." to player
+                                stop
                             else:
-                                set {teams.plot.add::%player%} to true
+                                set {teams.plot.trust::%player%} to true
                                 add arg-2 to {team.plot.members.%arg-2%::*}
                                 set {team.plot.has-members.%uuid of player%} to true
                                 make player say "/p trust %arg-2%"
+                                stop
                         else:
-                            set {teams.plot.add::%player%} to true
+                            set {teams.plot.trust::%player%} to true
                             make player say "/p trust %arg-2%"
+                            stop
                     else:
                         send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
                         send "&8[&6P2&8] &6You can only trust members of your team." to player
+                        stop
             else:
                 send "&8[&6P2&8] &6Usage: &7/plot trust <player|*>" to player
+                stop
         
         if arg-1 is "remove":
             if arg-2 is set:
@@ -324,24 +334,29 @@ command /plot [<text>] [<player>]:
                     if {teams.%loop-value%::*} contains arg-2:
                         if {team.plot.members.%arg-2%::*} does not contain arg-2:
                             send "&8[&6P2&8] &6The player &7%arg-2% &6is not on your plot therefore cannot be removed." to player
+                            stop
                         else:
                             if {gens.%uuid of arg-2%.gencount} is not 0:
                                 send "&8[&6P2&8] &6The player &7%arg-2% &6has placed gens." to player
                                 send "&8[&6P2&8] &6All gens must be picked up before they can be removed." to player
+                                stop
                             else:
                                 set {teams.plot.remove::%player%} to true
                                 remove arg-2 from {team.plot.members.%arg-2%::*}
                                 set {team.plot.has-members.%uuid of player%} to false
                                 make player say "/p remove %arg-2%"
+                                stop
                     else:
                         send "&8[&6P2&8] &6The player &7%arg-2% &6is not part of your team." to player
                         send "&8[&6P2&8] &6You can only trust members of your team." to player
+                        stop
         
         if arg-1 is "delete":
             if {team.plot.has-members.%uuid of player%} is false:
                 if {gens.%uuid of player%.gencount} is not 0:
-                    send "&8[&6P2&8] &6You still have gens places, please remove them." to player
+                    send "&8[&6P2&8] &6You still have gens placed, please remove them." to player
                 else:
+                    send "%{gens.%uuid of player%.gencount}%" to player
                     set {teams.plot.delete::%player%} to true
                     make player say "/p delete"
             else:
@@ -376,7 +391,7 @@ on command "/pay":
         set {teams.pay::%player%} to false
         stop
     else:
-        send "{@prefix} &eDue to the team functionality being used, please use: &7/team pay <player|*>" to player
+        send "{@prefix} &eDue to the team functionality being used, please use: &7/team pay <team> <player|*>" to player
         cancel event
 
 on command "/p add":

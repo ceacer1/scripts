@@ -59,9 +59,6 @@ function roomToggle(p: player, type: int = 0):
 		send "{@Name.GUI} &eYou are not of the required rank to enter this room." to {_p}
 		stop
 
-command /cfadd:
-	trigger:
-		remove 1 from {coinflip.low::*}
 	
 on inventory close:
 	if event-inventory's display name contains "{@Name.GUI}":
@@ -564,7 +561,7 @@ command /cf [<text>] [<int>] [<player>]:
 					
 					
 		if arg 1 is "reload" or "rl":
-			if player is cf.admin:
+			if player has permission "cf.admin":
 				set {_t} to now
 				make player execute command "sk reload %script name%"
 				send "&6[&eCoinFlip&6] &eSkript created by &bCeacer1 &7(Skript reload in &8%difference between now and {_t}%&7)"

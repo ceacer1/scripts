@@ -1,0 +1,5 @@
+on damage of a player:
+    if victim is in world "plots":
+        stop
+    else:
+        cancel event

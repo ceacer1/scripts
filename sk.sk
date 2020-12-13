@@ -120,6 +120,10 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 						set {stats.mg.totalwon::%player%} to 0
 						set {stats.mg.totalplayed::%player%} to 0 
 
+		if arg-1 is "blocks":
+			player has permission "minigame.admin":
+				give player lime concrete named "&aFinish Line"
+				give player red concrete named "&cTry Again"
 
 		if arg 1 is "create":
 			player has permission "minigame.admin":
@@ -294,7 +298,7 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 					send "{@tag} &cPlease select a valid arena name"
 
 on tab complete of "/minigame", "/mg", "/mini" or "/game":
-	set tab completions for position 1 to "help", "sign", "stats", "list", "create", "join", "remove", "settings" and "leave"
+	set tab completions for position 1 to "blocks", "help", "sign", "stats", "list", "create", "join", "remove", "settings" and "leave"
 	if tab arg-1 = "join", "remove", "leave" or "sign":
 		set tab completions for position 2 to (indexes of {arenas::*})
 	else if tab arg-1 = "create":
@@ -349,47 +353,50 @@ on rightclick on sign:
 		send "{@tag} &7Arena isn't found"
 
 
-on step on green wool:
-	if {ingame.%player%} is true:
-		loop {arenas::*}:
-			set {gametype} to {gamemode::%loop-value%}
-			if {status.%loop-value%} is "&4INGAME":
-				{player.%loop-value%::*} contains player:
-					teleport player to {winner.%loop-value%}
-					add {prize.%loop-value%} to player's balance
-					add 1 to {stats.mg.won::%player%::%{gametype}%}
-					add {prize.%loop-value%} to {stats.mg.winnings::%player%::%{gametype}%}
-					send "{@tag} &aCongrats! You have won &2$&a%{prize.%loop-value%}%"
-					set {status.%loop-value%} to "&aWAITING"
-					loop {player.%loop-value%::*}:
-						clear {ingame.%loop-value-2%}
-					remove player from {player.%loop-value%::*}
-					loop {player.%loop-value%::*}:
-						add 1 to {stats.mg.lost::%loop-value-2%::%{gametype}%}
-						teleport loop-value-2 to {gameslobby}
-						send "{@tag} &aWinning Prize was&8 -  &2$&a%{prize.%loop-value-1%}%" to loop-value-2
-					clear {prize.%loop-value%}
-					set {player.%loop-value%} to 0
-					broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
-					delete {player.%loop-value%::*}
-					set player's game mode to survival
-					gameSign(loop-value)
-			else:
-				send "{@tag} &7The game has not started yet." to player
-	else:
-		send "{@tag} &7You are not in game." to player
+on step on lime concrete:
+	if block below block is bedrock:
+		if {ingame.%player%} is true:
+			loop {arenas::*}:
+				set {gametype} to {gamemode::%loop-value%}
+				if {status.%loop-value%} is "&4INGAME":
+					{player.%loop-value%::*} contains player:
+						teleport player to {winner.%loop-value%}
+						add {prize.%loop-value%} to player's balance
+						add 1 to {stats.mg.won::%player%::%{gametype}%}
+						add {prize.%loop-value%} to {stats.mg.winnings::%player%::%{gametype}%}
+						send "{@tag} &aCongrats! You have won &2$&a%{prize.%loop-value%}%"
+						set {status.%loop-value%} to "&aWAITING"
+						loop {player.%loop-value%::*}:
+							clear {ingame.%loop-value-2%}
+						remove player from {player.%loop-value%::*}
+						loop {player.%loop-value%::*}:
+							add 1 to {stats.mg.lost::%loop-value-2%::%{gametype}%}
+							teleport loop-value-2 to {gameslobby}
+							send "{@tag} &aWinning Prize was&8 -  &2$&a%{prize.%loop-value-1%}%" to loop-value-2
+						clear {prize.%loop-value%}
+						set {player.%loop-value%} to 0
+						broadcast "{@tag} &a%loop-value% &bEnded. Winner: &a%player%"
+						delete {player.%loop-value%::*}
+						set player's game mode to survival
+						gameSign(loop-value)
+				else:
+					send "{@tag} &7The game has not started yet." to player
+		else:
+			send "{@tag} &7You are not in game." to player
 
-on step on red wool:
-	if {ingame.%player%} is true:
-		loop {arenas::*}:
-			if {status.%loop-value%} is "&4INGAME":
-				{player.%loop-value%::*} contains player:
-					teleport player to {spawn.%loop-value%}
-					send "{@tag} &7Try again." to player
-			else:
-				send "{@tag} &7The game has not started yet." to player
-	else:
-		send "{@tag} &7You are not in game." to player
+
+on step on red concrete:
+	if block below block is bedrock:
+		if {ingame.%player%} is true:
+			loop {arenas::*}:
+				if {status.%loop-value%} is "&4INGAME":
+					{player.%loop-value%::*} contains player:
+						teleport player to {spawn.%loop-value%}
+						send "{@tag} &7Try again." to player
+				else:
+					send "{@tag} &7The game has not started yet." to player
+		else:
+			send "{@tag} &7You are not in game." to player
 
 on join:
 	set {online.players::%player%} to player
