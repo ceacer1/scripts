@@ -111,7 +111,7 @@ function payoutWinners(p: player, type: int = 0):
 		format gui slot 12 of {_p} with glowing book named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 3)
 		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function payoutWinners({_p}, 4)
 		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&aAvailable&r&8)" to run function payoutWinners({_p}, 5)
-		format gui slot 15 of {_p} with glowing nether star named "&6&lSeason 6" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
+		format gui slot 15 of {_p} with glowing clock named "&6&lSeason 6" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
 		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 7" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 	if {_type} is 1:

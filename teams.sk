@@ -11,7 +11,24 @@ on first join:
     if {team.plot.has-members.%uuid of player%} is not set:
         set {team.plot.has-members.%uuid of player%} to false
 
-command /team [<text>] [<string>] [<player>] [<int>]:
+command /gen [<text>] [<text>] [<offline player>]:
+    trigger:
+        if arg-1 is "add":
+            if arg-2 is "count":
+                if arg-3 is set:
+                    add 1 to {gens.%uuid of arg-3%.gencount}
+            if arg-2 is "cap":
+                if arg-3 is set:
+                    add 1 to {gens.%uuid of arg-3%.gencap}
+        if arg-1 is "remove": 
+            if arg-2 is "count":
+                if arg-3 is set:
+                    remove 1 from {gens.%uuid of arg-3%.gencount}
+            if arg-2 is "cap":
+                if arg-3 is set:
+                    remove 1 from {gens.%uuid of arg-3%.gencap}
+
+command /team [<text>] [<string>] [<offline player>] [<int>]:
     trigger:
         if arg-1 is not set:
             send ""
@@ -58,16 +75,17 @@ command /team [<text>] [<string>] [<player>] [<int>]:
             if {teams::*} contains arg-2:
                 if {teams.amount.players.%arg-2%} is 2:
                     loop {teams.%arg-2%::*}:
-                        set {_teams.balance::%loop-value%} to balance of loop-value
-                        replace every "$" with "" in {_teams.balance::%loop-value%}
-                        set {_teams.balance::%loop-value%} to {_teams.balance::%loop-value%} parsed as number
-                        set {teams.gens::%loop-value%} to {gens.%uuid of loop-value%.gencount}
-                        set {teams.gencap::%loop-value%} to {gens.%uuid of loop-value%.gencap}
-                    loop {_teams.balance::*}:
+                        set {_teams.balance.%arg-2%::%loop-value%} to balance of loop-value
+                        replace every "$" with "" in {_teams.balance.%arg-2%::%loop-value%}
+                        set {_teams.balance.%arg-2%::%loop-value%} to {_teams.balance.%arg-2%::%loop-value%} parsed as number
+                        set {teams.gens.%arg-2%::%loop-value%} to {gens.%uuid of loop-value%.gencount}
+                        set {teams.gencap.%arg-2%::%loop-value%} to {gens.%uuid of loop-value%.gencap}
+                    loop {_teams.balance.%arg-2%::*}:
                         add loop-value to {_total}
-                    loop {teams.gens::*}:
+                    loop {teams.gens.%arg-2%::*}:
                         add loop-value to {_gentotal}
-                    loop {teams.gencap::*}:
+                    loop {teams.gencap.%arg-2%::*}:
+                        send "%loop-value%"
                         add loop-value to {_gencaptotal}
                 else if {teams.amount.players.%arg-2%} is 1:
                     loop {teams.%arg-2%::*}:
@@ -180,6 +198,7 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                         if {teams.member::%player%} is true:
                             remove player from {teams.%arg-2%::*}
                             clear {teams.member::%player%}
+                            clear {teams.gencap.%arg-2%::*}
                             set {teams.amount.players.%arg-2%} to 1
                             send "{@prefix} &8- &eYou have left the team &6%arg-2%" to player
                             send "{@prefix} &8- &6%player% &6has left your team" to {teams.%arg-2%.owner::*}
@@ -201,6 +220,7 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                                         if {teams.%arg-2%.owner::*} contains player:
                                             remove arg-3 from {teams.%arg-2%::*}
                                             clear {teams.member::%arg-3%}
+                                            clear {teams.gencap.%arg-2%::*}
                                             set {teams.amount.players.%arg-2%} to 1
                                             send "{@prefix} &8- &eYou have removed &6%arg-3% &efrom the team &6%arg-2%" to player
                                             send "{@prefix} &8- &eYou have been removed from the team &6%arg-2%" to arg-3
@@ -228,6 +248,7 @@ command /team [<text>] [<string>] [<player>] [<int>]:
                                 if {team.plot.members.amount.%arg-2%} is not set:
                                     if {teams.amount.players.%arg-2%} is 1:
                                         clear {teams.%arg-2%::*}
+                                        clear {teams.%arg-2%.owner::*}
                                         clear {teams.owner::%player%}
                                         clear {teams.amount.players.%arg-2%}
                                         clear {team.plot.members.%arg-2%::*}

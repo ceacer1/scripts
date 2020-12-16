@@ -1,6 +1,16 @@
 options:
 	tag: &8[&b&lFast&3&lGens&8]
 
+function minigameSelect(p: player, type: text):
+	set {_cmd} to "/minigame join %{_type}%"
+	send "&8&m----- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&b&ls&r&8]&8&m -----%nl%%nl%&r &b&lLobby: %nl% &a%{_type}% %nl%%nl%&r &b&lGamemode: %nl% &6%{gamemode::%{_type}%}%&7 %nl%%nl% &b&lEntry Fee: %nl% &2$&a%{entryfee2.%{_type}%}% %nl%%nl% &b&lPlayers: %nl% &e%{player.%{_type}%}%&7/&e%{maxplayer.%{_type}%}% %nl% " to {_p}
+	json("%{_p}%", "&a&lClick to join ||ttp:&aClick to join&c.||cmd:/minigame join %{_type}%")
+	send "%nl%&8&m- &8[&b&lFast&3&lGens&8]&8&m -" to {_p}
+
+command /mgselect [<string>]:
+	trigger:
+		minigameSelect(player, arg-1)	
+
 command /minigame [<text>] [<text>] [<text>] [<int>]:
 	aliases: /mg, /mini, /game
 	trigger:
@@ -62,13 +72,22 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 				loop {arenas::*}:
 					if {gamemode::%loop-value%} contains arg 2:
 						if {gamemode::%{_arg 2}%} is not 0:
-							set {_cmd} to "/minigame join %loop-value%"
-							send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lLobby: %nl% &a%loop-value% %nl%%nl%&r &b&lGamemode: %nl% &6%{gamemode::%loop-value%}%&7 %nl%%nl% &b&lEntry Fee: %nl% &2$&a%{entryfee2.%loop-value%}% %nl%%nl% &b&lPlayers: %nl% &e%{player.%loop-value%}%&7/&e%{maxplayer.%loop-value%}%%nl%%nl% &a&lClick to Join><command:%{_cmd}%>&7- &a%loop-value% &7- &a%{status.%loop-value%}% <reset>"
+							#set {_cmd} to "/minigame join %loop-value%"
+							json("%player%", "&7- &a%loop-value% &7- &a%{status.%loop-value%}% ||ttp:&aClick for lobby info&c.||cmd:/mgselect %loop-value%")
+							#send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lLobby: %nl% &a%loop-value% %nl%%nl%&r &b&lGamemode: %nl% &6%{gamemode::%loop-value%}%&7 %nl%%nl% &b&lEntry Fee: %nl% &2$&a%{entryfee2.%loop-value%}% %nl%%nl% &b&lPlayers: %nl% &e%{player.%loop-value%}%&7/&e%{maxplayer.%loop-value%}%%nl%%nl% &a&lClick to Join><command:%{_cmd}%>&7- &a%loop-value% &7- &a%{status.%loop-value%}% <reset>"
 					else:
 						send "&cThere is no arena."
 
 				send ""
 				send "&8&m- &8[&eHover for more Info&8]&8&m -"
+
+		if arg-1 is "lobby":
+			if {gameslobby} is not set:
+				send "{@tag} &eNo Lobby has been set."
+				stop
+			else:
+				teleport player to {gameslobby}
+				send "{@tag} &eYou have been teleported to the &b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r &elobby."
 
 		if arg-1 is "stats":
 			if arg-2 is not set:
@@ -82,7 +101,7 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 				send ""
 				send "&8&m---- &8[&d%player%&d's &r&eStats&r&8]&8&m ----"
 				send ""
-				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Maze&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::maze}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::maze}%&7/&e%{stats.mg.lost::%player%::maze}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::maze}%>&7- &6Maze &7- <reset>"
+				send formatted "<tooltip:&8&m-- &8[{@tag}&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Maze&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::maze}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::maze}%&7/&e%{stats.mg.lost::%player%::maze}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::maze}%>&7- &6Maze &7- <reset>"
 				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Parkour&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::parkour}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::parkour}%&7/&e%{stats.mg.lost::%player%::parkour}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::parkour}%>&7- &6Parkour &7- <reset>"
 				send formatted "<tooltip:&8&m-- &8[&b&lM&3&li&b&ln&3&li&b&lG&3&la&b&lm&3&le&r&8]&8&m --%nl%%nl%&r &b&lGamemode: %nl% &6Race&7 %nl%%nl% &b&lTotal Games: %nl% &a%{stats.mg.total::%player%::race}% %nl%%nl% &b&lWin/Loss: %nl% &e%{stats.mg.won::%player%::race}%&7/&e%{stats.mg.lost::%player%::race}%%nl%%nl% &b&lTotal Won: %nl% &2$&a%{stats.mg.winnings::%player%::race}%>&7- &6Race &7- <reset>"
 				send ""
@@ -298,7 +317,7 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 					send "{@tag} &cPlease select a valid arena name"
 
 on tab complete of "/minigame", "/mg", "/mini" or "/game":
-	set tab completions for position 1 to "blocks", "help", "sign", "stats", "list", "create", "join", "remove", "settings" and "leave"
+	set tab completions for position 1 to "lobby", "blocks", "help", "sign", "stats", "list", "create", "join", "remove", "settings" and "leave"
 	if tab arg-1 = "join", "remove", "leave" or "sign":
 		set tab completions for position 2 to (indexes of {arenas::*})
 	else if tab arg-1 = "create":
@@ -368,6 +387,7 @@ on step on lime concrete:
 						set {status.%loop-value%} to "&aWAITING"
 						loop {player.%loop-value%::*}:
 							clear {ingame.%loop-value-2%}
+							clear {checkpoint.%uuid of loop-value-2%}
 						remove player from {player.%loop-value%::*}
 						loop {player.%loop-value%::*}:
 							add 1 to {stats.mg.lost::%loop-value-2%::%{gametype}%}
@@ -391,12 +411,31 @@ on step on red concrete:
 			loop {arenas::*}:
 				if {status.%loop-value%} is "&4INGAME":
 					{player.%loop-value%::*} contains player:
-						teleport player to {spawn.%loop-value%}
-						send "{@tag} &7Try again." to player
+						if {checkpoint.%uuid of player%} is not set:
+							teleport player to {spawn.%loop-value%}
+							send "{@tag} &7Try again." to player
+						else:
+							teleport player to {checkpoint.%uuid of player%}
+							send "{@tag} &7Try again." to player
 				else:
 					send "{@tag} &7The game has not started yet." to player
 		else:
 			send "{@tag} &7You are not in game." to player
+
+on step on orange concrete:
+	if block below block is bedrock:
+		if {ingame.%player%} is true:
+			loop {arenas::*}:
+				if {status.%loop-value%} is "&4INGAME":
+					{player.%loop-value%::*} contains player:
+						set {checkpoint.%uuid of player%} to location of player
+						send "{@tag} &7Checkpoint set." to player
+				else:
+					send "{@tag} &7The game has not started yet." to player
+		else:
+			send "{@tag} &7You are not in game." to player
+							
+
 
 on join:
 	set {online.players::%player%} to player

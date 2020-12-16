@@ -1,0 +1,14 @@
+
+on command "/mute ":
+    set {_args::*} to arguments split at " "
+    set {_player} to {_args::1}
+    if {_args::2} is set:
+        set {_duration} to {_args::2}
+        send "%{_duration}%"
+        loop {_args::*}:
+            send "%loop-value%"
+    else if {_args::2} is not set:
+        set {_duration} to "Permanent"
+        send "%{_duration}%"
+        loop {_args::*}:
+            send "%loop-value%"
