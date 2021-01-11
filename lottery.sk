@@ -1,0 +1,153 @@
+Variables:
+	{seconds} = 1800
+	{price} = 50
+	{p} = "&c&l[&6&lLOTTERY&c&l]"
+	{last} = 1800
+	{enablelottery} = 1
+	{alertlottery} = 0
+	{creditslottery} = 1
+	{buylottery} = 1
+	
+every 1 seconds:
+	if {last} = 0:
+		set {last} to {seconds}
+		set {drawnumber} to random integer between 1 and size of {lotteryin::*}
+		if size of {lotteryin::*} >= 1:
+			send message "%{p}% &a&l%{lotteryin::%{drawnumber}%}% &ehas won &a&lthe lottery! &2&l%{prize}% &a&l$" to all players
+			set {lastwinner} to {lotteryin::%{drawnumber}%}
+			set {lastprize} to {prize}
+		add {prize} to {lastwinner}'s balance
+		set {prize} to 0
+		delete {player}
+		delete {lotteryin::*}
+		delete {drawnumber}
+		loop all players:
+			delete {playerinlottery.%loop-player%}
+	
+every 1 seconds:
+	if {enablelottery} = 1:
+		remove 1 from {last}
+	
+command /lottery:
+	trigger:
+		open virtual chest inventory with size 1 named "%{p}%" to player
+		if {enablelottery} = 0:
+			if player has permission "lottery.manage":
+				send message "%{p}% &cThe lottery plugin is disabled! Enable it in the setup section of the /lottery menu! (red wool, last slot)"
+			else:
+				send message "%{p}% &cThe lottery plugin is disabled! Ask an admin to enable it!"
+		make gui slot 0 of player with paper named "&cNext draw:" with lore "&a%{last}% seconds" to do nothing
+		make gui slot 1 of player with gold ingot named "&6Buy a ticket" with lore "&a%{price}% &2$" to run:
+			if {enablelottery} = 1:
+				if {playerinlottery.%player%} is not set:
+					if player's balance >= {price}:
+						remove {price} from player's balance
+						add player to {lotteryin::*}
+						add {price} to {prize}
+						set {playerinlottery.%player%} to 1
+						send message "%{p}% &aYou have bought 1 ticket!"
+						if {buylottery} = 1:
+							send message "%{p}% &6&l%player% &a&lhas bought 1 ticket with /lottery!"
+						close player's inventory
+					else:
+						send message "%{p}% &cYou don't have enough money!"
+				else:
+					send message "%{p}% &cYou already have a ticket! Max. 1 ticket per player!"
+			else:
+				if player has permission "lottery.manage":
+					send message "%{p}% &cThe lottery plugin is disabled! Enable it in the setup section of the /lottery menu! (red wool, last slot)"
+				else:
+					send message "%{p}% &cThe lottery plugin is disabled! Ask an admin to enable it!"
+		make gui slot 2 of player with redstone named "&4Last winner:" with lore "&6%{lastwinner}% &2- &a%{lastprize}% &2$"
+		make gui slot 3 of player with diamond named "&4Current prize:" with lore "&a&l%{prize}% &2&l$"
+		if player has permission "lottery.manage":
+			if {creditslottery} = 1:
+				make gui slot 7 of player with nametag named "&eMade by &6DaddyCeacer" with lore "&7Credits." and "&7Currently showing to normal players."
+			else:
+				make gui slot 7 of player with nametag named "&eMade by &6DaddyCeacer" with lore "&7Credits." and "&7Currently &4&lNOT &7showing to normal players."
+			make gui slot 8 of player with red wool named "&c&lSETUP" to run:
+				open virtual chest inventory with size 1 named "%{p}% &2Setup" to player
+				make gui slot 0 of player with compass named "&a&lSET SECONDS" with lore "&2Time between draws" and "&2Current: %{seconds}% seconds" to run:
+					send message "%{p}% &aType in chat the number of seconds you want to set between draws! Typing in a letter will cancel the operation." to player
+					set {secondslottery.%player%} to 1
+					close player's inventory
+				make gui slot 1 of player with nametag named "&a&lSET PREFIX" with lore "&2Set the plugin messages prefix" and "&2Current: %{p}%" to run:
+					send message "%{p}% &aType in chat the prefix you want to set for every lottery message!"
+					set {prefixlottery.%player%} to 1
+					close player's inventory
+				make gui slot 2 of player with golden ingot named "&a&lSET PRICE" with lore "&2Set the price for each ticket!" and "&2Current: %{price}% $" to run:
+					send message "%{p}% &aType in chat the price you want to set for each ticket! Typing in a letter will cancel the operation."
+					set {pricelottery.%player%} to 1
+					close player's inventory
+				if {alertlottery} = 1:
+					make gui slot 3 of player with lime wool named "&a&lLOTTERY ALERTS" with lore "&2Current: &aON" and "&2Click to turn off" to run:
+						set {alertlottery} to 0
+						close player's inventory
+						send message "%{p}% &aAlerts are now OFF!"
+				else:
+					make gui slot 3 of player with red wool named "&a&lLOTTERY ALERTS" with lore "&2Current: &cOFF" and "&2Click to turn on" to run:
+						set {alertlottery} to 1
+						close player's inventory
+						send message "%{p}% &aAlerts are now ON!"
+				if {enablelottery} = 1:
+					make gui slot 7 of player with lime wool named "&a&lLOTTERY ENABLED" with lore "&2Current: &aON" and "&2Click to turn off the main plugin" to run:
+						set {enablelottery} to 0
+						close player's inventory
+						send message "%{p}% &aThe plugin is now OFF!"
+				else:
+					make gui slot 7 of player with red wool named "&a&lLOTTERY &c&lDISABLED" with lore "&2Current: &cOFF" and "&2Click to turn on the main plugin" to run:
+						set {enablelottery} to 1
+						close player's inventory
+						send message "%{p}% &aThe plugin is now ON"
+						set {last} to {seconds}
+				make gui slot 8 of player with barrier named "&d&lBack to lottery menu" to run:
+					close player's inventory
+					make console execute "sudo %player% lottery"
+				if {creditslottery} = 1:
+					make gui slot 5 of player with lime wool named "&a&lCREDITS ENABLED" with lore "&2Current: &aON" and "&2Click to hide credits in" and "&2the /lottery menu" to run:
+						set {creditslottery} to 0
+						close player's inventory
+						send message "%{p}% &aThe credits are now OFF!"
+				else:
+					make gui slot 5 of player with red wool named "&a&lCREDITS &c&lDISABLED" with lore "&2Current: &cOFF" and "&2Click to show credits in" and "&2the /lottery menu" to run:
+						set {creditslottery} to 1
+						close player's inventory
+						send message "%{p}% &aThe credits are now ON!"
+				if {buylottery} = 1:
+					make gui slot 4 of player with lime wool named "&a&lBUY ALERTS ENABLED" with lore "&2Current: &aON" and "&2Click to disable alerts on" and "&2players buying tickets" to run:
+						set {buylottery} to 0
+						close player's inventory
+						send message "%{p}% &aThe buy alerts are now OFF!"
+				else:
+					make gui slot 4 of player with red wool named "&a&lBUY ALERTS &c&lDISABLED" with lore "&2Current: &cOFF" and "&2Click to disable alerts on" and "&2players buying tickets" to run:
+						set {buylottery} to 1
+						close player's inventory
+						send message "%{p}% &aThe buy alerts are now ON!"
+						
+every 1 seconds:
+	if {alertlottery}  = 1:
+		if {last} = {seconds} / 2:
+			send message "%{p}% &a&lLottery is drawing in %{last}% seconds! &a&lBuy a ticket with /lottery!" to all players
+on chat:
+	if {secondslottery.%player%} = 1:
+		cancel event
+		set {seconds} to message parsed as integer
+		set {last} to message parsed as integer
+		set {secondslottery.%player%} to 0
+		send message "%{p}% &aLottery will now draw every %{seconds}% seconds"
+		
+on chat:
+	if {prefixlottery.%player%} = 1:
+		cancel event
+		set {p} to message
+		set {prefixlottery.%player%} to 0
+		send message "%{p}% &aThe new prefix is &r%{p}% &a!"
+
+on chat:
+	if {pricelottery.%player%} = 1:
+		cancel event
+		set {price} to message parsed as integer
+		set {pricelottery.%player%} to 0
+		send message "%{p}% &aThe price for each ticket is now %{price}% $!"
+					
+			

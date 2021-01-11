@@ -1,0 +1,203 @@
+Options:
+	Prefix: &8[&6&lCAPTCHA&8]
+	
+function getCaptcha(p: player) :: string:
+	{cx::codelength} is not set:
+		set {cx::codelength} to 3
+		set {cx::codelength::double} to 6
+	{cx::mode} is not set:
+		set {cx::mode} to "both"
+	loop {cx::codelength} times: # codelength base loop 3x * 2 = double (always doubled no matter what)
+		{cx::mode} = "numbers":
+			set {_b} to random element of {numbers::*}
+			set {_b1} to random element of {numbers::*}
+			add "%{_b}%%{_b1}%" to {_d::*} 
+		{cx::mode} = "letters":
+			set {_c} to random element of {letters::*}
+			set {_c1} to random element of {letters::*}
+			add "%{_c}%%{_c1}%" to {_d::*}
+		{cx::mode} = "both":
+			set {_b} to random element of {numbers::*}
+			set {_c} to random element of {letters::*}
+			add "%{_b}%%{_c}%" to {_d::*}
+	{cx::codelength} = 2:
+		return "%{_d::1}%%{_d::2}%"
+	{cx::codelength} = 3:
+		return "%{_d::1}%%{_d::2}%%{_d::3}%"
+	{cx::codelength} = 4:
+		return "%{_d::1}%%{_d::2}%%{_d::3}%%{_d::4}%"
+	{cx::codelength} = 5:
+		return "%{_d::1}%%{_d::2}%%{_d::3}%%{_d::4}%%{_d::5}%"
+on rightclick with a compass:
+	{captcha::enabled::%event-player%} is true:
+		cancel event
+on join:
+	{captcha::enabled::%event-player%} is true:
+		set {captcha::location::%event-player%} to player's location
+		send "{@Prefix} &cType the code in chat to begin playing!"
+		set {captcha::string::%event-player%} to getCaptcha(Player)
+		{cx::attempts} is not set:
+			set {cx::attempts} to 3
+		set {captcha::tries::%event-player%} to {cx::attempts}
+		send "&a&l%{captcha::string::%event-player%}%"
+		send ""
+		send "&cYou have %{captcha::tries::%event-player%}% attempts."
+		
+on command:
+	{captcha::enabled::%event-player%} is true:
+		player has permission "cx.captcha.bypass":
+			stop
+		cancel event
+		
+on any movement:
+	(distance between player's location and {captcha::location::%event-player%}) >= 1:
+		{captcha::enabled::%event-player%} is true:
+			cancel event
+			wait 5 ticks
+			{captcha::move::%event-player%} is not set:
+				send "{@Prefix} &cYou cannot move! Please enter captcha!"
+				set {captcha::move::%event-player%} to true
+			teleport event-player to {captcha::location::%event-player%}
+			
+on quit:
+	set {captcha::enabled::%event-player%} to true
+	delete {captcha::tries::%event-player%}
+	delete {captcha::string::%event-player%}
+	
+on chat:
+	{captcha::enabled::%event-player%} is true:
+		{captcha::tries::%event-player%} > 0:
+			cancel event
+			message = {captcha::string::%event-player%}:
+				send "{@Prefix} &7(&a&l!&7)&a Success!"
+				delete {captcha::tries::%event-player%}
+				delete {captcha::string::%event-player%}
+				set {captcha::enabled::%event-player%} to false
+				stop
+			subtract 1 from {captcha::tries::%event-player%}
+			send "{@Prefix} &7(&c&lX&7)&c Incorrect captcha! Attempts remaining: %{captcha::tries::%event-player%}%"
+		{captcha::tries::%event-player%} = 0:
+			kick event-player due to "{@Prefix} &cYou have failed all of your attempts!"
+		
+function resetVars(b: boolean):
+	delete {numbers::*}
+	delete {letters::*}
+	loop 10 times:
+		add (loop-number - 1) to {numbers::*}
+	add "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y" and "z" to {letters::*}
+	
+function attemptGUI(p: player):
+	open virtual chest inventory with 1 rows named "{@Prefix}&c Attempts" to {_p}
+	loop 3 times:
+		create gui slot (loop-number - 1) of {_p} with red wool named "&cDecrease Attempts" with lore "&7Lowest: 1" to run function decrease({_p}, "attempts")
+	{cx::attempts} is not set:
+		set {cx::attempts} to 3
+	create gui slot 4 of {_p} with beacon named "&b&lConfirm" with lore "&7Current Amount: %{cx::attempts}%" to close then run {_p} command "/cx settings"
+	loop 3 times:        
+		create gui slot (9 - loop-number) of {_p} with green wool named "&aIncrease Attempts" with lore "&7Highest: infinite" to run function increase({_p}, "attempts")
+
+function increase(p: player, t: text):
+	{_t} = "attempts":
+		add 1 to {cx::attempts}
+		create gui slot 4 of {_p} with beacon named "&b&lConfirm" with lore "&7Current Amount: %{cx::attempts}%" to close then run {_p} command "/cx settings"
+	{_t} = "length":
+		{cx::codelength} < 5:
+			add 1 to {cx::codelength}
+			add 2 to {cx::codelength::double}
+			create gui slot 4 of {_p} with beacon named "&b&lConfirm" with lore "&7Current Amount: %{cx::codelength::double}%" to close then run {_p} command "/cx settings"
+		{cx::codelength} = 5:
+			send "{@Prefix} &cYou can not go above 10 characters" to {_p}
+			
+function decrease(p: player, t: text):
+	{_t} = "attempts":
+		{cx::attempts} > 1:
+			subtract 1 from {cx::attempts}
+			create gui slot 4 of {_p} with beacon named "&b&lConfirm" with lore "&7Current Amount: %{cx::attempts}%" to close then run {_p} command "/cx settings"
+		{cx::attempts} = 1:
+			send "{@Prefix} &cYou can not go lower than 1 attempt." to {_p}
+	{_t} = "length": # 2
+		{cx::codelength} > 2:
+			subtract 1 from {cx::codelength}
+			subtract 2 from {cx::codelength::double}
+			create gui slot 4 of {_p} with beacon named "&b&lConfirm" with lore "&7Current Amount: %{cx::codelength::double}%" to close then run {_p} command "/cx settings"
+		{cx::codelength} = 2:
+			send "{@Prefix} &cYou can not go lower than 4 characters." to {_p}
+			
+	
+function lengthGUI(p: player):
+	open virtual chest inventory with 1 rows named "{@Prefix}&c Length" to {_p}
+	loop 3 times:
+		create gui slot (loop-number - 1) of {_p} with red wool named "&cDecrease Length by 2" with lore "&7Lowest: 4" to run function decrease({_p}, "length") # 2 times
+	{cx::codelength} is not set:
+		set {cx::codelength} to 3
+	create gui slot 4 of {_p} with beacon named "&b&lConfirm" with lore "&7Current Amount: %{cx::codelength::double}%" to close then run {_p} command "/cx settings"
+	loop 3 times:        
+		create gui slot (9 - loop-number) of {_p} with green wool named "&aIncrease Length by 2" with lore "&7Highest: 10" to run function increase({_p}, "length") # 5 times
+		
+function switchMode(p: player):
+	{cx::mode} = "numbers":
+		set {cx::mode} to "letters"
+		create gui slot 13 of {_p} with lever named "&6&lChange Captcha Mode" with lore "&7Change the mode of the Captcha system||&e||&7Current Mode:&9 %{cx::mode}%" to run function switchMode({_p})
+		stop
+	{cx::mode} = "letters":
+		set {cx::mode} to "both"
+		create gui slot 13 of {_p} with lever named "&6&lChange Captcha Mode" with lore "&7Change the mode of the Captcha system||&e||&7Current Mode:&9 %{cx::mode}%" to run function switchMode({_p})
+		stop
+	{cx::mode} = "both":
+		set {cx::mode} to "numbers"
+		create gui slot 13 of {_p} with lever named "&6&lChange Captcha Mode" with lore "&7Change the mode of the Captcha system||&e||&7Current Mode:&9 %{cx::mode}%" to run function switchMode({_p})
+		stop
+	
+on skript load:
+	resetVars(true)
+	{cx::attempts} is not set:
+		set {cx::attempts} to 3
+	{cx::codelength} is not set:
+		set {cx::codelength} to 3
+		set {cx::codelength::double} to 6
+		
+command /cx [<text>] [<text>]:
+	aliases: captchax, captcha, cap
+	trigger:
+		arg-1 is not set:
+			send "&8&m----------{@Prefix}&8&m----------"
+			send "&c/cx recap <player>&7 - retrieves the active captcha"
+			send "&c/cx forcelogin <player>&7 - forces a login"
+			send "&c/cx settings&7 - opens the in-game config"
+		arg-1 is not "recap", "settings" or "forcelogin":
+			send "{@Prefix} &cThat is not a command!"
+		arg-1 is "forcelogin":
+			player has permission "cx.captcha.admin":
+				arg-2 is set:
+					set {_b} to arg-2 parsed as player
+					{_b} is online:
+						{captcha::enabled::%{_b}%} is false:
+							send "{@Prefix} &cThat player does not have an active captcha!"
+							stop
+						set {captcha::enabled::%{_b}%} to true
+						send "{@Prefix} &eDeleting %{_b}%'s current captcha..."
+						send "{@Prefix} &aCaptcha was&b %{captcha::string::%{_b}%}%"
+						delete {captcha::string::%{_b}%}
+						stop
+					send "{@Prefix} &cThat player is not online!"
+					stop
+				send "{@Prefix} &cPlease specify a player!"
+		arg-1 is "recap":
+			arg-2 is set:
+				set {_b} to arg-2 parsed as player
+				send "{@Prefix} &eRetrieving %{_b}%'s captcha..."
+				wait 5 ticks
+				{captcha::string::%{_b}%} is not set:
+					send "{@Prefix} &cNo captcha was found."
+					stop
+				send "{@Prefix} &aCaptcha retrieved:&b %{captcha::string::%{_b}%}%"
+				stop
+			send "{@Prefix} &cPlease specify a player!"
+		arg-1 is "settings":
+			player has permission "cx.captcha.admin":
+				open virtual chest inventory with 3 rows named "{@Prefix}&4&l Settings" to player
+				create gui slot 10 of player with bars named "&6&lChange Attempts" with lore "&7Change the amount of attempts a player gets" to close then run function attemptGUI(Player)
+				create gui slot 16 of player with redstone named "&6&lChange Captcha Length" with lore "&7Change the length of the Captcha" to close then run function lengthGUI(Player)
+				create gui slot 13 of player with lever named "&6&lChange Captcha Mode" with lore "&7Change the mode of the Captcha system||&e||&7Current Mode:&9 %{cx::mode}%" to run function switchMode(Player)
+
+		

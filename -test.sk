@@ -1,8 +1,0 @@
-
-on command "/mute ":
-    set {_args::*} to arguments split at " "
-    set {_player} to {_args::1}
-    if {_args::2} contains a integer:
-        set {_duration} to {_args::2}
-    else if {_args::2} does not contain a integer:
-        set {_duration} to "Permanent"

@@ -1,5 +1,5 @@
 options:
-	tag: &8[&b&lFast&3&lGens&8]
+	tag: &b&lFast&3&lGens &8➤
 
 function minigameSelect(p: player, type: text):
 	set {_cmd} to "/minigame join %{_type}%"
@@ -289,21 +289,42 @@ command /minigame [<text>] [<text>] [<text>] [<int>]:
 				if {ingame.%player%} is not set:
 					send "{@tag} &cYou are not in a game!"
 				else:
-					set {_refund} to (({entryfee.%arg 2%}/100) * 90)
-					add {_refund} to player's balance
-					remove {entryfee.%arg 2%} from {prize.%arg 2%}
-					send "{@tag} &2$&a%{_refund}% &chad been refunded for your for leaving."
-					send "{@tag} &cTen Percent of the entry fee has been kept."
-					clear player's inventory
-					teleport player to {gameslobby}
-					set player's game mode to survival
-					remove player from {player.%arg 2%::*}
-					remove 1 from {player.%arg 2%}
-					clear {ingame.%player%}
-					loop {player.%arg 2%::*}:
-						send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
-					send "{@tag} &aYou have left the game!"
-					gameSign(arg 2)
+					if {status.%arg 2%} is not "&4INGAME":
+						set {_refund} to (({entryfee.%arg 2%}/100) * 90)
+						add {_refund} to player's balance
+						remove {entryfee.%arg 2%} from {prize.%arg 2%}
+						send "{@tag} &2$&a%{_refund}% &chad been refunded for your for leaving."
+						send "{@tag} &cTen Percent of the entry fee has been kept."
+						clear player's inventory
+						teleport player to {gameslobby}
+						set player's game mode to survival
+						remove player from {player.%arg 2%::*}
+						remove 1 from {player.%arg 2%}
+						clear {ingame.%player%}
+						loop {player.%arg 2%::*}:
+							send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+						send "{@tag} &aYou have left the game!"
+						gameSign(arg 2)
+					else:
+						if {confirm.%player%} is not set:
+							send "{@tag} &aYou are trying to leave a game that is currently in play."
+							send "{@tag} &aPlease run again to confirm, You &lWILL &r&aforteit your entry fee."
+							set {confirm.%player%} to false
+							wait 10 seconds
+							if {confirm.%player%} is set:
+								delete {confirm.%player%}
+						else:
+							send "{@tag} &aYou have forefeited your entry fee."
+							clear player's inventory
+							teleport player to {gameslobby}
+							set player's game mode to survival
+							remove player from {player.%arg 2%::*}
+							remove 1 from {player.%arg 2%}
+							clear {ingame.%player%}
+							loop {player.%arg 2%::*}:
+								send "{@tag} &2%player% &ahas left the game! &8(&c%{player.%arg 2%}%&7/&c%{maxplayer.%arg 2%}%&8)" to loop-value
+							send "{@tag} &aYou have left the game!"
+							gameSign(arg 2)
 		
 		if arg 1 is "sign":
 			if arg 2 isn't set:
@@ -368,8 +389,6 @@ on rightclick on sign:
 		set {_game} to loop-value
 	if line 2 contains {_game}:
 		make player say "/minigame join %{_game}%"
-	else:
-		send "{@tag} &7Arena isn't found"
 
 
 on step on lime concrete:

@@ -1,0 +1,68 @@
+# ﻿Copyright 2020. 겜돌이(Over_N). all rights reserved
+
+import:
+	org.bukkit.event.inventory.InventoryPickupItemEvent
+	
+on InventoryPickupItemEvent:
+	set {_i} to item of event.getItem()
+	set {_b} to event.getInventory()
+	if {hopper.filter::%{_b}%::*} is set:
+		if {hopper.filter.name::%{_b}%::*} contains type of {_i}:
+			broadcast "1"
+		else:
+			cancel event
+
+command /getfilter:
+	trigger:
+		give player hopper named "&3Item Filter"
+		broadcast "filter"
+
+
+on place of hopper:
+	if name of player's tool is "&3Item Filter":
+		set block at event-location to hopper
+		remove 1 of player's tool from player's tool
+		broadcast "placed"
+	else:
+		broadcast "Nope"
+		cancel event
+
+on break:
+	set {_b} to inventory of event-block
+	if {hopper.filter::%{_b}%::*} is set:
+		delete {hopper.filter::%{_b}%::*}
+		delete {hopper.filter.name::%{_b}%::*}
+
+command /filtertest:
+	trigger:
+		send "%{hopper.filter.name::%{hopper.filter.set::%player%}%::*}%" to player
+		send "%{hopper.filter::%{hopper.filter.set::%player%}%::*}%" to player
+	
+
+on left click:
+	if player is sneaking:
+		if event-block is hopper:
+			cancel event
+			set {_b} to inventory of event-block
+			set {hopper.filter.set::%player%} to {_b}
+			open virtual hopper inventory named "&aHopperFilter" to player
+			if {hopper.filter.name::%{hopper.filter.set::%player%}%::*} is set:
+				loop {hopper.filter::%{_b}%::*}:
+					send "1" to player
+					set slot (loop-index parsed as integer)-1 of current inventory of player to loop-value
+			else:
+				send "2" to player
+				
+on inventory close:
+	if inventory name of current inventory of player contains "&aHopperFilter":
+		set {_c} to 0
+		delete {hopper.filter::%{hopper.filter.set::%player%}%::*}
+		delete {hopper.filter.name::%{hopper.filter.set::%player%}%::*}
+		if slot 1 of current inventory of player is not air:
+			add slot 1 of current inventory of player to {hopper.filter::%{hopper.filter.set::%player%}%::*}
+			add type of slot 1 of current inventory of player to {hopper.filter.name::%{hopper.filter.set::%player%}%::*}
+			add 1 to {_c}
+		if {_c} is 0:
+			delete {hopper.filter::%{hopper.filter.set::%player%}%::*}
+			delete {hopper.filter.name::%{hopper.filter.set::%player%}%::*}
+		delete {hopper.filter.set::%player%}

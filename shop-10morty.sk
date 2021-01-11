@@ -1,0 +1,1019 @@
+options:
+    ctb: &7Click to buy
+    currentpage: &7You are on this page!
+    #PRICES -- -- Price listed is price per item !
+    blocks: 3 
+    decoblocks: 3
+    enchanting_table: 50000
+    hopper: 312.5
+    coalgen: 500
+    #sellwands
+    sellwandx1: 1000000
+    sellwandx1_25: 3500000
+    sellwandx1_5: 7500000
+    sellwandx2: 15000000
+    sellwandx3: 35000000
+
+#-------------[DO NOT CHANGE ANYTHING BELOW THIS LINE]-------------#
+
+command /sandstonestairs:
+    trigger:
+        if player is "10morty" or "Stoff28":
+            set {sandstonestairs} to player's target block
+
+command /shop [<text>] [<text>] [<text>]:
+    trigger:
+#-SHOP              -DONE
+        if arg-1 is not set:
+            open chest with 5 rows named "&eShop" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 13 of player with grass block named "&eBlocks" with lore "&7Click me to go to the &ablock categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 20 of player with coal block named "&eGenerators" with lore "&7Click me to go to the &agenerators&7." to run [ execute player command "/shop gens" ]
+            format slot 24 of player with shiny blaze rod named "&eSell Wands" with lore "&7Click me to go to the &asell wands&7." to run [ execute player command "/shop sellwands" ]
+            format slot 31 of player with water bucket named "&eEssentials" with lore "&7Click me to go to the &aessentials items&7." to run [ execute player command "/shop essentials" ]
+            format slot 44 of player with light gray glass pane named "&7Shop Made By:" with lore "&a10morty" to run ""
+#-ESSENTIALS        -DONE
+        if arg-1 is "essentials":
+            open chest with 3 rows named "&8Shop > &eEssentials" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with water bucket with lore "{@ctb}" to run [ execute player command "/shop buy Water_Bucket essentials" ]
+            format slot 11 of player with chest with lore "{@ctb}" to run [ execute player command "/shop buy Chest essentials" ]
+            format slot 12 of player with ice with lore "{@ctb}" to run [ execute player command "/shop buy Ice essentials" ]
+            format slot 13 of player with blue ice with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Ice essentials" ]
+            format slot 14 of player with soul sand with lore "{@ctb}" to run [ execute player command "/shop buy Soul_Sand essentials" ]
+            format slot 15 of player with hopper with lore "{@ctb}" to run [ execute player command "/shop buy Hopper essentials" ]
+
+            format slot 22 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &amain page&7." to run [ execute player command "/shop" ]
+#-GENS              -DONE
+        if arg-1 is "gens":
+            open chest with 3 rows named "&8Shop > &eGenerators" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 13 of player with coal block named "&8Coal&aGen" with lore "&7Price: &e${@coalgen}" to run [ execute player command "/shop give Coal_Gen" ]
+            format slot 22 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &amain page&7." to run [ execute player command "/shop" ]
+#-SELLWANDS         -DONE
+        if arg-1 is "sellwands":
+            open chest with 3 rows named "&8Shop > &eSell Wands" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 11 of player with shiny blaze rod named "&2Sellwand &7| &ax1.0" with lore "&7Cost: &e$1,000,000" to run [ execute player command "/shop give Sellwandx1" ]
+            format slot 12 of player with shiny blaze rod named "&2Sellwand &7| &ax1.25" with lore "&7Cost: &e$3,500,000" to run [ execute player command "/shop give Sellwandx1_25" ]
+            format slot 13 of player with shiny blaze rod named "&2Sellwand &7| &ax1.5" with lore "&7Cost: &e$7,500,000" to run [ execute player command "/shop give Sellwandx1_5" ]
+            format slot 14 of player with shiny blaze rod named "&2Sellwand &7| &ax2.0" with lore "&7Cost: &e$15,000,000" to run [ execute player command "/shop give Sellwandx2" ]
+            format slot 15 of player with shiny blaze rod named "&2Sellwand &7| &ax3.0" with lore "&7Cost: &e$35,000,000" to run [ execute player command "/shop give Sellwandx3" ]
+            format slot 22 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &amain page&7." to run [ execute player command "/shop" ]
+#-DECOBLOCKS 1      -DONE
+        if arg-1 is "decoblocks1":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (1)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with poppy with lore "{@ctb}" to run [ execute player command "/shop buy Poppy decoblocks1" ]
+            format slot 11 of player with dandelion with lore "{@ctb}" to run [ execute player command "/shop buy Dandelion decoblocks1" ]
+            format slot 12 of player with blue orchid with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Orchid decoblocks1" ]
+            format slot 13 of player with allium with lore "{@ctb}" to run [ execute player command "/shop buy Allium decoblocks1" ]
+            format slot 14 of player with azure bluet with lore "{@ctb}" to run [ execute player command "/shop buy Azure_Bluet decoblocks1" ]
+            format slot 15 of player with red tulip with lore "{@ctb}" to run [ execute player command "/shop buy Red_Tulip decoblocks1" ]
+            format slot 16 of player with orange tulip with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Tulip decoblocks1" ]
+
+            format slot 19 of player with pink tulip with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Tulip decoblocks1" ]
+            format slot 20 of player with white tulip with lore "{@ctb}" to run [ execute player command "/shop buy White_Tulip decoblocks1" ]
+            format slot 21 of player with oxeye daisy with lore "{@ctb}" to run [ execute player command "/shop buy Oxeye_Daisy decoblocks1" ]
+            format slot 22 of player with cornflower with lore "{@ctb}" to run [ execute player command "/shop buy Cornflower decoblocks1" ]
+            format slot 23 of player with lily of the valley with lore "{@ctb}" to run [ execute player command "/shop buy Lily_Of_The_Valley decoblocks1" ]
+            format slot 24 of player with lilac with lore "{@ctb}" to run [ execute player command "/shop buy Lilac decoblocks1" ]
+            format slot 25 of player with peony with lore "{@ctb}" to run [ execute player command "/shop buy Peony decoblocks1" ]
+            
+            format slot 28 of player with rose bush with lore "{@ctb}" to run [ execute player command "/shop buy Rose_Bush decoblocks1" ]
+            format slot 29 of player with sunflower with lore "{@ctb}" to run [ execute player command "/shop buy Sunflower decoblocks1" ]
+            format slot 30 of player with wither rose with lore "{@ctb}" to run [ execute player command "/shop buy Wither_Rose decoblocks1" ]
+            format slot 31 of player with red mushroom with lore "{@ctb}" to run [ execute player command "/shop buy Red_Mushroom decoblocks1" ]
+            format slot 32 of player with crimson fungus with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Fungus decoblocks1" ]
+            format slot 33 of player with brown mushroom with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Mushroom decoblocks1" ]
+            format slot 34 of player with warped fungus with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Fungus decoblocks1" ]
+
+            format slot 37 of player with dead bush with lore "{@ctb}" to run [ execute player command "/shop buy Dead_Bush decoblocks1" ]
+            format slot 38 of player with seagrass with lore "{@ctb}" to run [ execute player command "/shop buy Seagrass decoblocks1" ]
+            format slot 39 of player with short grass with lore "{@ctb}" to run [ execute player command "/shop buy Grass decoblocks1" ]
+            format slot 40 of player with tall grass with lore "{@ctb}" to run [ execute player command "/shop buy Tall_Grass decoblocks1" ]
+            format slot 41 of player with fern with lore "{@ctb}" to run [ execute player command "/shop buy Fern decoblocks1" ]
+            format slot 42 of player with large fern with lore "{@ctb}" to run [ execute player command "/shop buy Large_Fern decoblocks1" ]
+            format slot 43 of player with vine with lore "{@ctb}" to run [ execute player command "/shop buy Vine decoblocks1" ]
+
+            format slot 46 of player with shiny oxeye daisy named "&eFlowers" with lore "{@currentpage}" to run ""
+            format slot 47 of player with campfire named "&ePage 2" with lore "&7Click me to go to the &anext page&7." to run [ execute player command "/shop decoblocks2" ]
+            format slot 48 of player with jungle fence named "&eWalls & Fences" with lore "&7Click me to go to the &awalls and fences&7." to run [ execute player command "/shop decoblocks3" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with spruce door named "&eDoors & Fence Gates" with lore "&7Click me to go to the &adoors and fence gates&7." to run [ execute player command "/shop decoblocks4" ]
+            format slot 51 of player with cyan glazed terracotta named "&eColorful Blocks" with lore "&7Click me to go to the &acolorful blocks&7." to run [ execute player command "/shop decoblocks5" ]
+            format slot 52 of player with red mushroom block named "&eNature Blocks" with lore "&7Click me to go to the &anature blocks&7." to run [ execute player command "/shop decoblocks6" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop decoblocks2" ]
+#-DECOBLOCKS 2      -DONE
+        if arg-1 is "decoblocks2":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (2)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with lily pad with lore "{@ctb}" to run [ execute player command "/shop buy Lily_Pad decoblocks2" ]
+            format slot 11 of player with kelp with lore "{@ctb}" to run [ execute player command "/shop buy Kelp decoblocks2" ]
+            format slot 12 of player with cactus with lore "{@ctb}" to run [ execute player command "/shop buy Cactus decoblocks2" ]
+            format slot 13 of player with sugar cane with lore "{@ctb}" to run [ execute player command "/shop buy Sugar_Cane decoblocks2" ]
+            format slot 14 of player with sea pickle with lore "{@ctb}" to run [ execute player command "/shop buy Sea_Pickle decoblocks2" ]
+            format slot 15 of player with twisting vines with lore "{@ctb}" to run [ execute player command "/shop buy Twisting_Vines decoblocks2" ]
+            format slot 16 of player with nether sprouts with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Sprouts decoblocks2" ]
+
+            format slot 19 of player with warped roots with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Roots decoblocks2" ]
+            format slot 20 of player with crimson roots with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Roots decoblocks2" ]
+            format slot 21 of player with weeping vines with lore "{@ctb}" to run [ execute player command "/shop buy Weeping_Vines decoblocks2" ]
+            format slot 22 of player with torch with lore "{@ctb}" to run [ execute player command "/shop buy Torch decoblocks2" ]
+            format slot 23 of player with lantern with lore "{@ctb}" to run [ execute player command "/shop buy Lantern decoblocks2" ]
+            format slot 24 of player with campfire with lore "{@ctb}" to run [ execute player command "/shop buy Campfire decoblocks2" ]
+            format slot 25 of player with end rod with lore "{@ctb}" to run [ execute player command "/shop buy End_Rod decoblocks2" ]
+
+            format slot 28 of player with soul torch with lore "{@ctb}" to run [ execute player command "/shop buy Soul_Torch decoblocks2" ]
+            format slot 29 of player with soul lantern with lore "{@ctb}" to run [ execute player command "/shop buy Soul_Lantern decoblocks2" ]
+            format slot 30 of player with soul campfire with lore "{@ctb}" to run [ execute player command "/shop buy Soul_Campfire decoblocks2" ]
+            format slot 31 of player with shroomlight with lore "{@ctb}" to run [ execute player command "/shop buy Shroomlight decoblocks2" ]
+            format slot 32 of player with jack o lantern with lore "{@ctb}" to run [ execute player command "/shop buy Jack_O_Lantern decoblocks2" ]
+            format slot 33 of player with glowstone with lore "{@ctb}" to run [ execute player command "/shop buy Glowstone decoblocks2" ]
+            format slot 34 of player with sea lantern with lore "{@ctb}" to run [ execute player command "/shop buy Sea_Lantern decoblocks2" ]
+
+            format slot 38 of player with enchanting table with lore "{@ctb}" to run [ execute player command "/shop buy Enchanting_Table decoblocks2" ]
+            format slot 39 of player with iron bars with lore "{@ctb}" to run [ execute player command "/shop buy Iron_Bars decoblocks2" ]
+            format slot 40 of player with chain with lore "{@ctb}" to run [ execute player command "/shop buy Chain decoblocks2" ]
+            format slot 41 of player with cobweb with lore "{@ctb}" to run [ execute player command "/shop buy Cobweb decoblocks2" ]
+            format slot 42 of player with snow layer with lore "{@ctb}" to run [ execute player command "/shop buy Snow_Layer decoblocks2" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop decoblocks1" ]
+            format slot 46 of player with oxeye daisy named "&eFlowers" with lore "&7Click me to go to the &aflowers&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 47 of player with shiny campfire named "&ePage 2" with lore "{@currentpage}" to run ""
+            format slot 48 of player with jungle fence named "&eWalls & Fences" with lore "&7Click me to go to the &awalls and fences&7." to run [ execute player command "/shop decoblocks3" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with spruce door named "&eDoors & Fence Gates" with lore "&7Click me to go to the &adoors and fence gates&7." to run [ execute player command "/shop decoblocks4" ]
+            format slot 51 of player with cyan glazed terracotta named "&eColorful Blocks" with lore "&7Click me to go to the &acolorful blocks&7." to run [ execute player command "/shop decoblocks5" ]
+            format slot 52 of player with red mushroom block named "&eNature Blocks" with lore "&7Click me to go to the &anature blocks&7." to run [ execute player command "/shop decoblocks6" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop decoblocks3" ]
+#-DECOBLOCKS 3      -DONE
+        if arg-1 is "decoblocks3":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (3)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with oak fence with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Fence decoblocks3" ]
+            format slot 11 of player with birch fence with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Fence decoblocks3" ]
+            format slot 12 of player with jungle fence with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Fence decoblocks3" ]
+            format slot 13 of player with acacia fence with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Fence decoblocks3" ]
+            format slot 14 of player with spruce fence with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Fence decoblocks3" ]
+            format slot 15 of player with dark oak fence with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Fence decoblocks3" ]
+            format slot 16 of player with crimson fence with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Fence decoblocks3" ]
+
+            format slot 19 of player with nether brick fence with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Brick_Fence decoblocks3" ]
+            format slot 20 of player with warped fence with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Fence decoblocks3" ]
+            format slot 21 of player with sandstone wall with lore "{@ctb}" to run [ execute player command "/shop buy Sandstone_Wall decoblocks3" ]
+            format slot 22 of player with end stone brick wall with lore "{@ctb}" to run [ execute player command "/shop buy End_Stone_Brick_Wall decoblocks3" ]
+            format slot 23 of player with diorite wall with lore "{@ctb}" to run [ execute player command "/shop buy Diorite_Wall decoblocks3" ]
+            format slot 24 of player with andesite wall with lore "{@ctb}" to run [ execute player command "/shop buy Andesite_Wall decoblocks3" ]
+            format slot 25 of player with cobblestone wall with lore "{@ctb}" to run [ execute player command "/shop buy Cobblestone_Wall decoblocks3" ]
+
+            format slot 28 of player with stone brick wall with lore "{@ctb}" to run [ execute player command "/shop buy Stone_Brick_Wall decoblocks3" ]
+            format slot 29 of player with mossy cobblestone wall with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Cobblestone_Wall decoblocks3" ]
+            format slot 30 of player with mossy stone brick wall with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Stone_Brick_Wall decoblocks3" ]
+            format slot 31 of player with red sandstone wall with lore "{@ctb}" to run [ execute player command "/shop buy Red_Sandstone_Wall decoblocks3" ]
+            format slot 32 of player with granite wall with lore "{@ctb}" to run [ execute player command "/shop buy Granite_Wall decoblocks3" ]
+            format slot 33 of player with brick wall with lore "{@ctb}" to run [ execute player command "/shop buy Brick_Wall decoblocks3" ]
+            format slot 34 of player with red nether brick wall with lore "{@ctb}" to run [ execute player command "/shop buy Red_Nether_Brick_Wall decoblocks3" ]
+
+            format slot 38 of player with nether brick wall with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Brick_Wall decoblocks3" ]
+            format slot 39 of player with blackstone wall with lore "{@ctb}" to run [ execute player command "/shop buy Blackstone_Wall decoblocks3" ]
+            format slot 40 of player with polished blackstone brick wall with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone_Brick_Wall decoblocks3" ]
+            format slot 41 of player with polished blackstone wall with lore "{@ctb}" to run [ execute player command "/shop buy Polised_Blackstone_Wall decoblocks3" ]
+            format slot 42 of player with prismarine wall with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine_Wall decoblocks3" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop decoblocks2" ]
+            format slot 46 of player with oxeye daisy named "&eFlowers" with lore "&7Click me to go to the &aflowers&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 47 of player with campfire named "&ePage 2" with lore "&7Click me to go to &apage 2&7." to run [ execute player command "/shop decoblocks2" ]
+            format slot 48 of player with shiny jungle fence named "&eWalls & Fences" with lore "{@currentpage}" to run ""
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with spruce door named "&eDoors & Fence Gates" with lore "&7Click me to go to the &adoors and fence gates&7." to run [ execute player command "/shop decoblocks4" ]
+            format slot 51 of player with cyan glazed terracotta named "&eColorful Blocks" with lore "&7Click me to go to the &acolorful blocks&7." to run [ execute player command "/shop decoblocks5" ]
+            format slot 52 of player with red mushroom block named "&eNature Blocks" with lore "&7Click me to go to the &anature blocks&7." to run [ execute player command "/shop decoblocks6" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop decoblocks4" ]
+#-DECOBLOCKS 4      -DONE
+        if arg-1 is "decoblocks4":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (4)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with oak door with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Door decoblocks4" ]
+            format slot 11 of player with birch door with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Door decoblocks4" ]
+            format slot 12 of player with jungle door with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Door decoblocks4" ]
+            format slot 13 of player with acacia door with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Door decoblocks4" ]
+            format slot 14 of player with spruce door with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Door decoblocks4" ]
+            format slot 15 of player with dark oak door with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Door decoblocks4" ]
+            format slot 16 of player with warped door with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Door decoblocks4" ]
+
+            format slot 19 of player with crimson door with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Door decoblocks4" ]
+            format slot 20 of player with iron door with lore "{@ctb}" to run [ execute player command "/shop buy Iron_Door decoblocks4" ]
+            format slot 21 of player with oak trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Trapdoor decoblocks4" ]
+            format slot 22 of player with birch trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Trapdoor decoblocks4" ]
+            format slot 23 of player with jungle trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Trapdoor decoblocks4" ]
+            format slot 24 of player with acacia trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Trapdoor decoblocks4" ]
+            format slot 25 of player with spruce trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Trapdoor decoblocks4" ]
+
+            format slot 28 of player with dark oak trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Trapdoor decoblocks4" ]
+            format slot 29 of player with warped trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Trapdoor decoblocks4" ]
+            format slot 30 of player with crimson trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Trapdoor decoblocks4" ]
+            format slot 31 of player with iron trapdoor with lore "{@ctb}" to run [ execute player command "/shop buy Iron_Trapdoor decoblocks4" ]
+            format slot 32 of player with oak fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Fence_Gate decoblocks4" ]
+            format slot 33 of player with birch fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Fence_Gate decoblocks4" ]
+            format slot 34 of player with jungle fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Fence_Gate decoblocks4" ]
+
+            format slot 38 of player with acacia fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Fence_Gate decoblocks4" ]
+            format slot 39 of player with spruce fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Fence_Gate decoblocks4" ]
+            format slot 40 of player with dark oak fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Fence_Gate decoblocks4" ]
+            format slot 41 of player with warped fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Fence_Gate decoblocks4" ]
+            format slot 42 of player with crimson fence gate with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Fence_Gate decoblocks4" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop decoblocks3" ]
+            format slot 46 of player with oxeye daisy named "&eFlowers" with lore "&7Click me to go to the &aflowers&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 47 of player with campfire named "&ePage 2" with lore "&7Click me to go to &apage 2&7." to run [ execute player command "/shop decoblocks2" ]
+            format slot 48 of player with jungle fence named "&eWalls & Fences" with lore "&7Click me to go to the &awalls and fences&7." to run [ execute player command "/shop decoblocks3" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with shiny spruce door named "&eDoors & Fence Gates" with lore "{@currentpage}" to run ""
+            format slot 51 of player with cyan glazed terracotta named "&eColorful Blocks" with lore "&7Click me to go to the &acolorful blocks&7." to run [ execute player command "/shop decoblocks5" ]
+            format slot 52 of player with red mushroom block named "&eNature Blocks" with lore "&7Click me to go to the &anature blocks&7." to run [ execute player command "/shop decoblocks6" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop decoblocks5" ]
+#-DECOBLOCKS 5      -DONE
+        if arg-1 is "decoblocks5":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (5)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with white bed with lore "{@ctb}" to run [ execute player command "/shop buy White_Bed decoblocks5" ]
+            format slot 11 of player with yellow bed with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Bed decoblocks5" ]
+            format slot 12 of player with orange bed with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Bed decoblocks5" ]
+            format slot 13 of player with red bed with lore "{@ctb}" to run [ execute player command "/shop buy Red_Bed decoblocks5" ]
+            format slot 14 of player with pink bed with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Bed decoblocks5" ]
+            format slot 15 of player with magenta bed with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Bed decoblocks5" ]
+            format slot 16 of player with purple bed with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Bed decoblocks5" ]
+
+            format slot 19 of player with light blue bed with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Bed decoblocks5" ]
+            format slot 20 of player with cyan bed with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Bed decoblocks5" ]
+            format slot 21 of player with blue bed with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Bed decoblocks5" ]
+            format slot 22 of player with lime bed with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Bed decoblocks5" ]
+            format slot 23 of player with green bed with lore "{@ctb}" to run [ execute player command "/shop buy Green_Bed decoblocks5" ]
+            format slot 24 of player with light gray bed with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Bed decoblocks5" ]
+            format slot 25 of player with gray bed with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Bed decoblocks5" ]
+
+            format slot 28 of player with black bed with lore "{@ctb}" to run [ execute player command "/shop buy Black_Bed decoblocks5" ]
+            format slot 29 of player with brown bed with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Bed decoblocks5" ]
+            format slot 30 of player with white glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy White_Glazed_Terracotta decoblocks5" ]
+            format slot 31 of player with yellow glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Yellow_Glazed_Terracotta decoblocks5" ]
+            format slot 32 of player with orange glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Orange_Glazed_Terracotta decoblocks5" ]
+            format slot 33 of player with red glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Red_Glazed_Terracotta decoblocks5" ]
+            format slot 34 of player with pink glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Pink_Glazed_Terracotta decoblocks5" ]
+
+            format slot 37 of player with magenta glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Magenta_Glazed_Terracotta decoblocks5" ]
+            format slot 38 of player with purple glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Purple_Glazed_Terracotta decoblocks5" ]
+            format slot 39 of player with light blue glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Light_Blue_Glazed_Terracotta decoblocks5" ]
+            format slot 40 of player with cyan glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Cyan_Glazed_Terracotta decoblocks5" ]
+            format slot 41 of player with blue glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Blue_Glazed_Terracotta decoblocks5" ]
+            format slot 42 of player with lime glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Lime_Glazed_Terracotta decoblocks5" ]
+            format slot 43 of player with green glazed terracotta with lore "{@ctb}" to run [ execute player command "shop buy Green_Glazed_Terracotta decoblocks5" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop decoblocks4" ]
+            format slot 46 of player with oxeye daisy named "&eFlowers" with lore "&7Click me to go to the &aflowers&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 47 of player with campfire named "&ePage 2" with lore "&7Click me to go to &apage 2&7." to run [ execute player command "/shop decoblocks2" ]
+            format slot 48 of player with jungle fence named "&eWalls & Fences" with lore "&7Click me to go to the &awalls and fences&7." to run [ execute player command "/shop decoblocks3" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with spruce door named "&eDoors & Fence Gates" with lore "&7Click me to go to the &adoors and fence gates&7." to run [ execute player command "/shop decoblocks4" ]
+            format slot 51 of player with shiny cyan glazed terracotta named "&eColorful Blocks" with lore "{@currentpage}" to run ""
+            format slot 52 of player with red mushroom block named "&eNature Blocks" with lore "&7Click me to go to the &anature blocks&7." to run [ execute player command "/shop decoblocks6" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop decoblocks6" ]
+#-DECOBLOCKS 6      -DONE
+        if arg-1 is "decoblocks6":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (6)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with light gray glazed terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Glazed_Terracotta decoblocks6" ]
+            format slot 11 of player with gray glazed terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Glazed_Terracotta decoblocks6" ]
+            format slot 12 of player with black glazed terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Black_Glazed_Terracotta decoblocks6" ]
+            format slot 13 of player with brown glazed terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Glazed_Terracotta decoblocks6" ]
+            format slot 14 of player with red mushroom block with lore "{@ctb}" to run [ execute player command "/shop buy Red_Mushroom_Block decoblocks6" ]
+            format slot 15 of player with magma block with lore "{@ctb}" to run [ execute player command "/shop buy Magma_Block decoblocks6" ]
+            format slot 16 of player with honeycomb block with lore "{@ctb}" to run [ execute player command "/shop buy Honeycomb_Block decoblocks6" ]
+
+            format slot 19 of player with pumpkin with lore "{@ctb}" to run [ execute player command "/shop buy Pumpkin decoblocks6" ]
+            format slot 20 of player with carved pumpkin with lore "{@ctb}" to run [ execute player command "/shop buy Carved_Pumpkin decoblocks6" ]
+            format slot 21 of player with hay block with lore "{@ctb}" to run [ execute player command "/shop buy Hay_Block decoblocks6" ]
+            format slot 22 of player with sponge with lore "{@ctb}" to run [ execute player command "/shop buy Sponge decoblocks6" ]
+            format slot 23 of player with wet sponge with lore "{@ctb}" to run [ execute player command "/shop buy Wet_Sponge decoblocks6" ]
+            format slot 24 of player with bell with lore "{@ctb}" to run [ execute player command "/shop buy Bell decoblocks6" ]
+            format slot 25 of player with melon with lore "{@ctb}" to run [ execute player command "/shop buy Melon decoblocks6" ]
+
+            format slot 28 of player with slime block with lore "{@ctb}" to run [ execute player command "/shop buy Slime_Block decoblocks6" ]
+            format slot 29 of player with oak leaves with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Leaves decoblocks6" ]
+            format slot 30 of player with birch leaves with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Leaves decoblocks6" ]
+            format slot 31 of player with jungle leaves with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Leaves decoblocks6" ]
+            format slot 32 of player with acacia leaves with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Leaves decoblocks6" ]
+            format slot 33 of player with spruce leaves with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Leaves decoblocks6" ]
+            format slot 34 of player with dark oak leaves with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Leaves decoblocks6" ]
+
+            format slot 37 of player with brown mushroom block with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Mushroom_Block decoblocks6" ]
+            format slot 38 of player with barrel with lore "{@ctb}" to run [ execute player command "/shop buy Barrel decoblocks6" ]
+            format slot 39 of player with composter with lore "{@ctb}" to run [ execute player command "/shop buy Composter decoblocks6" ]
+            format slot 40 of player with crafting table with lore "{@ctb}" to run [ execute player command "/shop buy Crafting_Table decoblocks6" ]
+            format slot 41 of player with bookshelf with lore "{@ctb}" to run [ execute player command "/shop buy Bookshelf decoblocks6" ]
+            format slot 42 of player with chest with lore "{@ctb}" to run [ execute player command "/shop buy Chest decoblocks6" ]
+            format slot 43 of player with lectern with lore "{@ctb}" to run [ execute player command "/shop buy Lectern decoblocks6" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop decoblocks5" ]
+            format slot 46 of player with oxeye daisy named "&eFlowers" with lore "&7Click me to go to the &aflowers&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 47 of player with campfire named "&ePage 2" with lore "&7Click me to go to &apage 2&7." to run [ execute player command "/shop decoblocks2" ]
+            format slot 48 of player with jungle fence named "&eWalls & Fences" with lore "&7Click me to go to the &awalls and fences&7." to run [ execute player command "/shop decoblocks3" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with spruce door named "&eDoors & Fence Gates" with lore "&7Click me to go to the &adoors and fence gates&7." to run [ execute player command "/shop decoblocks4" ]
+            format slot 51 of player with cyan glazed terracotta named "&eColorful Blocks" with lore "&7Click me to go to the &acolorful blocks&7." to run [ execute player command "/shop decoblocks5" ]
+            format slot 52 of player with shiny red mushroom block named "&eNature Blocks" with lore "{@currentpage}" to run ""
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop decoblocks7" ]
+#-DECOBLOCKS 7      -DONE
+        if arg-1 is "decoblocks7":
+            open chest with 6 rows named "&8Shop > &eDecoration Blocks (7)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with smithing table with lore "{@ctb}" to run [ execute player command "/shop buy Smithing_Table decoblocks7" ]
+            format slot 11 of player with blast furnace with lore "{@ctb}" to run [ execute player command "/shop buy Blast_Furnace decoblocks7" ]
+            format slot 12 of player with furnace with lore "{@ctb}" to run [ execute player command "/shop buy Furnace decoblocks7" ]
+            format slot 13 of player with stonecutter with lore "{@ctb}" to run [ execute player command "/shop buy Stonecutter decoblocks7" ]
+            format slot 14 of player with cauldron with lore "{@ctb}" to run [ execute player command "/shop buy Cauldron decoblocks7" ]
+            format slot 15 of player with armor stand with lore "{@ctb}" to run [ execute player command "/shop buy Armor_Stand decoblocks7" ]
+            format slot 16 of player with item frame with lore "{@ctb}" to run [ execute player command "/shop buy Item_Frame decoblocks7" ]
+
+            format slot 19 of player with painting with lore "{@ctb}" to run [ execute player command "/shop buy Painting decoblocks7" ]
+            format slot 20 of player with mushroom stem with lore "{@ctb}" to run [ execute player command "/shop buy Mushroom_Stem decoblocks7" ]
+            format slot 21 of player with flower pot with lore "{@ctb}" to run [ execute player command "/shop buy Flower_Pot decoblocks7" ]
+            format slot 22 of player with beacon named "&fBeacon" with lore "{@ctb}" to run [ execute player command "/shop buy Beacon decoblocks7" ]
+            format slot 23 of player with water bucket with lore "{@ctb}" to run [ execute player command "/shop buy Water_Bucket decoblocks7" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop decoblocks6" ]
+            format slot 46 of player with oxeye daisy named "&eFlowers" with lore "&7Click me to go to the &aflowers&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 47 of player with campfire named "&ePage 2" with lore "&7Click me to go to &apage 2&7." to run [ execute player command "/shop decoblocks2" ]
+            format slot 48 of player with jungle fence named "&eWalls & Fences" with lore "&7Click me to go to the &awalls and fences&7." to run [ execute player command "/shop decoblocks3" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 50 of player with spruce door named "&eDoors & Fence Gates" with lore "&7Click me to go to the &adoors and fence gates&7." to run [ execute player command "/shop decoblocks4" ]
+            format slot 51 of player with cyan glazed terracotta named "&eColorful Blocks" with lore "&7Click me to go to the &acolorful blocks&7." to run [ execute player command "/shop decoblocks5" ]
+            format slot 52 of player with red mushroom block named "&eNature Blocks" with lore "&7Click me to go to the &anature blocks&7." to run [ execute player command "/shop decoblocks6" ]
+#-BLOCKS            -DONE
+        if arg-1 is "blocks":
+            open chest with 5 rows named "&8Shop > &eBlocks" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 11 of player with yellow terracotta named "&eTerracotta" with lore "&7Click me to go to the &aterracotta blocks&7." to run [ execute player command "/shop terracotta" ]
+            format slot 13 of player with grass block named "&eBuilding Blocks" with lore "&7Click me to go to the &abuilding blocks&7." to run [ execute player command "/shop buildingblocks1" ]
+            format slot 15 of player with lime glass named "&eGlass Blocks" with lore "&7Click me to go to the &aglass blocks&7." to run [ execute player command "/shop glass" ]
+            format slot 29 of player with cyan concrete named "&eConcrete" with lore "&7Click me to go to the &aconcrete blocks&7." to run [ execute player command "/shop concrete" ]
+            format slot 31 of player with poppy named "&eDecoration Blocks" with lore "&7Click me to go to the &adecoration blocks&7." to run [ execute player command "/shop decoblocks1" ]
+            format slot 33 of player with white wool named "&eWool" with lore "&7Click me to go to the &awool blocks&7." to run [ execute player command "/shop wool" ]
+            format slot 40 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back to the &amain &7page." to run [ execute player command "/shop" ]
+#-TERRACOTTA        -DONE
+        if arg-1 is "terracotta":
+            open chest with 6 rows named "&8Blocks > &eTerracotta" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Terracotta terracotta" ]
+            format slot 11 of player with white terracotta with lore "{@ctb}" to run [ execute player command "/shop buy White_Terracotta terracotta" ]
+            format slot 12 of player with yellow terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Terracotta terracotta" ]
+            format slot 13 of player with orange terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Terracotta terracotta" ]
+            format slot 14 of player with red terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Red_Terracotta terracotta" ]
+            format slot 15 of player with pink terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Terracotta terracotta" ]
+            format slot 16 of player with magenta terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Terracotta terracotta" ]
+            format slot 25 of player with purple terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Terracotta terracotta" ]
+            format slot 24 of player with light blue terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Terracotta terracotta" ]
+            format slot 23 of player with cyan terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Terracotta terracotta" ]
+            format slot 22 of player with blue terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Terracotta terracotta" ]
+            format slot 21 of player with lime terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Terracotta terracotta" ]
+            format slot 20 of player with green terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Green_Terracotta terracotta" ]
+            format slot 19 of player with brown terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Terracotta terracotta" ]
+            format slot 28 of player with light gray terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Terracotta terracotta" ]
+            format slot 29 of player with gray terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Terracotta terracotta" ]
+            format slot 30 of player with black terracotta with lore "{@ctb}" to run [ execute player command "/shop buy Black_Terracotta terracotta" ]
+
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+#-BUILDINGBLOCKS 1  -DONE
+        if arg-1 is "buildingblocks1":
+            open chest with 6 rows named "&8Blocks > &eBuilding Blocks (1)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with dirt with lore "{@ctb}" to run [ execute player command "/shop buy Dirt buildingblocks1" ]
+            format slot 11 of player with coarse dirt with lore "{@ctb}" to run [ execute player command "/shop buy Coarse_Dirt buildingblocks1" ]
+            format slot 12 of player with podzol with lore "{@ctb}" to run [ execute player command "/shop buy Podzol buildingblocks1" ]
+            format slot 13 of player with grass with lore "{@ctb}" to run [ execute player command "/shop buy Grass_Block buildingblocks1" ]
+            format slot 14 of player with warped nylium with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Nylium buildingblocks1" ]
+            format slot 15 of player with crimson nylium with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Nylium buildingblocks1" ]
+            format slot 16 of player with mycelium with lore "{@ctb}" to run [ execute player command "/shop buy Mycelium buildingblocks1" ]
+
+            format slot 19 of player with oak log with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Log buildingblocks1" ]
+            format slot 20 of player with spruce log with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Log buildingblocks1" ]
+            format slot 21 of player with birch log with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Log buildingblocks1" ]
+            format slot 22 of player with jungle log with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Log buildingblocks1" ]
+            format slot 23 of player with acacia log with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Log buildingblocks1" ]
+            format slot 24 of player with dark oak log with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Log buildingblocks1" ]
+            format slot 25 of player with ice with lore "{@ctb}" to run [ execute player command "/shop buy Ice buildingblocks1" ]
+
+            format slot 28 of player with stripped oak log with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Oak_Log buildingblocks1" ]
+            format slot 29 of player with stripped spruce log with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Spruce_Log buildingblocks1" ]
+            format slot 30 of player with stripped birch log with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Birch_Log buildingblocks1" ]
+            format slot 31 of player with stripped jungle log with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Jungle_Log buildingblocks1" ]
+            format slot 32 of player with stripped acacia log with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Acacia_Log buildingblocks1" ]
+            format slot 33 of player with stripped dark oak log with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Dark_Oak_Log buildingblocks1" ]
+            format slot 34 of player with packed ice with lore "{@ctb}" to run [ execute player command "/shop buy Packed_Ice buildingblocks1" ]
+
+            format slot 37 of player with oak planks with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Planks buildingblocks1" ]
+            format slot 38 of player with spruce planks with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Planks buildingblocks1" ]
+            format slot 39 of player with birch planks with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Planks buildingblocks1" ]
+            format slot 40 of player with jungle planks with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Planks buildingblocks1" ]
+            format slot 41 of player with acacia planks with lore "{@ctb}" to run [ execute player command "/shop buy acacia_Planks buildingblocks1" ]
+            format slot 42 of player with dark oak planks with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Planks buildingblocks1" ]
+            format slot 43 of player with blue ice with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Ice buildingblocks1" ]
+
+            format slot 47 of player with brick slab named "&eSlabs" with lore "&7Click me to go to the &ablock slabs&7." to run [ execute player command "/shop slabs1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with birch stairs named "&eStairs" with lore "&7Click me to go to the &astairs blocks&7." to run [ execute player command "/shop stairs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop buildingblocks2" ]
+#-BUILDINGBLOCKS 2  -DONE
+        if arg-1 is "buildingblocks2":
+            open chest with 6 rows named "&8Blocks > &eBuilding Blocks (2)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with polished basalt with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Basalt buildingblocks2" ]
+            format slot 11 of player with basalt with lore "{@ctb}" to run [ execute player command "/shop buy Basalt buildingblocks2" ]
+            format slot 12 of player with stone with lore "{@ctb}" to run [ execute player command "/shop buy Stone buildingblocks2" ]
+            format slot 13 of player with cobblestone with lore "{@ctb}" to run [ execute player command "/shop buy Cobblestone buildingblocks2" ]
+            format slot 14 of player with mossy cobblestone with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Cobblestone buildingblocks2" ]
+            format slot 15 of player with gravel with lore "{@ctb}" to run [ execute player command "/shop buy Gravel buildingblocks2" ]
+            format slot 16 of player with andesite with lore "{@ctb}" to run [ execute player command "/shop buy Andesite buildingblocks2" ]
+
+            format slot 19 of player with polished andesite with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Andesite buildingblocks2" ]
+            format slot 20 of player with stone bricks with lore "{@ctb}" to run [ execute player command "/shop buy Stone_Bricks buildingblocks2" ]
+            format slot 21 of player with cracked stone bricks with lore "{@ctb}" to run [ execute player command "/shop buy Cracked_Stone_Bricks buildingblocks2" ]
+            format slot 22 of player with mossy stone bricks with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Stone_Bricks buildingblocks2" ]
+            format slot 23 of player with chiseled stone bricks with lore "{@ctb}" to run [ execute player command "/shop buy Chiseled_Stone_Bricks buildingblocks2" ]
+            format slot 24 of player with smooth stone with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Stone buildingblocks2" ]
+            format slot 25 of player with clay block with lore "{@ctb}" to run [ execute player command "/shop buy Clay_Block buildingblocks2" ]
+
+            format slot 28 of player with diorite with lore "{@ctb}" to run [ execute player command "/shop buy Diorite buildingblocks2" ]
+            format slot 29 of player with polished diorite with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Diorite buildingblocks2" ]
+            format slot 30 of player with smooth quartz with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Quartz buildingblocks2" ]
+            format slot 31 of player with snow block with lore "{@ctb}" to run [ execute player command "/shop buy Snow_Block buildingblocks2" ]
+            format slot 32 of player with quartz block with lore "{@ctb}" to run [ execute player command "/shop buy Quartz_Block buildingblocks2" ]
+            format slot 33 of player with quartz pillar with lore "{@ctb}" to run [ execute player command "/shop buy Quartz_Pillar buildingblocks2" ]
+            format slot 34 of player with chiseled quartz block with lore "{@ctb}" to run [ execute player command "/shop buy Chiseled_Quartz_Block buildingblocks2" ]
+
+            format slot 37 of player with quartz bricks with lore "{@ctb}" to run [ execute player command "/shop buy Quartz_Bricks buildingblocks2" ]
+            format slot 38 of player with bone block with lore "{@ctb}" to run [ execute player command "/shop buy Bone_Block buildingblocks2" ]
+            format slot 39 of player with granite with lore "{@ctb}" to run [ execute player command "/shop buy Granite buildingblocks2" ]
+            format slot 40 of player with polished granite with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Granite buildingblocks2" ]
+            format slot 41 of player with brick block with lore "{@ctb}" to run [ execute player command "/shop buy Bricks_Block buildingblocks2" ]
+            format slot 42 of player with nether wart block with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Wart_Block buildingblocks2" ]
+            format slot 43 of player with netherrack with lore "{@ctb}" to run [ execute player command "/shop buy Netherrack buildingblocks2" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop buildingblocks1" ]
+            format slot 47 of player with brick slab named "&eSlabs" with lore "&7Click me to go to the &ablock slabs&7." to run [ execute player command "/shop slabs1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with birch stairs named "&eStairs" with lore "&7Click me to go to the &astairs blocks&7." to run [ execute player command "/shop stairs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop buildingblocks3" ]
+#-BUILDINGBLOCKS 3  -DONE
+        if arg-1 is "buildingblocks3":
+            open chest with 6 rows named "&8Blocks > &eBuilding Blocks (3)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with red nether bricks with lore "{@ctb}" to run [ execute player command "/shop buy Red_Nether_Bricks buildingblocks3" ]
+            format slot 11 of player with nether bricks with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Bricks buildingblocks3" ]
+            format slot 12 of player with cracked nether bricks with lore "{@ctb}" to run [ execute player command "/shop buy Cracked_Nether_Bricks buildingblocks3" ]
+            format slot 13 of player with chiseled nether bricks with lore "{@ctb}" to run [ execute player command "/shop buy Chiseled_Nether_Bricks buildingblocks3" ]
+            format slot 14 of player with blackstone with lore "{@ctb}" to run [ execute player command "/shop buy Blackstone buildingblocks3" ]
+            format slot 15 of player with polished blackstone with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone buildingblocks3" ]
+            format slot 16 of player with polished blackstone bricks with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone_Bricks buildingblocks3" ]
+
+            format slot 19 of player with cracked polished blackstone bricks with lore "{@ctb}" to run [ execute player command "/shop buy Cracked_Polished_Blackstone_bricks buildingblocks3" ]
+            format slot 20 of player with chiseled polished blackstone with lore "{@ctb}" to run [ execute player command "/shop buy Chiseled_Polished_Blackstone buildingblocks3" ]
+            format slot 21 of player with gilded blackstone with lore "{@ctb}" to run [ execute player command "/shop buy Gilded_Blackstone buildingblocks3" ]
+            format slot 22 of player with soul soil with lore "{@ctb}" to run [ execute player command "/shop buy Soul_Soil buildingblocks3" ]
+            format slot 23 of player with soul sand with lore "{@ctb}" to run [ execute player command "/shop buy Soul_Sand buildingblocks3" ]
+            format slot 24 of player with sand with lore "{@ctb}" to run [ execute player command "/shop buy Sand buildingblocks3" ]
+            format slot 25 of player with sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Sandstone buildingblocks3" ]
+
+            format slot 28 of player with chiseled sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Chiseled_Sandstone buildingblocks3" ]
+            format slot 29 of player with cut sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Cut_Sandstone buildingblocks3" ]
+            format slot 30 of player with smooth sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Sandstone buildingblocks3" ]
+            format slot 31 of player with end stone with lore "{@ctb}" to run [ execute player command "/shop buy End_Stone buildingblocks3" ]
+            format slot 32 of player with end stone bricks with lore "{@ctb}" to run [ execute player command "/shop buy End_Stone_Bricks buildingblocks3" ]
+            format slot 33 of player with red sand with lore "{@ctb}" to run [ execute player command "/shop buy Red_Sand buildingblocks3" ]
+            format slot 34 of player with red sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Red_Sandstone buildingblocks3" ]
+
+            format slot 37 of player with red chiseled sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Red_Chiseled_Sandstone buildingblocks3" ]
+            format slot 38 of player with cut red sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Cut_Sed_Sandstone buildingblocks3" ]
+            format slot 39 of player with smooth red sandstone with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Red_Sandstone buildingblocks3" ]
+            format slot 40 of player with prismarine with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine buildingblocks3" ]
+            format slot 41 of player with prismarine bricks with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine_Bricks buildingblocks3" ]
+            format slot 42 of player with stripped warped stem with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Warped_Stem buildingblocks3" ]
+            format slot 43 of player with warped planks with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Planks buildingblocks3" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop buildingblocks2" ]
+            format slot 47 of player with brick slab named "&eSlabs" with lore "&7Click me to go to the &ablock slabs&7." to run [ execute player command "/shop slabs1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with birch stairs named "&eStairs" with lore "&7Click me to go to the &astairs blocks&7." to run [ execute player command "/shop stairs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop buildingblocks4" ]
+#-BUILDINGBLOCKS 4  -DONE
+        if arg-1 is "buildingblocks4":
+            open chest with 6 rows named "&8Blocks > &eBuilding Blocks (4)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with warped stem with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Stem buildingblocks4" ]
+            format slot 11 of player with dark prismarine with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Prismarine buildingblocks4" ]
+            format slot 12 of player with stripped crimson stem with lore "{@ctb}" to run [ execute player command "/shop buy Stripped_Crimson_Stem buildingblocks4" ]
+            format slot 13 of player with crimson planks with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Planks buildingblocks4" ]
+            format slot 14 of player with crimson stem with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Stem buildingblocks4" ]
+            format slot 15 of player with purpur pillar with lore "{@ctb}" to run [ execute player command "/shop buy Purpur_Pillar buildingblocks4" ]
+            format slot 16 of player with purpur block with lore "{@ctb}" to run [ execute player command "/shop buy Purpur_Block buildingblocks4" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop buildingblocks3" ]
+            format slot 47 of player with brick slab named "&eSlabs" with lore "&7Click me to go to the &ablock slabs&7." to run [ execute player command "/shop slabs1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with birch stairs named "&eStairs" with lore "&7Click me to go to the &astairs blocks&7." to run [ execute player command "/shop stairs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop slabs1" ]
+#-SLABS 1           -DONE
+        if arg-1 is "slabs1":
+            open chest with 6 rows named "&8Blocks > &eSlabs (1)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with double stone slab with lore "{@ctb}" to run [ execute player command "/shop buy Double_Stone_Slab slabs1" ]
+            format slot 11 of player with smooth stone slab with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Stone_Slab slabs1" ]
+            format slot 12 of player with cobblestone slab with lore "{@ctb}" to run [ execute player command "/shop buy Cobblestone_Slab slabs1" ]
+            format slot 13 of player with andesite slab with lore "{@ctb}" to run [ execute player command "/shop buy Andesite_Slab slabs1" ]
+            format slot 14 of player with polished andesite slab with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Andesite_Slab slabs1" ]
+            format slot 15 of player with stone brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Stone_Brick_Slab slabs1" ]
+            format slot 16 of player with mossy stone brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Stone_Brick_Slab slabs1" ]
+
+            format slot 19 of player with mossy cobblestone slab with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Cobblestone_Slab slabs1" ]
+            format slot 20 of player with diorite slab with lore "" to run [ execute player command "/shop buy Diorite_Slab slabs1" ]
+            format slot 21 of player with polished diorite slab with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Diorite_Slab slabs1" ]
+            format slot 22 of player with smooth quartz slab with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Quartz_Slab slabs1" ]
+            format slot 23 of player with quartz slab with lore "{@ctb}" to run [ execute player command "/shop buy Quartz_Slab slabs1" ]
+            format slot 24 of player with birch slab with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Slab slabs1" ]
+            format slot 25 of player with double sandstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Double_Sandstone_Slab slabs1" ]
+
+            format slot 28 of player with smooth sandstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Sandstone_Slab slabs1" ]
+            format slot 29 of player with cut sandstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Cut_Sandstone_Slab slabs1" ]
+            format slot 30 of player with end stone brick slab with lore "{@ctb}" to run [ execute player command "/shop buy End_Stone_Brick_Slab slabs1" ]
+            format slot 31 of player with acacia slab with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Slab slabs1" ]
+            format slot 32 of player with red sandstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Red_Sandstone_Slab slabs1" ]
+            format slot 33 of player with cut red sandstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Cut_Red_Sandstone_Slab slabs1" ]
+            format slot 34 of player with smooth red sandstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Red_Sandstone_Slab slabs1" ]
+
+            format slot 37 of player with jungle slab with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Slab slabs1" ]
+            format slot 38 of player with granite slab with lore "{@ctb}" to run [ execute player command "/shop buy Granite_Slab slabs1" ]
+            format slot 39 of player with polished granite slab with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Granite_Slab slabs1" ]
+            format slot 40 of player with brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Brick_Slab slabs1" ]
+            format slot 41 of player with prismarine slab with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine_Slab slabs1" ]
+            format slot 42 of player with prismarine brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine_Brick_Slab slabs1" ]
+            format slot 43 of player with dark prismarine slab with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Prismarine_Slab slabs1" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop buildingblocks4" ]
+            format slot 47 of player with grass block named "&eBuilding Blocks" with lore "&7Click me to go to the &abuilding blocks&7." to run [ execute player command "/shop buildingblocks1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with birch stairs named "&eStairs" with lore "&7Click me to go to the &astairs blocks&7." to run [ execute player command "/shop stairs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop slabs2" ]
+#-SLABS 2           -DONE
+        if arg-1 is "slabs2":
+            open chest with 6 rows named "&8Blocks > &eSlabs (2)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with oak slab with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Slab slabs2" ]
+            format slot 11 of player with spruce slab with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Slab slabs2" ]
+            format slot 12 of player with dark oak slab with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Slab slabs2" ]
+            format slot 13 of player with nether brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Brick_Slab slabs2" ]
+            format slot 14 of player with red nether brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Red_Nether_Brick_Slab slabs2" ]
+            format slot 15 of player with crimson slab with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Slab slabs2" ]
+            format slot 16 of player with purpur slab with lore "{@ctb}" to run [ execute player command "/shop buy Purpur_Slab slabs2" ]
+
+            format slot 19 of player with blackstone slab with lore "{@ctb}" to run [ execute player command "/shop buy blackstone_Slab slabs2" ]
+            format slot 20 of player with polished blackstone brick slab with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone_Brick_Slab slabs2" ]
+            format slot 21 of player with polished blackstone slab with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone_Slab slabs2" ]
+            format slot 22 of player with warped slab with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Slab slabs2" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop slabs1" ]
+            format slot 47 of player with grass block named "&eBuilding Blocks" with lore "&7Click me to go to the &abuilding blocks&7." to run [ execute player command "/shop buildingblocks1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with birch stairs named "&eStairs" with lore "&7Click me to go to the &astairs blocks&7." to run [ execute player command "/shop stairs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop stairs1" ]
+#-STAIRS 1          -DONE
+        if arg-1 is "stairs1":
+            open chest with 6 rows named "&8Blocks > &eStairs (1)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with stone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Stone_Stairs stairs1" ]
+            format slot 11 of player with cobblestone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Cobblestone_Stairs stairs1" ]
+            format slot 12 of player with andesite stairs with lore "{@ctb}" to run [ execute player command "/shop buy Andesite_Stairs stairs1" ]
+            format slot 13 of player with polished andesite stairs with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Andesite_Stairs stairs1" ]
+            format slot 14 of player with stone brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Stone_Brick_Stairs stairs1" ]
+            format slot 15 of player with mossy stone brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Stone_Brick_Stairs stairs1" ]
+            format slot 16 of player with mossy cobblestone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Mossy_Cobblestone_Stairs stairs1" ]
+
+            format slot 19 of player with diorite stairs with lore "{@ctb}" to run [ execute player command "/shop buy Diorite_Stairs stairs1" ]
+            format slot 20 of player with polished diorite stairs with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Diorite_Stairs stairs1" ]
+            format slot 21 of player with smooth quartz stairs with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Quartz_Stairs stairs1" ]
+            format slot 22 of player with quartz stairs with lore "{@ctb}" to run [ execute player command "/shop buy Quartz_Stairs stairs1" ]
+            format slot 23 of player with birch stairs with lore "{@ctb}" to run [ execute player command "/shop buy Birch_Stairs stairs1" ]
+            format gui slot 24 of player with sandstone stairs with lore "{@ctb}" to make player say "/shop buy Sandstone_Stairs stairs1"
+            format slot 25 of player with smooth sandstone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Sandstone_Stairs stairs1" ]
+
+            format slot 28 of player with end stone brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy End_Stone_Brick_Stairs stairs1" ]
+            format slot 29 of player with acacia stairs with lore "{@ctb}" to run [ execute player command "/shop buy Acacia_Stairs stairs1" ]
+            format slot 30 of player with red sandstone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Red_Sandstone_Stairs stairs1" ]
+            format slot 31 of player with smooth red sandstone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Smooth_Red_Sandstone_Stairs stairs1" ]
+            format slot 32 of player with jungle stairs with lore "{@ctb}" to run [ execute player command "/shop buy Jungle_Stairs stairs1" ]
+            format slot 33 of player with granite stairs with lore "{@ctb}" to run [ execute player command "/shop buy Granite_Stairs stairs1" ]
+            format slot 34 of player with polished granite stairs with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Granite_Stairs stairs1" ]
+
+            format slot 37 of player with brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Brick_Stairs stairs1" ]
+            format slot 38 of player with prismarine stairs with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine_Stairs stairs1" ]
+            format slot 39 of player with prismarine brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Prismarine_Brick_Stairs stairs1" ]
+            format slot 40 of player with dark prismarine stairs with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Prismarine_Stairs stairs1" ]
+            format slot 41 of player with warped stairs with lore "{@ctb}" to run [ execute player command "/shop buy Warped_Stairs stairs1" ]
+            format slot 42 of player with red nether brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Red_Nether_brick_Stairs stairs1" ]
+            format slot 43 of player with nether brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Nether_Brick_Stairs stairs1" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop slabs2" ]
+            format slot 47 of player with grass block named "&eBuilding Blocks" with lore "&7Click me to go to the &abuilding blocks&7." to run [ execute player command "/shop buildingblocks1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with brick slab named "&aSlabs" with lore "&7Click me to go to the &ablock slabs&7." to run [ execute player command "/shop slabs1" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop stairs2" ]
+#-STAIRS2           -DONE
+        if arg-1 is "stairs2":
+            open chest with 6 rows named "&8Blocks > &eStairs (2)" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with crimson stairs with lore "{@ctb}" to run [ execute player command "/shop buy Crimson_Stairs stairs2" ]
+            format slot 11 of player with oak stairs with lore "{@ctb}" to run [ execute player command "/shop buy Oak_Stairs stairs2" ]
+            format slot 12 of player with spruce stairs with lore "{@ctb}" to run [ execute player command "/shop buy Spruce_Stairs stairs2" ]
+            format slot 13 of player with dark oak stairs with lore "{@ctb}" to run [ execute player command "/shop buy Dark_Oak_Stairs stairs2" ]
+            format slot 14 of player with polished blackstone brick stairs with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone_Brick_Stairs stairs2" ]
+            format slot 15 of player with blackstone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Blackstone_Stairs stairs2" ]
+            format slot 16 of player with polished blackstone stairs with lore "{@ctb}" to run [ execute player command "/shop buy Polished_Blackstone_Stairs stairs2" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop stairs1" ]
+            format slot 47 of player with grass block named "&eBuilding Blocks" with lore "&7Click me to go to the &abuilding blocks&7." to run [ execute player command "/shop buildingblocks1" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with brick slab named "&aSlabs" with lore "&7Click me to go to the &ablock slabs&7." to run [ execute player command "/shop slabs1" ]
+#-GLASS             -DONE
+        if arg-1 is "glass":
+            open chest with 6 rows named "&8Blocks > &eGlass" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with glass with lore "{@ctb}" to run [ execute player command "/shop buy Glass glass" ]
+            format slot 11 of player with white glass with lore "{@ctb}" to run [ execute player command "/shop buy White_Glass glass" ]
+            format slot 12 of player with yellow glass with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Glass glass" ]
+            format slot 13 of player with orange glass with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Glass glass" ]
+            format slot 14 of player with red glass with lore "{@ctb}" to run [ execute player command "/shop buy Red_Glass glass" ]
+            format slot 15 of player with pink glass with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Glass glass" ]
+            format slot 16 of player with magenta glass with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Glass glass" ]
+            format slot 25 of player with purple glass with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Glass glass" ]
+            format slot 24 of player with light blue glass with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Glass glass" ]
+            format slot 23 of player with cyan glass with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Glass glass" ]
+            format slot 22 of player with blue glass with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Glass glass" ]
+            format slot 21 of player with lime glass with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Glass glass" ]
+            format slot 20 of player with green glass with lore "{@ctb}" to run [ execute player command "/shop buy Green_Glass glass" ]
+            format slot 19 of player with brown glass with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Glass glass" ]
+            format slot 28 of player with light gray glass with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Glass glass" ]
+            format slot 29 of player with gray glass with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Glass glass" ]
+            format slot 30 of player with black glass with lore "{@ctb}" to run [ execute player command "/shop buy Black_Glass glass" ]
+
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with purple glass pane named "&aGlass Panes" with lore "&7Click me to go to the &aglass panes&7." to run [ execute player command "/shop glasspanes" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop glasspanes" ]
+#-GLASSPANES        -DONE
+        if arg-1 is "glasspanes":
+            open chest with 6 rows named "&8Blocks > &eGlass Panes" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Glass_Pane glasspanes" ]
+            format slot 11 of player with white glass pane with lore "{@ctb}" to run [ execute player command "/shop buy White_Glass_Pane glasspanes" ]
+            format slot 12 of player with yellow glass panes with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Glass_Pane glasspanes" ]
+            format slot 13 of player with orange glass panes with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Glass_Pane glasspanes" ]
+            format slot 14 of player with red glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Red_Glass_Pane glasspanes" ]
+            format slot 15 of player with pink glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Glass_Pane glasspanes" ]
+            format slot 16 of player with magenta glass panes with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Glass_Pane glasspanes" ]
+            format slot 25 of player with purple glass panes with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Glass_Pane glasspanes" ]
+            format slot 24 of player with light blue glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Glass_Pane glasspanes" ]
+            format slot 23 of player with cyan glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Glass_Pane glasspanes" ]
+            format slot 22 of player with blue glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Glass_Pane glasspanes" ]
+            format slot 21 of player with lime glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Glass_Pane glasspanes" ]
+            format slot 20 of player with green glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Green_Glass_Pane glasspanes" ]
+            format slot 19 of player with brown glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Glass_Pane glasspanes" ]
+            format slot 28 of player with light gray glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Glass_Pane glasspanes" ]
+            format slot 29 of player with gray glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Glass_Pane glasspanes" ]
+            format slot 30 of player with black glass pane with lore "{@ctb}" to run [ execute player command "/shop buy Black_Glass_Pane glasspanes" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop glass" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with orange glass named "&aGlass Blocks" with lore "&7Click me to go to the &aglass blocks&7." to run [ execute player command "/shop glass" ]
+#-WOOL              -DONE
+        if arg-1 is "wool":
+            open chest with 6 rows named "&8Blocks > &eWool" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with white Wool  with lore "{@ctb}" to run [ execute player command "/shop buy White_Wool wool" ]
+            format slot 11 of player with yellow wool with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Wool wool" ]
+            format slot 12 of player with orange wool with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Wool wool" ]
+            format slot 13 of player with red wool with lore "{@ctb}" to run [ execute player command "/shop buy Red_Wool wool" ]
+            format slot 14 of player with pink wool with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Wool wool" ]
+            format slot 15 of player with magenta wool with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Wool wool" ]
+            format slot 16 of player with purple wool with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Wool wool" ]
+            format slot 25 of player with light blue wool with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Wool wool" ]
+            format slot 24 of player with cyan wool with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Wool wool" ]
+            format slot 23 of player with blue wool with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Wool wool" ]
+            format slot 22 of player with lime wool with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Wool wool" ]
+            format slot 21 of player with green wool with lore "{@ctb}" to run [ execute player command "/shop buy Green_Wool wool" ]
+            format slot 20 of player with brown wool with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Wool wool" ]
+            format slot 19 of player with light gray wool with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Wool wool" ]
+            format slot 28 of player with gray wool with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Wool wool" ]
+            format slot 29 of player with black wool with lore "{@ctb}" to run [ execute player command "/shop buy Black_Wool wool" ]
+
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with blue carpet named "&aWool Carpets" with lore "&7Click me to go to the &awool carpets&7." to run [ execute player command "/shop woolcarpets" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop woolcarpets" ]
+#-WOOLCARPETS       -DONE
+        if arg-1 is "woolcarpets":
+            open chest with 6 rows named "&8Blocks > &eWool Carpets" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with white Carpet with lore "{@ctb}" to run [ execute player command "/shop buy White_Carpet woolcarpets" ]
+            format slot 11 of player with yellow carpet with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Carpet woolcarpets" ]
+            format slot 12 of player with orange carpet with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Carpet woolcarpets" ]
+            format slot 13 of player with red carpet with lore "{@ctb}" to run [ execute player command "/shop buy Red_Carpet woolcarpets" ]
+            format slot 14 of player with pink carpet with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Carpet woolcarpets" ]
+            format slot 15 of player with magenta carpet with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Carpet woolcarpets" ]
+            format slot 16 of player with purple carpet with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Carpet woolcarpets" ]
+            format slot 25 of player with light blue carpet with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Carpet woolcarpets" ]
+            format slot 24 of player with cyan carpet with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Carpet woolcarpets" ]
+            format slot 23 of player with blue carpet with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Carpet woolcarpets" ]
+            format slot 22 of player with lime carpet with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Carpet woolcarpets" ]
+            format slot 21 of player with green carpet with lore "{@ctb}" to run [ execute player command "/shop buy Green_Carpet woolcarpets" ]
+            format slot 20 of player with brown carpet with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Carpet woolcarpets" ]
+            format slot 19 of player with light gray carpet with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Carpet woolcarpets" ]
+            format slot 28 of player with gray carpet with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Carpet woolcarpets" ]
+            format slot 29 of player with black carpet with lore "{@ctb}" to run [ execute player command "/shop buy Black_Carpet woolcarpets" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop wool" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with yellow wool named "&aWool Blocks" with lore "&7Click me to go to the &awool blocks&7." to run [ execute player command "/shop wool" ]
+#-CONCRETE          -DONE
+        if arg-1 is "concrete":
+            open chest with 6 rows named "&8Blocks > &eConcrete" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with white concrete with lore "{@ctb}" to run [ execute player command "/shop buy White_Concrete concrete" ]
+            format slot 11 of player with yellow concrete with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Concrete concrete" ]
+            format slot 12 of player with orange concrete with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Concrete concrete" ]
+            format slot 13 of player with red concrete with lore "{@ctb}" to run [ execute player command "/shop buy Red_Concrete concrete" ]
+            format slot 14 of player with pink concrete with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Concrete concrete" ]
+            format slot 15 of player with magenta concrete with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Concrete concrete" ]
+            format slot 16 of player with purple concrete with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Concrete concrete" ]
+            format slot 25 of player with light blue concrete with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Concrete concrete" ]
+            format slot 24 of player with cyan concrete with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Concrete concrete" ]
+            format slot 23 of player with blue concrete with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Concrete concrete" ]
+            format slot 22 of player with lime concrete with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Concrete concrete" ]
+            format slot 21 of player with green concrete with lore "{@ctb}" to run [ execute player command "/shop buy Green_Concrete concrete" ]
+            format slot 20 of player with brown concrete with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Concrete concrete" ]
+            format slot 19 of player with light gray concrete with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Concrete concrete" ]
+            format slot 28 of player with gray concrete with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Concrete concrete" ]
+            format slot 29 of player with black concrete with lore "{@ctb}" to run [ execute player command "/shop buy Black_Concrete concrete" ]
+
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with yellow concrete powder named "&aConcrete Powder" with lore "&7Click me to go to the &aconcrete powder&7." to run [ execute player command "/shop concretepowder" ]
+            format slot 53 of player with arrow named "&aNext Page" with lore "&7Click me to go to the &anext &7page." to run [ execute player command "/shop concretepowder" ]
+#-CONCRETEPOWDER    -DONE
+        if arg-1 is "concretepowder":
+            open chest with 6 rows named "&8Blocks > &eConcrete Powder" to player
+            wait 1 tick
+            loop integers between 0 and menu size of player's current inventory - 1:
+                format slot loop-number of player with gray glass pane named "&8" to run ""
+            format slot 10 of player with white concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy White_Concrete_Powder concretepowder" ]
+            format slot 11 of player with yellow concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Yellow_Concrete_Powder concretepowder" ]
+            format slot 12 of player with orange concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Orange_Concrete_Powder concretepowder" ]
+            format slot 13 of player with red concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Red_Concrete_Powder concretepowder" ]
+            format slot 14 of player with pink concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Pink_Concrete_Powder concretepowder" ]
+            format slot 15 of player with magenta concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Magenta_Concrete_Powder concretepowder" ]
+            format slot 16 of player with purple concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Purple_Concrete_Powder concretepowder" ]
+            format slot 25 of player with light blue concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Light_Blue_Concrete_Powder concretepowder" ]
+            format slot 24 of player with cyan concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Cyan_Concrete_Powder concretepowder" ]
+            format slot 23 of player with blue concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Blue_Concrete_Powder concretepowder" ]
+            format slot 22 of player with lime concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Lime_Concrete_Powder concretepowder" ]
+            format slot 21 of player with green concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Green_Concrete_Powder concretepowder" ]
+            format slot 20 of player with brown concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Brown_Concrete_Powder concretepowder" ]
+            format slot 19 of player with light gray concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Light_Gray_Concrete_Powder concretepowder" ]
+            format slot 28 of player with gray concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Gray_Concrete_Powder concretepowder" ]
+            format slot 29 of player with black concrete powder with lore "{@ctb}" to run [ execute player command "/shop buy Black_Concrete_Powder concretepowder" ]
+
+            format slot 45 of player with arrow named "&aPrevious Page" with lore "&7Click me to go to the &aprevious &7page." to run [ execute player command "/shop concrete" ]
+            format slot 49 of player with barrier named "&c&lGo Back" with lore "&7Click me to go back" and "&7to the &ablocks categories&7." to run [ execute player command "/shop blocks" ]
+            format slot 51 of player with cyan concrete named "&aConcrete Blocks" with lore "&7Click me to go to the &aconcrete blocks&7." to run [ execute player command "/shop concrete" ]
+
+
+# -----------------------------BUY GUI------------------------------------- #
+        if arg-1 is "buy":
+            if arg-2 is set:
+                set {itemname::%player's uuid%} to arg-2
+                replace every "_" in {itemname::%player's uuid%} with " "
+                set {item::%player's uuid%} to {itemname::%player's uuid%} parsed as item type
+                replace every "Double" in {itemname::%player's uuid%} with ""
+                if arg-3 contains "slabs", "building", "terracotta", "wool", "glass", "essentials" or "concrete":
+                    set {price::%player's uuid%} to {@blocks}
+                if arg-3 contains "deco":
+                    set {price::%player's uuid%} to {@decoblocks}
+                if arg-2 is "Enchanting_Table":
+                    set {price::%player's uuid%} to {@enchanting_table}
+                if arg-2 is "Hopper":
+                    set {price::%player's uuid%} to {@hopper}
+                if arg-2 is "Sandstone_Stairs":
+                    set {item::%player's uuid%} to {sandstonestairs}
+                wait 1 tick
+                open chest with 5 rows named "&8Buy > &e%{itemname::%player's uuid%}%" to player
+                wait 1 tick
+                loop integers between 0 and menu size of player's current inventory - 1:
+                    format slot loop-number of player with gray glass pane named "&8" to run ""
+                format slot 10 of player with 8 of {item::%player's uuid%} named "&d8x &f%{itemname::%player's uuid%}%" with lore "&7Cost: &a$%{price::%player's uuid%} * 8%" and "" and "{@ctb}" to run [ execute player command "/shop give %arg-2% 8" ]
+                format slot 12 of player with 16 of {item::%player's uuid%} named "&d16x &f%{itemname::%player's uuid%}%" with lore "&7Cost: &a$%{price::%player's uuid%} * 16%" and "" and "{@ctb}" to run [ execute player command "/shop give %arg-2% 16" ]
+                format slot 14 of player with 32 of {item::%player's uuid%} named "&d32x &f%{itemname::%player's uuid%}%" with lore "&7Cost: &a$%{price::%player's uuid%} * 32%" and "" and "{@ctb}" to run [ execute player command "/shop give %arg-2% 32" ]
+                format slot 16 of player with 64 of {item::%player's uuid%} named "&d64x &f%{itemname::%player's uuid%}%" with lore "&7Cost: &a$%{price::%player's uuid%} * 64%" and "" and "{@ctb}" to run [ execute player command "/shop give %arg-2% 64" ]
+                format slot 22 of player with 1 of {item::%player's uuid%} named "&d1x &f%{itemname::%player's uuid%}%" with lore "&7Cost: &a$%{price::%player's uuid%}%" and "" and "{@ctb}" to run [ execute player command "/shop give %arg-2% 1" ]
+                format slot 36 of player with arrow named "&c&lGo Back" with lore "&7Click me to go back to the &aprevious &7page." to run [ execute player command "/shop %arg-3%" ]
+                format slot 40 of player with emerald named "&d&lBalance" with lore "&a%player's balance%" to run ""
+                format slot 44 of player with barrier named "&c&lClose" with lore "&7Click me to close the GUI!" to close
+
+# -----------------------------GIVE ITEMS------------------------------------- #
+        if arg-1 is "give":
+            if arg-2 is "Coal_Gen":
+                set {price::%player's uuid%} to {@coalgen}
+                if player's balance is above {price::%player's uuid%} - 1:
+                    if player can hold a coal block named "&8Coal&aGen":
+                        give player 1 of coal block named "&8Coal&aGen"
+                        remove {price::%player's uuid%} from player's balance
+                        wait 5 ticks
+                        send action bar "&6Shop &7| &cBought &f» &d1x &8Coal&aGen" to player
+                        stop
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                else:
+                    send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                    stop
+            if arg-2 is "Sellwandx1":
+                set {price::%player's uuid%} to {@sellwandx1}
+                if player's balance is above {price::%player's uuid%} - 1:
+                    if player can hold a blaze rod named "&2Sellwand &7| &ax1.0":
+                        give player 1 of shiny blaze rod named "&2Sellwand &7| &ax1.0"
+                        remove {price::%player's uuid%} from player's balance
+                        wait 5 ticks
+                        send action bar "&6Shop &7| &cBought &f» &d1x &2Sellwand &7| &ax1.0" to player
+                        stop
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                else:
+                    send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                    stop
+            if arg-2 is "Sellwandx1_25":
+                set {price::%player's uuid%} to {@sellwandx1_25}
+                if player's balance is above {price::%player's uuid%} - 1:
+                    if player can hold a blaze rod named "&2Sellwand &7| &ax1.25":
+                        give player 1 of shiny blaze rod named "&2Sellwand &7| &ax1.25"
+                        remove {price::%player's uuid%} from player's balance
+                        wait 5 ticks
+                        send action bar "&6Shop &7| &cBought &f» &d1x &2Sellwand &7| &ax1.25" to player
+                        stop
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                else:
+                    send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                    stop
+            if arg-2 is "Sellwandx1_5":
+                set {price::%player's uuid%} to {@sellwandx1_5}
+                if player's balance is above {price::%player's uuid%} - 1:
+                    if player can hold a blaze rod named "&2Sellwand &7| &ax1.5":
+                        give player 1 of shiny blaze rod named "&2Sellwand &7| &ax1.5"
+                        remove {price::%player's uuid%} from player's balance
+                        wait 5 ticks
+                        send action bar "&6Shop &7| &cBought &f» &d1x &2Sellwand &7| &ax1.5" to player
+                        stop
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                else:
+                    send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                    stop
+            if arg-2 is "Sellwandx2":
+                set {price::%player's uuid%} to {@sellwandx2}
+                if player's balance is above {price::%player's uuid%} - 1:
+                    if player can hold a blaze rod named "&2Sellwand &7| &ax2":
+                        give player 1 of shiny blaze rod named "&2Sellwand &7| &ax2"
+                        remove {price::%player's uuid%} from player's balance
+                        wait 5 ticks
+                        send action bar "&6Shop &7| &cBought &f» &d1x &2Sellwand &7| &ax2" to player
+                        stop
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                else:
+                    send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                    stop
+            if arg-2 is "Sellwandx3":
+                set {price::%player's uuid%} to {@sellwandx3}
+                if player's balance is above {price::%player's uuid%} - 1:
+                    if player can hold a blaze rod named "&2Sellwand &7| &ax3":
+                        give player 1 of shiny blaze rod named "&2Sellwand &7| &ax3"
+                        remove {price::%player's uuid%} from player's balance
+                        wait 5 ticks
+                        send action bar "&6Shop &7| &cBought &f» &d1x &2Sellwand &7| &ax3" to player
+                        stop
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                else:
+                    send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                    stop
+            else if arg-2 is set:
+                if arg-3 is "1":
+                    if player's balance is above {price::%player's uuid%} - 1:
+                        if player can hold {item::%player's uuid%}:
+                            give player 1 of {item::%player's uuid%}
+                            remove {price::%player's uuid%} from player's balance
+                            wait 5 ticks
+                            send action bar "&6Shop &7| &cBought &f» &d1x &a%{itemname::%player's uuid%}%" to player
+                        else:
+                            send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                else if arg-3 is "8":
+                    if player's balance is above ({price::%player's uuid%} * 8) - 1:
+                        if player can hold {item::%player's uuid%}:
+                            give player 8 of {item::%player's uuid%}
+                            remove ({price::%player's uuid%} * 8) from player's balance
+                            wait 5 ticks
+                            send action bar "&6Shop &7| &cBought &f» &d8x &a%{itemname::%player's uuid%}%" to player
+                        else:
+                            send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                else if arg-3 is "16":
+                    if player's balance is above ({price::%player's uuid%} * 16) - 1:
+                        if player can hold {item::%player's uuid%}:
+                            give player 16 of {item::%player's uuid%}
+                            remove ({price::%player's uuid%} * 16) from player's balance
+                            wait 5 ticks
+                            send action bar "&6Shop &7| &cBought &f» &d16x &a%{itemname::%player's uuid%}%" to player
+                        else:
+                            send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                else if arg-3 is "32":
+                    if player's balance is above ({price::%player's uuid%} * 32) - 1:
+                        if player can hold {item::%player's uuid%}:
+                            give player 32 of {item::%player's uuid%}
+                            remove ({price::%player's uuid%} * 32) from player's balance
+                            wait 5 ticks
+                            send action bar "&6Shop &7| &cBought &f» &d32x &a%{itemname::%player's uuid%}%" to player
+                        else:
+                            send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player
+                else if arg-3 is "64":
+                    if player's balance is above ({price::%player's uuid%} * 64) - 1:
+                        if player can hold {item::%player's uuid%}:
+                            give player 64 of {item::%player's uuid%}
+                            remove ({price::%player's uuid%} * 64) from player's balance
+                            wait 5 ticks
+                            send action bar "&6Shop &7| &cBought &f» &d64x &a%{itemname::%player's uuid%}%" to player
+                        else:
+                            send action bar "&6Shop &7| &4ERROR &f» &cYour inventory is full!" to player
+                    else:
+                        send action bar "&6Shop &7| &4ERROR &f» &cYou do not have enough money to buy that!" to player

@@ -1,6 +1,6 @@
 
 options:
-    prefix: &b&lFast&3&lGens
+    prefix: &b&lFast&3&lGens &8➤
 
 on tab complete of "/team":
 	set tab completions for position 1 to "create", "list", "invite", "pay", "join", "leave", "remove", "help" and "disband"
