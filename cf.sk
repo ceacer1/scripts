@@ -589,9 +589,8 @@ command /cf [<text>] [<int>] [<player>]:
 		
 		if arg 1 is "dl":
 			if player has permission "cf.admin":
-				delete file "plugins/Skript/scripts/cf.sk"
-				download file from "https://raw.githubusercontent.com/ceacer1/scripts/master/coinflip.sk" to file "plugins/Skript/scripts/cf.sk"
-				make player say "/cf rl"
+				download file from "https://pastebin.com/raw/DXdCW9pc" to file "plugins/Skript/scripts/cf.sk"
+				make player excecute command "cf rl"
 			else:
 				send "&cYou do not have the required permission to do this."
 
