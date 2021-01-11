@@ -583,7 +583,7 @@ command /cf [<text>] [<int>] [<player>]:
 			if player has permission "cf.admin":
 				set {_t} to now
 				make player execute command "sk reload %script name%"
-				send "&6[&eCoinFlip&6] &eSkript created by &#00AEFFD&#0077FFa&#002FFFd&#0900FFd&#4800FFy&#7700FFC&#A200FFe&#C800FFa&#F700FFc&#FF00CCe&#FF0095r &7(Skript reload in &8%difference between now and {_t}%&7)"
+				send "&6[&eCoinFlip&6] &eSkript created by &aDaddy&5Ceacer &7(Skript reload in &8%difference between now and {_t}%&7)"
 			else:
 				send "&cYou do not have the required permission to do this."
 		
