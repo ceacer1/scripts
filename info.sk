@@ -1,0 +1,18 @@
+options:
+    GuiName: &2&lDonor &3&lRanks
+
+command /donor:
+    aliases: /donator
+    trigger:
+        create a gui with virtual chest named "{@GuiName}" with 3 rows:
+            loop integers between 0 and 8:
+                make gui slot loop-number to gray glass pane named "&8"
+            make gui slot 9 to gray glass pane named "&8"
+            make gui slot 17 to gray glass pane named "&8"
+            loop integers between 18 and 26:
+                make gui slot loop-number to gray glass pane named "&8"
+            make gui slot 10 to gold ingot named "&7[&4&lDemon&7]"
+            make gui slot 12 to diamond named "&7[&b&lAngel&7]"
+            make gui slot 14 to emerald named "&7[&c&lDevil&7]"
+            make gui slot 16 to netherite ingot #named "&7[&f&lGOD&7]"
+        open last gui to player
