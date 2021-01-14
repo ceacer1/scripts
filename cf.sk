@@ -90,8 +90,8 @@ command /cf [<text>] [<int>] [<player>]:
 			else:
 				set {_bal} to player' balance
 				create a gui with virtual chest named "{@Name.GUI}" with 4 rows:
-					make gui slot 27 to feather named "&6» &eInformation" with lore "", "&6» &eYour Money&7: &c%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%player%}%" and "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%"
-					make gui slot 31 to glowing book named "&6» &eInformation" with lore "", "&6» &eCommands", "", "&6» &e/cf help", "&6» &e/cf create <amount>", "&6» &e/cf leave" and ""
+					make gui slot 27 to skull of player named "&6» &eStats" with lore "", "&6» &eYour Money&7: &c%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%player%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%", "", "&6» &eBalance won &7: &2$&a%{coinflip.win.total::%player%}%" and  "&6» &eBalance lost &7: &2$&c%{coinflip.lose.total::%player%}%"
+					make gui slot 31 to glowing book named "&6» &eCommands" with lore "", "&6» &e/cf help", "&6» &e/cf create <amount>", "&6» &e/cf leave" and ""
 					make gui slot 33 to skull of "DaddyCeacer" parsed as offline player named "&eMade By &6DaddyCeacer"
 					set {_slot} to 0
 					wait 2 ticks
@@ -523,6 +523,8 @@ command /cf [<text>] [<int>] [<player>]:
 											send "" to arg 3
 											send ""
 											send "" to arg 3
+											add {coinflip.bet.%arg-3%} to {coinflip.win.total::%player%}
+											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%arg-3%}
 											make console execute command "eco give %player% %{FinalBet.%player%}%"
 										if {_END} < 49:
 											add 1 to {coinflip.lose::%player%} 
@@ -541,6 +543,8 @@ command /cf [<text>] [<int>] [<player>]:
 											send "" to arg 3
 											send ""
 											send "" to arg 3
+											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%player%}
+											add {coinflip.bet.%arg-3%} to {coinflip.win.total::%arg-3%}
 											make console execute command "eco give %arg-3% %{FinalBet.%player%}%"		
 										else if {_END} is 50:
 											add 1 to {coinflip.lose::%player%} 
@@ -561,6 +565,8 @@ command /cf [<text>] [<int>] [<player>]:
 											send "" to arg 3
 											send ""
 											send "" to arg 3
+											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%player%}
+											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%arg-3%}
 											set {_otherplayer} to arg-3
 											coinflipformatNum50(player, "%{_otherplayer}%", {coinflip.bet.%arg-3%})
 										clear {coinflip.bet.%arg-3%}
@@ -602,6 +608,10 @@ on join:
 		set {coinflip.win::%player%} to 0
 	if {coinflip.lose::%player%} is not set:
 		set {coinflip.lose::%player%} to 0
+	if {coinflip.win.total::%player%} is not set:
+		set {coinflip.win.total::%player%} to 0
+	if {coinflip.lose.total::%player%} is not set:
+		set {coinflip.lose.total::%player%} to 0
 	set {coinflip.roomtoggle::%player%} to 0 
 	set {coinflip.room.selected::%player%} to "&8[&eLow&8]"
 	if {help.read::%uuid of player%} is not set:
