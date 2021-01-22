@@ -7,64 +7,59 @@ on join:
 	if {bossbar::toggle::%uuid of player%} is false:
 		remove player from bossbar "welcome.bossbar"
 	
+on script load:
+	make console execute command "bbar-set"
 
-
-command /bbar-off:
-    trigger:
-        remove player from bossbar "welcome.bossbar"
-        set {bossbar::toggle::%uuid of player%} to false
-
-command /bbar-on:
+command /bbar-toggle:
 	trigger:
-		set bossbar "welcome.bossbar" for player
-		set {bossbar::toggle::%uuid of player%} to true
+		if {bossbar::toggle::%uuid of player%} is true:
+			remove player from bossbar "welcome.bossbar"
+			set {bossbar::toggle::%uuid of player%} to false
+		else if {bossbar::toggle::%uuid of player%} is false:
+			set bossbar "welcome.bossbar" for player 
+			set {bossbar::toggle::%uuid of player%} to true
 
 command /bbar-set:
+	permission: op
 	trigger:
 		set {bossbar::toggle} to true
-		remove all players from bossbar "welcome.bossbar"
-		create bossbar titled "&a&lWelcome &7to &b&lFastGens!" and id "welcome.bossbar" for all players with progress 100 with colors green
+		remove bossbar "welcome.bossbar"
+		create bossbar titled "&a&lWelcome &7to &b&lFast&3&lGens!" and id "welcome.bossbar" for all players with progress 100 with colors green
 		wait 5 ticks
-		bossbar(player)
+		bossbar(1)
 			
 command /bbar-remove:
+	permission: op
 	trigger:
 		remove bossbar "welcome.bossbar"
 		set {bossbar::toggle} to false
 
+function bossbarValue(n: number):
+	set {_bbarvalue} to value of bossbar "welcome.bossbar"
+	set bossbar "welcome.bossbar" value to (100 - {_n})
 
-function bossbar(p: player):
-	if {bossbar::toggle} is true:
-		loop 100 times:
-			set {_bbarvalue} to value of bossbar "welcome.bossbar"
-			remove 1 from {_bbarvalue}
-			set bossbar "welcome.bossbar" value to {_bbarvalue}
-			wait 5 ticks
+function bossbarTitle(n: number):
+	if {_n} is 0:
+		set bossbar "welcome.bossbar" title to "&a&lWelcome &7to &b&lFast&3&lGens!"
+	if {_n} is 1:
 		set bossbar "welcome.bossbar" title to "&bJoin our &dDiscord &bwith &6/discord"
-		set {_bbarvalue} to 100
-		set bossbar "welcome.bossbar" value to {_bbarvalue}
-		loop 100 times:
-			set {_bbarvalue} to value of bossbar "welcome.bossbar"
-			remove 1 from {_bbarvalue}
-			set bossbar "welcome.bossbar" value to {_bbarvalue}
-			wait 5 ticks
-		set bossbar "welcome.bossbar" title to "&cHave an issue? &3Open a ticket on &dDiscord"
-		set {_bbarvalue} to 100
-		set bossbar "welcome.bossbar" value to {_bbarvalue}
-		loop 100 times:
-			set {_bbarvalue} to value of bossbar "welcome.bossbar"
-			remove 1 from {_bbarvalue}
-			set bossbar "welcome.bossbar" value to {_bbarvalue}
-			wait 5 ticks
+	if {_n} is 2:
+		set bossbar "welcome.bossbar" title to "&cHave an issue? &bOpen a ticket on &dDiscord"
+	if {_n} is 3:
+		set bossbar "welcome.bossbar" title to "&bMake sure you have read &6/rules&b!!"
+	if {_n} is 4:
+		set bossbar "welcome.bossbar" title to "&bNot sure what a &7&lSilo &r&bis go to &6/warp silo"
+	if {_n} is 5:
 		set bossbar "welcome.bossbar" title to "&bDon't forget to &aDonate &bwith &6/buy"
-		set {_bbarvalue} to 100
-		set bossbar "welcome.bossbar" value to {_bbarvalue}
+	
+
+function bossbar(n: number):
+	if {bossbar::toggle} is true:	
 		loop 100 times:
-			set {_bbarvalue} to value of bossbar "welcome.bossbar"
-			remove 1 from {_bbarvalue}
-			set bossbar "welcome.bossbar" value to {_bbarvalue}
-			wait 5 ticks
-		set bossbar "welcome.bossbar" title to "&a&lWelcome &7to &b&lFastGens!"
-		set {_bbarvalue} to 100
-		set bossbar "welcome.bossbar" value to {_bbarvalue}
-		bossbar({_p})
+			bossbarValue(loop-value)
+			wait 1 ticks
+		bossbarTitle({_n})
+		add 1 to {_n}
+		if {_n} is 6:
+			set {_n} to 0
+		bossbar({_n})
