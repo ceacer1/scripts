@@ -55,13 +55,22 @@ variables:
 	{S5F3} = "Krievs"
 	{S5F3bal} = "$26,801,006,817"
 	#Season 6 Winners
-	{S6} = "&9&lS&e&l6 &2&lWinners"
+	{S6} = "&b&lS&3&l6 &2&lWinners"
 	{S6F1} = "Girly_gamer_xo"
 	{S6F1bal} = "$36,277,522,060"
 	{S6F2} = "Reny_B"
 	{S6F2bal} = "$29,696,969,420"
 	{S6F3} = "mEmeg0d"
 	{S6F3bal} = "$28,714,175,843"
+	#Season 7 Winners
+	{S7} = "&b&lS&3&l7 &2&lWinners"
+	{S7F1} = "notice30"
+	{S7F1bal} = "$69,696,969,696"
+	{S7F2} = "xchris0809"
+	{S7F2bal} = "$58,265,300,172"
+	{S7F3} = "FireGamingDK"
+	{S7F3bal} = "$44,569,635,354"
+
 
 command /payouts:
 	trigger:
@@ -135,11 +144,11 @@ function payoutWinners(p: player, type: int = 0):
 		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, 4)
 		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, 5)
 		format gui slot 15 of {_p} with glowing book named "&6&lSeason 6" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, 6)
-		format gui slot 16 of {_p} with glowing clock named "&6&lSeason 7" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
+		format gui slot 16 of {_p} with glowing book named "&6&lSeason 7" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, 7)
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 		format gui slot 23 of {_p} with glowing arrow named "&dNext Page" to run function payoutWinners({_p}, 1)
 	if {_type} is 1:
-		format gui slot 10 of {_p} with glowing barrier block named "&6&lSeason 8" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 10 of {_p} with glowing clock named "&6&lSeason 8" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
 		format gui slot 11 of {_p} with glowing barrier block named "&6&lSeason 9" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 12 of {_p} with glowing barrier block named "&6&lSeason 10" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 13 of {_p} with glowing barrier block named "&6&lSeason 11" with lore "" and "&8(&cNot Avaliable&8)" to close 

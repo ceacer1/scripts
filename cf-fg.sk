@@ -79,29 +79,28 @@ function coinflipRoomCheck(p: player) :: string:
 		set {_cfrcreturn} to "ludicrous"
 	return {_cfrcreturn}
 
-function coinflipAmountCheck(p: player, amount: number, type: int) :: string:
-	if {_type} is 0:
-		if {_amount} is between 1000 and 499999:
-			set {_room} to "&eLow"
-			set {coinflip.roomtoggle::%{_p}%} to 0
-		if {_amount} is between 500000 and 4999999:
-			set {_room} to "&6Med"
-			set {coinflip.roomtoggle::%{_p}%} to 1
-		if {_amount} is between 5000000 and 249999999:
-			set {_room} to "&cHigh"
-			set {coinflip.roomtoggle::%{_p}%} to 2
-		if {_amount} is between 250000000 and 999999999:
-			set {_room} to "&4Mega"
-			set {coinflip.roomtoggle::%{_p}%} to 3
-		if {_amount} is between 1000000000 and 1999999999:
-			set {_room} to "&dUltra"
-			set {coinflip.roomtoggle::%{_p}%} to 4
-		if {_amount} is between 2000000000 and 9999999999:
-			set {_room} to "&5Insane"
-			set {coinflip.roomtoggle::%{_p}%} to 5
-		if {_amount} is more than 9999999999:
-			set {_room} to "&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls"
-			set {coinflip.roomtoggle::%{_p}%} to 6
+function coinflipAmountCheck(p: player, amount: number) :: string:
+	if {_amount} is between 1000 and 499999:
+		set {_room} to "&eLow"
+		set {coinflip.roomtoggle::%{_p}%} to 0
+	if {_amount} is between 500000 and 4999999:
+		set {_room} to "&6Med"
+		set {coinflip.roomtoggle::%{_p}%} to 1
+	if {_amount} is between 5000000 and 249999999:
+		set {_room} to "&cHigh"
+		set {coinflip.roomtoggle::%{_p}%} to 2
+	if {_amount} is between 250000000 and 999999999:
+		set {_room} to "&4Mega"
+		set {coinflip.roomtoggle::%{_p}%} to 3
+	if {_amount} is between 1000000000 and 1999999999:
+		set {_room} to "&dUltra"
+		set {coinflip.roomtoggle::%{_p}%} to 4
+	if {_amount} is between 2000000000 and 9999999999:
+		set {_room} to "&5Insane"
+		set {coinflip.roomtoggle::%{_p}%} to 5
+	if {_amount} is more than 9999999999:
+		set {_room} to "&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls"
+		set {coinflip.roomtoggle::%{_p}%} to 6
 	return {_room}
 
 command /cf [<text>] [<int>] [<player>]:
@@ -145,19 +144,10 @@ command /cf [<text>] [<int>] [<player>]:
 			if {cf.%player%} is true:
 				send "{@Prefix} &eYour bet of &2$&a%{coinflip.bet.%player%}% &ehas been refunded."
 				add {coinflip.bet.%player%} to player's balance
-				clear {coinflip.bet.%player%}
-				remove player from {coinflip::*}
-				remove player from {coinflip.low::*}
-				remove player from {coinflip.med::*}
-				remove player from {coinflip.high::*}
-				remove player from {coinflip.mega::*}   
-				remove player from {coinflip.ultra::*}
-				remove player from {coinflip.insane::*}
-				remove player from {coinflip.ludicrous::*}
-				clear {cf.%player%}
+				clear {coinflip.bet.%player%} and {cf.%player%}
+				remove player from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}
 			else:
 				send "{@Prefix} &eYou do not have an open &b&lC&3&lF."
-
 
 		if arg 1 is "h" or "help":
 			send ""
@@ -168,8 +158,7 @@ command /cf [<text>] [<int>] [<player>]:
 			send ""
 			send "&c&l» &eYou can change rooms by clicking on the button in &6&o/cf "
 			send ""
-			send "&c&l» &eA number between &8(&b0&8) &eand &8(&b100&8) &ewill be selected"
-			send "&c&l» &eIf the number lands on &8(&b50&8) &eneither of you win"
+			send "&c&l» &eA number between &8(&b1&8) &eand &8(&b100&8) &ewill be selected"
 			send ""
 			send "&c&l» &eIf you log off before your &b&lC&3&lF &r&eis played, your money will be returned."
 			send ""
@@ -182,13 +171,12 @@ command /cf [<text>] [<int>] [<player>]:
 			if arg 2 is set:		
 				if player's balance is greater than or equal to arg-2:
 					if {cf.%player%} is not set:	
-						set {_room} to coinflipAmountCheck(player, arg 2, 0)
+						set {_room} to coinflipAmountCheck(player, arg 2)
 						set {_roomannounce} to coinflipRoomCheck(player)
 						if (amount of {coinflip.%{_room}%::*}) < 27:
 							set {cf.%player%} to true
 							set {coinflip.bet.%player%} to arg 2
-							add player to {coinflip::*}
-							add player to {coinflip.%{_room}%::*}
+							add player to {coinflip::*} and {coinflip.%{_roomannounce}%::*}
 							remove {coinflip.bet.%player%} from player's balance
 							send "{@Prefix} &eYour bet of &2$&a%{coinflip.bet.%player%}% &ehas been registered."
 							coinflipCreate(player, "%{_room}%")
@@ -211,65 +199,42 @@ command /cf [<text>] [<int>] [<player>]:
 							if player's balance is greater than or equal to {coinflip.bet.%arg-3%}:
 								if {cf.%player%} is not set:
 									if {cf.%arg-3%} is set:
-										clear {cf.%arg-3%}
-										clear {cf.%player%}
-										send "{@Prefix} &7&oLoading ..."
-										send "{@Prefix} &7&oLoading ..." to arg 3		
+										clear {cf.%arg-3%} and {cf.%player%}
+										send "{@Prefix} &7&oLoading ..." to player and arg 3
 										wait 3 ticks
-										send "{@Prefix} &7&oCoinFlip Opening"
-										send "{@Prefix} &7&oCoinFlip Opening" to arg 3
-										make console execute command "eco take %player% %{coinflip.bet.%arg-3%}%"
+										send "{@Prefix} &7&oCoinFlip Opening" to player and arg 3
+										remove {coinflip.bet.%arg-3%} from player's balance
+										send "{@Prefix} &eYou have matched &6&l%arg 3%&6&l's &ebet of &2$&a%{coinflip.bet.%arg 3%}%."
 										set {FinalBet.%player%} to {coinflip.bet.%arg-3%} + {coinflip.bet.%arg-3%}
 										set {FinalBet.%player%} to (({FinalBet.%player%}/100) * 90)
-										add player to {Cf.%player%::*}
-										add arg 3 to {Cf.%player%::*}
-										remove arg 3 from {coinflip::*}
-										remove arg 3 from {coinflip.low::*}
-										remove arg 3 from {coinflip.med::*}
-										remove arg 3 from {coinflip.high::*}
-										remove arg 3 from {coinflip.mega::*}
-										remove arg 3 from {coinflip.ultra::*}
-										remove arg 3 from {coinflip.insane::*}
-										remove arg 3 from {coinflip.ludicrous::*}								
+										add player and arg 3 to {Cf.%player%::*}
+										remove arg 3 from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}							
 										loop 5 times:
-											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player
-											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to arg 3		
+											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player and arg 3
 											wait 3 ticks
-											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to player
-											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to arg 3									
+											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to player and arg 3
 											wait 3 ticks
-											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading..." to player
-											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading..." to arg 3
+											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading..." to player and arg 3
 											wait 3 ticks
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to player and arg 3
 										wait 3 ticks
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player and arg 3
 										wait 3 ticks							
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading" to player and arg 3
 										wait 3 ticks							
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadin" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadin" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadin" to player and arg 3
 										wait 3 ticks
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadi" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadi" to arg 3								
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadi" to player and arg 3
 										wait 3 ticks							
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoad" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoad" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoad" to player and arg 3
 										wait 3 ticks
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoa" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoa" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLoa" to player and arg 3
 										wait 3 ticks
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLo" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oLo" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oLo" to player and arg 3
 										wait 3 ticks		
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oL" to player
-										open chest with 1 row named "{@Name.GUI.Loading} &7&oL" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading} &7&oL" to player and arg 3
 										wait 3 ticks	
-										open chest with 1 row named "{@Name.GUI.Loading}" to player
-										open chest with 1 row named "{@Name.GUI.Loading}" to arg 3
+										open chest with 1 row named "{@Name.GUI.Loading}" to player and arg 3
 										wait 3 ticks		
 										set {_slot} to 0
 										loop 25 times:
@@ -280,50 +245,35 @@ command /cf [<text>] [<int>] [<player>]:
 													evaluate "format gui slot %{_slot}% of player with 160:%{_RI}% named ""&6» &e%{_FIGURE}%"" to do nothing"
 												if event-inventory's display name is "{@Name.GUI.Loading}":
 													if {_RI} = 1:
-														format gui slot {_slot} of arg 3 with orange glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with orange glass named "&6» &e%{_FIGURE}%" to do nothing												
+														format gui slot {_slot} of player and arg 3 with orange glass named "&6» &e%{_FIGURE}%" to do nothing												
 													if {_RI} = 2:
-														format gui slot {_slot} of arg 3 with magenta glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with magenta glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with magenta glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 3:
-														format gui slot {_slot} of arg 3 with light blue glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with light blue glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with light blue glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 4:
-														format gui slot {_slot} of arg 3 with yellow glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with yellow glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with yellow glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 5:
-														format gui slot {_slot} of arg 3 with light green glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with light green glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with light green glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 6:
-														format gui slot {_slot} of arg 3 with pink glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with pink glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with pink glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 7:
-														format gui slot {_slot} of arg 3 with gray glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with gray glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with gray glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 8:
-														format gui slot {_slot} of arg 3 with light gray glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with light gray glass named "&6» &e%{_FIGURE}%" to do nothing	
+														format gui slot {_slot} of player and arg 3 with light gray glass named "&6» &e%{_FIGURE}%" to do nothing	
 													if {_RI} = 9:
-														format gui slot {_slot} of arg 3 with cyan glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with cyan glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with cyan glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 10:
-														format gui slot {_slot} of arg 3 with purple glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with purple glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with purple glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 11:
-														format gui slot {_slot} of arg 3 with blue glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with blue glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with blue glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 12:
-														format gui slot {_slot} of arg 3 with brown glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with brown glass named "&6» &e%{_FIGURE}%" to do nothing	
+														format gui slot {_slot} of player and arg 3 with brown glass named "&6» &e%{_FIGURE}%" to do nothing	
 													if {_RI} = 13:
-														format gui slot {_slot} of arg 3 with green glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with green glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with green glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 14:
-														format gui slot {_slot} of arg 3 with red glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with red glass named "&6» &e%{_FIGURE}%" to do nothing
+														format gui slot {_slot} of player and arg 3 with red glass named "&6» &e%{_FIGURE}%" to do nothing
 													if {_RI} = 15:
-														format gui slot {_slot} of arg 3 with black glass named "&6» &e%{_FIGURE}%" to do nothing
-														format gui slot {_slot} of player with black glass named "&6» &e%{_FIGURE}%" to do nothing												
+														format gui slot {_slot} of player and arg 3 with black glass named "&6» &e%{_FIGURE}%" to do nothing												
 												add 1 to {_slot}
 											set {_FIGURE} to random integer between 1 and 2
 											if {_FIGURE} = 1:
@@ -339,63 +289,47 @@ command /cf [<text>] [<int>] [<player>]:
 											set {_slot} to 0
 											wait 3 ticks		
 										set {_END} to random integer between 1 and 100
-										close player's inventory
-										close arg 3's inventory
+										close player and arg 3's inventory
 										if {_END} is greater than or equal to 51:
-											add 1 to {coinflip.win::%player%} 
-											add 1 to {coinflip.lose::%arg-3%}								
-											send ""
-											send "" to arg 3
-											send ""
-											send "" to arg 3
+											add 1 to {coinflip.win::%player%} and {coinflip.lose::%arg-3%}							
+											send "" to player and arg 3
+											send "" to player and arg 3
 											send "{@Prefix} &7&oYou won the Coinflip !"
 											send "{@Prefix} &7&oYou lost the CoinFlip !" to arg 3
 											send "{@Prefix} &7&oSo you won &6$%{FinalBet.%player%}%"
 											send "{@Prefix} &7&oYou lost &6$%{coinflip.bet.%arg-3%}%" to arg 3
-											send "{@Prefix} &7The winning number was &6%{_END}%" to arg 3
-											send "{@Prefix} &7The winning number was &6%{_END}%"
-											send ""
-											send "" to arg 3
-											send ""
-											send "" to arg 3
-											add {coinflip.bet.%arg-3%} to {coinflip.win.total::%player%}
-											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%arg-3%}
+											send "{@Prefix} &7The winning number was &6%{_END}%" to player and arg 3
+											send "" to player and arg 3
+											send "" to player and arg 3
+											send "{@Prefix} &eYour winnings of &2$&a%{FinalBet.%player%}% &ehave been debited to your account."
+											add {coinflip.bet.%arg-3%} to {coinflip.win.total::%player%} and {coinflip.lose.total::%arg-3%}
 											add {FinalBet.%player%} to player's balance
 										if {_END} is less than or equal to 50:
-											add 1 to {coinflip.lose::%player%} 
-											add 1 to {coinflip.win::%arg-3%}
-											send ""
-											send "" to arg 3
-											send ""
-											send "" to arg 3
+											add 1 to {coinflip.lose::%player%} and {coinflip.win::%arg-3%}
+											send "" to player and arg 3
+											send "" to player and arg 3
 											send "{@Prefix} &7&oYou won the Coinflip !" to arg 3
 											send "{@Prefix} &7&oYou lost the CoinFlip !" 
 											send "{@Prefix} &7&oSo you won &6$%{FinalBet.%player%}%" to arg 3
 											send "{@Prefix} &7&oYou lost &6$%{coinflip.bet.%arg-3%}%"
-											send "{@Prefix} &7The winning number was &6%{_END}%" to arg 3
-											send "{@Prefix} &7The winning number was &6%{_END}%"									
-											send ""
-											send "" to arg 3
-											send ""
-											send "" to arg 3
-											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%player%}
-											add {coinflip.bet.%arg-3%} to {coinflip.win.total::%arg-3%}
+											send "{@Prefix} &7The winning number was &6%{_END}%" to player and arg 3								
+											send "" to player and arg 3
+											send "" to player and arg 3
+											send "{@Prefix} &eYour winnings of &2$&a%{FinalBet.%player%}% &ehave been debited to your account." to arg 3
+											add {coinflip.bet.%arg-3%} to {coinflip.lose.total::%player%} and {coinflip.win.total::%arg-3%}
 											add {FinalBet.%player%} to arg-3's balance	
 										clear {coinflip.bet.%arg-3%}
 										stop
 									else:
 										send "{@Prefix} &eSomeone has already played this CF."
-										close player's inventory	
 								else:
 									send "{@Prefix} &eYou cannot play a CF while you have one set."
 									send "{@Prefix} &eUse &6&o/cf leave &ebefore trying again."
-									close player's inventory	
 							else:
 								send "{@Prefix} &eYou do not have enough money."
-								close player's inventory
 						else:
 							send "{@Prefix} &eYou can't play alone."	
-							close player's inventory									
+						close player's inventory									
 					
 		if arg 1 is "reload" or "rl":
 			if player has permission "cf.admin":
@@ -421,15 +355,7 @@ on join:
 		
 on quit:
 	clear {cf.%player%}
-	remove player from {coinflip::*}
-	remove player from {coinflip.low::*}
-	remove player from {coinflip.med::*}
-	remove player from {coinflip.high::*}
-	remove player from {coinflip.mega::*}
-	remove player from {coinflip.ultra::*}
-	remove player from {coinflip.insane::*}
-	remove player from {coinflip.ludicrous::*}
+	remove player from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}
 	if {cf.%player%} is true:
-		make console execute command "eco give %player% %{coinflip.bet.%player%}%"
-		clear {coinflip.bet.%player%}
-		clear {cf.%player%}
+		add {coinflip.bet.%player%} to player's balance
+		clear {coinflip.bet.%player%} and {cf.%player%}
