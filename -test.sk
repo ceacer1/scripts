@@ -1,0 +1,34 @@
+on skript load:
+    create a new mongo client to host "mongodb+srv://test:test@cluster0.adzx4.mongodb.net/Cluster0?retryWrites=true&w=majority" as "test"
+    set {client} to client named "test"
+    set {database} to mongo database named "mongosk" of {client}
+    set {collection} to collection named "coinflip" of {database}
+
+command /database [<text>]:
+    trigger:
+        if arg 1 is not set:
+            set {_databases::*} to all databases from client named "test"
+            loop {_databases::*}:
+                send "%loop-value%" to player
+        if arg 1 is "create":
+            set {_new} to new mongo document
+            set value "player" of {_new} to name of player
+            add random integer between 1 and 10 to list "random" of {_new}
+            save document {_new} in {database}
+        if arg 1 is "test":
+            # We search a document where the value "points" is 10.
+            set {_search} to document where "winner" is "DaddyCeacer" in {collection}
+            # We check if a document has been found.
+            if {_search} is not set:
+                # Otherwise, we will create a new mongo example document.
+                set {_doc} to new mongo document
+            else:
+                # Trying to broadcast a value of the document.
+                broadcast "%value ""amount"" of {_search}%"
+                #loop list "example" of {_doc}:
+                 #   broadcast "%loop-value%"
+                #set {_doc} to {_search}
+            #set value "title" of {_doc} to "This is a test!"
+            #set value "points" of {_doc} to random integer between 1 and 10
+            #set list "example" of {_doc} to "a", "b" and "c"
+            #save document {_doc} in {collection}

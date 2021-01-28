@@ -62,7 +62,11 @@ variables:
 	{S6F2bal} = "$29,696,969,420"
 	{S6F3} = "mEmeg0d"
 	{S6F3bal} = "$28,714,175,843"
+<<<<<<< HEAD
 	#Season 7 Winners
+=======
+	#Season 7 BETA Winners
+>>>>>>> e5c4fecdb70f6339c8dabf2053fc7ea57158f161
 	{S7} = "&b&lS&3&l7 &7&oBETA &2&lWinners"
 	{S7F1} = "notice30"
 	{S7F1bal} = "$69,696,969,696"
