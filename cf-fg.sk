@@ -1,9 +1,10 @@
 on skript load:
-    create a new mongo client to host "mongodb+srv://test:test@cluster0.adzx4.mongodb.net/Cluster0?retryWrites=true&w=majority" as "test"
-    set {client.cf} to client named "test"
+    create a new mongo client to host "mongodb+srv://test:test@cluster0.adzx4.mongodb.net/Cluster0?retryWrites=true&w=majority" as "coinflip"
+    set {client.cf} to client named "coinflip"
     set {database.cf} to mongo database named "mongosk" of {client.cf}
     set {collection.cflogs} to collection named "CoinFlipLogs" of {database.cf}
     set {collection.cf} to collection named "CoinFlip" of {database.cf}
+    set {collection.cfbets} to collection named "CoinFlipBets" of {database.cf}
 
 on join:
     set {_search} to document where "UUID of Player" is UUID of player in {collection.cf}
@@ -159,9 +160,11 @@ command /cf [<text>] [<int>] [<player>]:
                     wait 2 ticks
                     set {cf.open::%player%} to true
                     set {_cfrcreturn} to coinflipRoomCheck(player)
-                    loop {coinflip.%{_cfrcreturn}%::*}:
-                        set {_text} to loop-value
-                        make gui slot {_slot} to skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{coinflip.bet.%loop-value%}%":
+                    set {_filter} to new mongo filter where "room" is {_cfrcreturn}
+                    set {_coinflips::*} to all documents with filter {_filter} in {collection.cfbets}
+                    loop {_coinflips::*}:
+                        set {_text} to value "player" of loop-value
+                        make gui slot {_slot} to skull of "%value ""player"" of loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%value ""player"" of loop-value%" and "&6» &eBet&7: $&c%value ""bet"" of loop-value%":
                             make player execute command "cf play 12 %{_text}%"
                         add 1 to {_slot}
                         if {cf.open::%player%} is false:
@@ -180,10 +183,12 @@ command /cf [<text>] [<int>] [<player>]:
         
         if arg-1 is "leave":
             if {cf.%player%} is true:
-                send "{@Prefix} &eYour bet of &2$&a%{coinflip.bet.%player%}% &ehas been refunded."
-                add {coinflip.bet.%player%} to player's balance
-                clear {coinflip.bet.%player%} and {cf.%player%}
-                remove player from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}
+                set {_doc} to document where "player" is name of player in {collection.cfbets}
+                set {_bet} to value "bet" of {_doc}
+                send "{@Prefix} &eYour bet of &2$&a%{_bet}% &ehas been refunded."
+                add {_bet} to player's balance
+                clear {cf.%player%}
+                delete mongo document {_doc} from {collection.cfbets}
             else:
                 send "{@Prefix} &eYou do not have an open &b&lC&3&lF."
 
@@ -208,19 +213,24 @@ command /cf [<text>] [<int>] [<player>]:
         if arg 1 is "create":
             if arg 2 is set:        
                 if player's balance is greater than or equal to arg-2:
-                    if {cf.%player%} is not set:    
+                    if {cf.%player%} is not set:
                         set {_room} to coinflipAmountCheck(player, arg 2)
                         set {_roomannounce} to coinflipRoomCheck(player)
-                        if (amount of {coinflip.%{_room}%::*}) < 27:
+                        set {_filter} to new mongo filter where "room" is {_roomannounce}
+                        set {_coinflips::*} to all documents with filter {_filter} in {collection.cfbets}
+                        if (amount of {_coinflips::*}) < 27:
+                            set {_doc} to new mongo document
                             set {cf.%player%} to true
-                            set {coinflip.bet.%player%} to arg 2
-                            add player to {coinflip::*} and {coinflip.%{_roomannounce}%::*}
-                            remove {coinflip.bet.%player%} from player's balance
-                            send "{@Prefix} &eYour bet of &2$&a%{coinflip.bet.%player%}% &ehas been registered."
+                            set value "room" of {_doc} to {_roomannounce}
+                            set value "player" of {_doc} to name of player
+                            set value "bet" of {_doc} to arg 2
+                            save document {_doc} in {collection.cfbets}
+                            remove arg 2 from player's balance
+                            send "{@Prefix} &eYour bet of &2$&a%arg 2% &ehas been registered."
                             coinflipCreate(player, "%{_room}%")
                             wait 5 seconds
                             if {_room} is "&dUltra", "&5Insane" or "&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls":
-                                coinflipformatNum(player, "%{_room}%", {coinflip.bet.%player%})
+                                coinflipformatNum(player, "%{_room}%", arg 2)
                         else:
                             send "{@Prefix} &eYou cannot create one at the moment, the room is full."
                     else:
@@ -235,18 +245,20 @@ command /cf [<text>] [<int>] [<player>]:
                 if arg 3 is set:
                     if arg 3 is online:
                         if arg 3 is not player:
-                            if player's balance is greater than or equal to {coinflip.bet.%arg-3%}:
+                            set {_doc} to first document where "player" is name of arg 3 in {collection.cfbets}
+                            set {_bet} to value "bet" of {_doc}
+                            if player's balance is greater than or equal to {_bet}:
                                 if {cf.%player%} is not set:
                                     if {cf.%arg-3%} is set:
                                         clear {cf.%arg-3%} and {cf.%player%}
                                         send "{@Prefix} &7&oLoading ..." to player and arg 3
                                         wait 3 ticks
                                         send "{@Prefix} &7&oCoinFlip Opening" to player and arg 3
-                                        remove {coinflip.bet.%arg-3%} from player's balance
-                                        send "{@Prefix} &eYou have matched &6&l%arg 3%&6&l's &ebet of &2$&a%{coinflip.bet.%arg 3%}%."
-                                        set {FinalBet.%player%} to {coinflip.bet.%arg-3%} + {coinflip.bet.%arg-3%}
-                                        set {FinalBet.%player%} to (({FinalBet.%player%}/100) * 90)
-                                        add player and arg 3 to {Cf.%player%::*}
+                                        remove {_bet} from player's balance
+                                        send "{@Prefix} &eYou have matched &6&l%arg 3%&6&l's &ebet of &2$&a%{_bet}%."
+                                        set {_finalBet} to {_bet} + {_bet}
+                                        set {_finalBet} to (({_finalBet}/100) * 90)
+                                        delete mongo document {_doc} from {collection.cfbets} 
                                         remove arg 3 from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}                            
                                         loop 5 times:
                                             open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player and arg 3
@@ -329,37 +341,34 @@ command /cf [<text>] [<int>] [<player>]:
                                             wait 3 ticks        
                                         set {_END} to random integer between 1 and 100
                                         close player and arg 3's inventory
-                                        if {_END} is greater than or equal to 51:
-                                            add 1 to {coinflip.win::%player%} and {coinflip.lose::%arg-3%}                          
+                                        if {_END} is greater than or equal to 51:                         
                                             send "" to player and arg 3
                                             send "" to player and arg 3
                                             send "{@Prefix} &7&oYou won the Coinflip !"
                                             send "{@Prefix} &7&oYou lost the CoinFlip !" to arg 3
-                                            send "{@Prefix} &7&oSo you won &6$%{FinalBet.%player%}%"
-                                            send "{@Prefix} &7&oYou lost &6$%{coinflip.bet.%arg-3%}%" to arg 3
+                                            send "{@Prefix} &7&oSo you won &6$%{_finalBet}%"
+                                            send "{@Prefix} &7&oYou lost &6$%{_bet}%" to arg 3
                                             send "{@Prefix} &7The winning number was &6%{_END}%" to player and arg 3
                                             send "" to player and arg 3
                                             send "" to player and arg 3
-                                            send "{@Prefix} &eYour winnings of &2$&a%{FinalBet.%player%}% &ehave been debited to your account."
-                                            coinflipOutCome("%player%", "%arg 3%", "%{coinflip.bet.%arg-3%}%")
-                                            add {FinalBet.%player%} to player's balance
-                                            coinflipLogs("%player%", "%arg 3%", "%{FinalBet.%player%}%", {_END}) 
+                                            send "{@Prefix} &eYour winnings of &2$&a%{_finalBet}% &ehave been debited to your account."
+                                            coinflipOutCome("%player%", "%arg 3%", {_bet})
+                                            add {_finalBet} to player's balance
+                                            coinflipLogs("%player%", "%arg 3%", "%{_finalBet}%", {_END}) 
                                         if {_END} is less than or equal to 50:
-                                            add 1 to {coinflip.lose::%player%} and {coinflip.win::%arg-3%}
                                             send "" to player and arg 3
                                             send "" to player and arg 3
                                             send "{@Prefix} &7&oYou won the Coinflip !" to arg 3
                                             send "{@Prefix} &7&oYou lost the CoinFlip !" 
-                                            send "{@Prefix} &7&oSo you won &6$%{FinalBet.%player%}%" to arg 3
-                                            send "{@Prefix} &7&oYou lost &6$%{coinflip.bet.%arg-3%}%"
+                                            send "{@Prefix} &7&oSo you won &6$%{_finalBet}%" to arg 3
+                                            send "{@Prefix} &7&oYou lost &6$%{_bet}%"
                                             send "{@Prefix} &7The winning number was &6%{_END}%" to player and arg 3                                
                                             send "" to player and arg 3
                                             send "" to player and arg 3
-                                            send "{@Prefix} &eYour winnings of &2$&a%{FinalBet.%player%}% &ehave been debited to your account." to arg 3
-                                            coinflipOutCome("%arg 3%", "%player%", "%{coinflip.bet.%arg-3%}%")
-                                            add {FinalBet.%player%} to arg-3's balance
-                                            coinflipLogs("%arg 3%", "%player%", "%{FinalBet.%player%}%", {_END})   
-                                        clear {coinflip.bet.%arg-3%}
+                                            send "{@Prefix} &eYour winnings of &2$&a%{_finalBet}% &ehave been debited to your account." to arg 3
+                                            coinflipOutCome("%arg 3%", "%player%", {_bet})
+                                            add {_finalBet} to arg-3's balance
+                                            coinflipLogs("%arg 3%", "%player%", "%{_finalBet}%", {_END})   
                                         stop
                                     else:
                                         send "{@Prefix} &eSomeone has already played this CF."
@@ -388,19 +397,30 @@ function coinflipLogs(w: string, l: string, a: string, n: number):
     set value "number" of {_doc} to "%{_n}%"
     save document {_doc} in {collection.cflogs} 
 
-function coinflipOutCome(w: string, l: string, a: string):
+function coinflipOutCome(w: string, l: string, a: number):
     set {_doc} to first document where "UUID of Player" is UUID of ({_w} parsed as an offline player) in {collection.cf}
-    set value "CoinFlips Won" of {_doc} to value "CoinFlips Won" of {_doc} + 1
-    set value "CoinFlip Balance Won" of {_doc} to value "CoinFlip Balance Won" of {_doc} + ({_a} parsed as an integer)
+    set {_value} to value "CoinFlips Won" of {_doc}
+    add 1 to {_value}
+    set value "CoinFlips Won" of {_doc} to {_value}
+    set {_value} to value "CoinFlip Balance Won" of {_doc}
+    wait 1 second
+    set {_value} to {_value} + {_a}
+    set value "CoinFlip Balance Won" of {_doc} to {_value}
     save {_doc} in {collection.cf}
     set {_doc} to first document where "UUID of Player" is UUID of ({_l} parsed as an offline player) in {collection.cf}
-    set value "CoinFlips Lost" of {_doc} to value "CoinFlips Lost" of {_doc} + 1
-    set value "CoinFlip Balance Lost" of {_doc} to value "CoinFlip Balance Lost" of {_doc} + ({_a} parsed as an integer)
+    set {_value} to value "CoinFlips Lost" of {_doc}
+    add 1 to {_value}
+    set value "CoinFlips Lost" of {_doc} to {_value}
+    set {_value} to value "CoinFlip Balance Lost" of {_doc}
+    wait 1 second
+    set {_value} to {_value} + {_a}
+    set value "CoinFlip Balance Lost" of {_doc} to {_value}
     save {_doc} in {collection.cf}
 
 on quit:
+    set {_doc} to document where "player" is name of player in {collection.cfbets}
+    set {_bet} to value "bet" of {_doc}
+    send "{@Prefix} &eYour bet of &2$&a%{_bet}% &ehas been refunded."
+    add {_bet} to player's balance
     clear {cf.%player%}
-    remove player from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}
-    if {cf.%player%} is true:
-        add {coinflip.bet.%player%} to player's balance
-        clear {coinflip.bet.%player%} and {cf.%player%}
+    delete mongo document {_doc} from {collection.cfbets}

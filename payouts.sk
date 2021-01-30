@@ -13,68 +13,11 @@ options:
 	TopBal2: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lSecond Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and "" 
 	TopBal3: {_topbp}'s head named "&a&l&n%{_topbp}%" with lore "", "&6&lThird Place", "", "&a&lCurrent Balance:", "&2$&a%{_topb}%" and "" 
 
-variables:
-	#Season 1 Winners
-	{S1} = "&4&lS&c&l1 &2&lWinners"
-	{S1F1} = "CokeGirl"
-	{S1F1bal} = "Not Recorded"
-	{S1F2} = "Communicator"
-	{S1F2bal} = "Not Recorded"
-	{S1F3} = "Hykonic"
-	{S1F3bal} = "Not Recorded"
-	#Season 2 Winners
-	{S2} = "&e&lS&6&l2 &2&lWinners"
-	{S2F1} = "itamar_c"
-	{S2F1bal} = "Not Recorded"
-	{S2F2} = "XPICKLEWIZARDX"
-	{S2F2bal} = "Not Recorded"
-	{S2F3} = "LegoParkiet"
-	{S2F3bal} = "Not Recorded"
-	#Season 3 Winners
-	{S3} = "&b&lS&3&l3 &2&lWinners"
-	{S3F1} = "DJOverTime"
-	{S3F1bal} = "$36,300,255,386"
-	{S3F2} = "soosnov"
-	{S3F2bal} = "$31,967,772,348"
-	{S3F3} = "LegoParkiet"
-	{S3F3bal} = "$18,016,327,731"
-	#Season 4 Winners
-	{S4} = "&d&lS&5&l4 &2&lWinners"
-	{S4F1} = "DJOverTime"
-	{S4F1bal} = "$26,799,013,765"
-	{S4F2} = "soosnov"
-	{S4F2bal} = "$21,870,636,617"
-	{S4F3} = "RussPlays"
-	{S4F3bal} = "$10,397,937,959"
-	#Season 5 Winners
-	{S5} = "&2&lS&a&l5 &2&lWinners"
-	{S5F1} = "DJOverTime"
-	{S5F1bal} = "$42,069,420,420"
-	{S5F2} = "Girly_gamer_xo"
-	{S5F2bal} = "$31,811,692,787"
-	{S5F3} = "Krievs"
-	{S5F3bal} = "$26,801,006,817"
-	#Season 6 Winners
-	{S6} = "&b&lS&3&l6 &2&lWinners"
-	{S6F1} = "Girly_gamer_xo"
-	{S6F1bal} = "$36,277,522,060"
-	{S6F2} = "Reny_B"
-	{S6F2bal} = "$29,696,969,420"
-	{S6F3} = "mEmeg0d"
-	{S6F3bal} = "$28,714,175,843"
-<<<<<<< HEAD
-	#Season 7 Winners
-=======
-	#Season 7 BETA Winners
->>>>>>> e5c4fecdb70f6339c8dabf2053fc7ea57158f161
-	{S7} = "&b&lS&3&l7 &7&oBETA &2&lWinners"
-	{S7F1} = "notice30"
-	{S7F1bal} = "$69,696,969,696"
-	{S7F2} = "xchris0809"
-	{S7F2bal} = "$58,265,300,172"
-	{S7F3} = "FireGamingDK"
-	{S7F3bal} = "$44,569,635,354"
-
+on skript load:
+    create a new mongo client to host "mongodb+srv://test:test@cluster0.adzx4.mongodb.net/Cluster0?retryWrites=true&w=majority" as "payouts"
+    set {client.payout} to client named "payouts"
+    set {database.payout} to mongo database named "mongosk" of {client.payout}
+    set {collection.payout} to collection named "PayoutWinners" of {database.payout}
 
 command /payouts:
 	trigger:
@@ -89,7 +32,6 @@ command /payouts:
 		send "&bType &6/winners &bor <command:/winners>&a&l(Click Here)<reset>" to player
 		send "" to player
 		send "&8&m-------- <command:/discord>&8[&d&lJoin the Discord&8]<reset>&8&m--------"
-
 		
 command /winners:
 	trigger:
@@ -126,29 +68,28 @@ on inventory click:
 		else:
 			close player's inventory
 
-function previousWinner(p: player, s: int):
-	open chest with 3 rows named "%{S%{_s}%}%" to {_p}
-	format gui slot 11 of {_p} with skull of ("%{S%{_s}%F1}%" parsed as offline player) named "&a&l&n%{S%{_s}%F1}%" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a%{S%{_s}%F1bal}%" to close
-	format gui slot 13 of {_p} with skull of ("%{S%{_s}%F2}%" parsed as offline player) named "&a&l&n%{S%{_s}%F2}%" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a%{S%{_s}%F2bal}%" to close
-	format gui slot 15 of {_p} with skull of ("%{S%{_s}%F3}%" parsed as offline player) named "&a&l&n%{S%{_s}%F3}%" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a%{S%{_s}%F3bal}%" to close
+function previousWinner(p: player, s: text):
+	set {_doc} to first document where "Season" is {_s} in {collection.payout}
+	open chest with 3 rows named "&b&lSeason &3&l%value ""S"" of {_doc}%" to {_p}
+	format gui slot 11 of {_p} with skull of ("%value ""F1"" of {_doc}%" parsed as an offline player) named "&a&l&n%value ""F1"" of {_doc}%" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a%value ""F1bal"" of {_doc}%" to close
+	format gui slot 13 of {_p} with skull of ("%value ""F2"" of {_doc}%" parsed as an offline player) named "&a&l&n%value ""F2"" of {_doc}%" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a%value ""F2bal"" of {_doc}%" to close
+	format gui slot 15 of {_p} with skull of ("%value ""F3"" of {_doc}%" parsed as an offline player) named "&a&l&n%value ""F3"" of {_doc}%" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a%value ""F3bal"" of {_doc}%" to close
 	format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
 	format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
 	format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
-
-
 
 function payoutWinners(p: player, type: int = 0):
 	open chest with 3 rows named "&b&lFast&3&lGens &8➤" to {_p}
 	format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
 	format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
 	if {_type} is 0:
-		format gui slot 10 of {_p} with glowing book named "&6&lSeason 1" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, 1)
-		format gui slot 11 of {_p} with glowing book named "&6&lSeason 2" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, 2)
-		format gui slot 12 of {_p} with glowing book named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, 3)
-		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, 4)
-		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, 5)
-		format gui slot 15 of {_p} with glowing book named "&6&lSeason 6" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, 6)
-		format gui slot 16 of {_p} with glowing book named "&6&lSeason 7 &7&oBETA" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, 7)
+		format gui slot 10 of {_p} with glowing book named "&6&lSeason 1" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "one")
+		format gui slot 11 of {_p} with glowing book named "&6&lSeason 2" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "two")
+		format gui slot 12 of {_p} with glowing book named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "three")
+		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "four")
+		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, "five")
+		format gui slot 15 of {_p} with glowing book named "&6&lSeason 6" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, "six")
+		format gui slot 16 of {_p} with glowing book named "&6&lSeason 7 &7&oBETA" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, "seven beta")
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 		format gui slot 23 of {_p} with glowing arrow named "&dNext Page" to run function payoutWinners({_p}, 1)
 	if {_type} is 1:
@@ -161,6 +102,3 @@ function payoutWinners(p: player, type: int = 0):
 		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 13" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 		format gui slot 21 of {_p} with glowing arrow named "&dPrevious Page" to run function payoutWinners({_p}, 0)
-	
-	
-
