@@ -10,6 +10,6 @@ command /database [<text>] [<text>]:
 
 function TestLink(u: text, d: text):
     set {_doc} to new mongo document
-    set value "Minecraft Account" of {_doc} to {_u}          # MINECRAFT UUID
-    set value "Discord Account" of {_doc} to {_d}    # DISCORD ID 
-    save {_doc} in {collection.l}
+    set value "Minecraft Account" of {_doc} to "%{_u}%"          # MINECRAFT UUID
+    set value "Discord Account" of {_doc} to "%{_d}%"    # DISCORD ID 
+    save document {_doc} in {collection.l}

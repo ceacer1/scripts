@@ -1,0 +1,85 @@
+on load:
+	set mysql host to "209.222.98.118:3306"
+	set mysql username to "u34410_5dajrss6DK"
+	set mysql password to "fe8Sim+BVXI1I6^7.O6gH!a7"
+	set mysql database to "s34410_test"
+	connect to mysql
+	update "CREATE TABLE IF NOT EXISTS `{@Table}` (`id` varchar(255),`value` varchar(255))"
+	update "ALTER TABLE {@Table} ADD UNIQUE (id, value)"
+
+options:
+	Table:  TABLENAME
+
+function thisMySQLUpdatevalue(id:text, value:text) :: text:
+	set {_SetResult::*} to objects in column "id" from result of query "SELECT * FROM '{@Table}' WHERE id = '%{_id}%'" and close
+	loop {_SetResult::*}:
+		send "%loop-value%" to all players
+	set {_GetResult} to false
+	loop {_SetResult::*}:
+		If loop-value is {_id}:
+			set {_GetResult} to true
+	If {_GetResult} is false:
+		update "INSERT INTO `{@Table}` (`id`,`value`) valueS ('%{_id}%', '%{_value}%')"
+		return "&e%{_id}% &ahas been succesfully &5&lCREATED &awith value &e%{_value}% &ain table &b{@Table}"
+	else:
+		update "UPDATE `{@Table}` SET `value` = '%{_value}%' WHERE `{@Table}`.`id` ='%{_id}%'"
+		return "&e%{_id}% &ahas been succesfully &5&lUPDATED &awith value &e%{_value}% &ain table &b{@Table}"
+	
+function thisMySQLRemovevalue(id:text) :: text:
+	set {_SetResult::*} to objects in column "id" from result of query "SELECT * FROM {@Table} WHERE id = '%{_id}%'" and close
+	send "%{_SetResult::*}%" to all players
+	set {_GetResult} to false
+	loop {_SetResult::*}:
+		If loop-value is {_id}:
+			set {_GetResult} to true
+	If {_GetResult} is true:
+		update "DELETE FROM {@Table} WHERE id = '%{_id}%'"
+		return "&e%{_id}% &ahas been succesfully &5&lDELETED &afrom table &b{@Table}"
+	else:
+		return "&cid &e%{_id}% &ccouldn't be found in table &b{@Table}"
+
+function thisMySQLReadvalue(id:text) :: text:
+	set {_SetResult::*} to objects in column "value" from result of query "SELECT * FROM {@Table} WHERE id = '%{_id}%'" and close
+	send "%{_SetResult::*}%" to all players
+	delete {_GetResult}
+	loop {_SetResult::*}:
+		If loop-value is set:
+			set {_GetResult} to loop-value
+	If {_GetResult} is set:
+		return "&aThe value of &b%{_id}% &ais &b%{_GetResult}% &ain table &b{@Table}"
+	else:
+		return "&cid &e%{_id}% &ccouldn't be found in table &b{@Table}"
+
+command /mysql [<text>] [<text>] [<text>]:
+	trigger:
+		If arg-1 is not set:
+			message " &c>> &6/mysql update <id> <value>"
+			message " &c>> &6/mysql remove <id>"
+			message " &c>> &6/mysql read <id>"
+		else:
+			If arg-1 is not "update", "remove" or "read":
+				message " &c>> &6/mysql update <id> <value>"
+				message " &c>> &6/mysql remove <id>"
+				message " &c>> &6/mysql read <id>"
+			else:
+				If arg-1 is "update":
+					If arg-2 is not set:
+						message "&c>> Please enter an id"
+						stop
+					If arg-3 is not set:
+						message "&c>> Please enter a value"
+						stop
+					set {_getResult} to thisMySQLUpdatevalue(arg-2, arg-3)
+					message " &c>> %{_getResult}%"
+				If arg-1 is "remove":
+					If arg-2 is not set:
+						message "&c>> Please enter an id"
+						stop
+					set {_getResult} to thisMySQLRemovevalue(arg-2)
+					message " &c>> %{_getResult}%"
+				If arg-1 is "read":
+					If arg-2 is not set:
+						message "&c>> Please enter an id"
+						stop
+					set {_getResult} to thisMySQLReadvalue(arg-2)
+					message " &c>> %{_getResult}%"

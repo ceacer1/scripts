@@ -83,22 +83,22 @@ function payoutWinners(p: player, type: int = 0):
 	format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
 	format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
 	if {_type} is 0:
-		format gui slot 10 of {_p} with glowing book named "&6&lSeason 1" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "one")
-		format gui slot 11 of {_p} with glowing book named "&6&lSeason 2" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "two")
-		format gui slot 12 of {_p} with glowing book named "&6&lSeason 3" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "three")
-		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&aAvaliable&8)" to run function previousWinner({_p}, "four")
-		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, "five")
-		format gui slot 15 of {_p} with glowing book named "&6&lSeason 6" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, "six")
-		format gui slot 16 of {_p} with glowing book named "&6&lSeason 7 &7&oBETA" with lore "" and "&8(&aAvailable&8)" to run function previousWinner({_p}, "seven beta")
+		format gui slot 10 of {_p} with glowing book named "&6&lSeason 1" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
+		format gui slot 11 of {_p} with glowing book named "&6&lSeason 2" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 12 of {_p} with glowing book named "&6&lSeason 3" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 13 of {_p} with glowing book named "&6&lSeason 4" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 14 of {_p} with glowing book named "&6&lSeason 5" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 15 of {_p} with glowing book named "&6&lSeason 6" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 16 of {_p} with glowing book named "&6&lSeason 7" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 		format gui slot 23 of {_p} with glowing arrow named "&dNext Page" to run function payoutWinners({_p}, 1)
 	if {_type} is 1:
-		format gui slot 10 of {_p} with glowing clock named "&6&lSeason 7" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
-		format gui slot 11 of {_p} with glowing barrier block named "&6&lSeason 8" with lore "" and "&8(&cNot Avaliable&8)" to close 
-		format gui slot 12 of {_p} with glowing barrier block named "&6&lSeason 9" with lore "" and "&8(&cNot Avaliable&8)" to close 
-		format gui slot 13 of {_p} with glowing barrier block named "&6&lSeason 10" with lore "" and "&8(&cNot Avaliable&8)" to close 
-		format gui slot 14 of {_p} with glowing barrier block named "&6&lSeason 11" with lore "" and "&8(&cNot Avaliable&8)" to close 
-		format gui slot 15 of {_p} with glowing barrier block named "&6&lSeason 12" with lore "" and "&8(&cNot Avaliable&8)" to close 
-		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 13" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 10 of {_p} with glowing clock named "&6&lSeason 8" with lore "" and "&8(&cNot Avaliable&8)" to close
+		format gui slot 11 of {_p} with glowing barrier block named "&6&lSeason 9" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 12 of {_p} with glowing barrier block named "&6&lSeason 10" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 13 of {_p} with glowing barrier block named "&6&lSeason 11" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 14 of {_p} with glowing barrier block named "&6&lSeason 12" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 15 of {_p} with glowing barrier block named "&6&lSeason 13" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 16 of {_p} with glowing barrier block named "&6&lSeason 14" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 22 of {_p} with glowing barrier block named "&cClose" to close
 		format gui slot 21 of {_p} with glowing arrow named "&dPrevious Page" to run function payoutWinners({_p}, 0)

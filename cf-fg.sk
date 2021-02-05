@@ -7,8 +7,8 @@ on skript load:
     set {collection.cfbets} to collection named "CoinFlipBets" of {database.cf}
 
 on join:
-    set {_search} to document where "UUID of Player" is UUID of player in {collection.cf}
-    if {_search} is not set:
+    set {_doc} to document where "UUID of Player" is UUID of player in {collection.cf}
+    if {_doc} is not set:
         set {_doc} to new mongo document
         set value "UUID of Player" of {_doc} to UUID of player
         set value "Player Name" of {_doc} to "%player%"
@@ -171,13 +171,11 @@ command /cf [<text>] [<int>] [<player>]:
                             stop loop
                         else:
                             continue
-                    
                     make gui slot 35 to stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&2$&a1000 &e» &2$&a499k&8)", "&6» &6Med &eRoller &8(&2$&a500k &e» &2$&a4.9M&8)", "&6» &cHigh &eRoller &8(&2$&a5M &e» &2$&a249M&8)", "&6» &4Mega &eRoller &8(&2$&a250M &e» &2$&a999M&8)", "&6» &dUltra &eRoller &8(&2$&a1B &e» &2$&a1.9B&8)", "&6» &5Insane &eRoller &8(&2$&a2B &e» &2$&a9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&2$&a10B &eand up&8)", "",  "&6» &eCurrent %value ""CoinFlip Selected room"" of {_doc}%", "", "&a&lLeft Click &7- &eNext Room" and "&a&lRight Click &7- &ePrevious Room":
                         if click type is left mouse button:
                             roomToggle(player, 0)
                         if click type is right mouse button:    
-                            roomToggle(player, 1)
-                        
+                            roomToggle(player, 1)   
                 open last gui to player
                 stop    
         
@@ -258,8 +256,8 @@ command /cf [<text>] [<int>] [<player>]:
                                         send "{@Prefix} &eYou have matched &6&l%arg 3%&6&l's &ebet of &2$&a%{_bet}%."
                                         set {_finalBet} to {_bet} + {_bet}
                                         set {_finalBet} to (({_finalBet}/100) * 90)
-                                        delete mongo document {_doc} from {collection.cfbets} 
-                                        remove arg 3 from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}                            
+                                        delete mongo document {_doc} from {collection.cfbets}
+                                        set {_doc} to first document where "Page" is "Loading" in {collection.cf} 
                                         loop 5 times:
                                             open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player and arg 3
                                             wait 3 ticks
@@ -267,64 +265,21 @@ command /cf [<text>] [<int>] [<player>]:
                                             wait 3 ticks
                                             open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading..." to player and arg 3
                                             wait 3 ticks
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to player and arg 3
-                                        wait 3 ticks
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player and arg 3
-                                        wait 3 ticks                            
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading" to player and arg 3
-                                        wait 3 ticks                            
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadin" to player and arg 3
-                                        wait 3 ticks
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoadi" to player and arg 3
-                                        wait 3 ticks                            
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoad" to player and arg 3
-                                        wait 3 ticks
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLoa" to player and arg 3
-                                        wait 3 ticks
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oLo" to player and arg 3
-                                        wait 3 ticks        
-                                        open chest with 1 row named "{@Name.GUI.Loading} &7&oL" to player and arg 3
-                                        wait 3 ticks    
+                                        loop 9 times:
+                                            set {_name} to value "%loop-number%" of {_doc}
+                                            open chest with 1 row named "{@Name.GUI.Loading} &7&o%{_name}%" to player and arg 3
+                                            wait 3 ticks
                                         open chest with 1 row named "{@Name.GUI.Loading}" to player and arg 3
                                         wait 3 ticks        
                                         set {_slot} to 0
+                                        set {_doc} to first document where "Page" is "Colours" in {collection.cf}
                                         loop 25 times:
                                             loop 9 times:
                                                 set {_RI} to random integer between 1 and 15
                                                 set {_FIGURE} to random integer between 9999 and 99999
+                                                set {_COLOUR} to value "%{_RI}%" of {_doc}
                                                 if event-inventory's display name is "{@Name.GUI.Loading}":
-                                                    evaluate "format gui slot %{_slot}% of player with 160:%{_RI}% named ""&6» &e%{_FIGURE}%"" to do nothing"
-                                                if event-inventory's display name is "{@Name.GUI.Loading}":
-                                                    if {_RI} = 1:
-                                                        format gui slot {_slot} of player and arg 3 with orange glass named "&6» &e%{_FIGURE}%" to do nothing                                               
-                                                    if {_RI} = 2:
-                                                        format gui slot {_slot} of player and arg 3 with magenta glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 3:
-                                                        format gui slot {_slot} of player and arg 3 with light blue glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 4:
-                                                        format gui slot {_slot} of player and arg 3 with yellow glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 5:
-                                                        format gui slot {_slot} of player and arg 3 with light green glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 6:
-                                                        format gui slot {_slot} of player and arg 3 with pink glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 7:
-                                                        format gui slot {_slot} of player and arg 3 with gray glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 8:
-                                                        format gui slot {_slot} of player and arg 3 with light gray glass named "&6» &e%{_FIGURE}%" to do nothing   
-                                                    if {_RI} = 9:
-                                                        format gui slot {_slot} of player and arg 3 with cyan glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 10:
-                                                        format gui slot {_slot} of player and arg 3 with purple glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 11:
-                                                        format gui slot {_slot} of player and arg 3 with blue glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 12:
-                                                        format gui slot {_slot} of player and arg 3 with brown glass named "&6» &e%{_FIGURE}%" to do nothing    
-                                                    if {_RI} = 13:
-                                                        format gui slot {_slot} of player and arg 3 with green glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 14:
-                                                        format gui slot {_slot} of player and arg 3 with red glass named "&6» &e%{_FIGURE}%" to do nothing
-                                                    if {_RI} = 15:
-                                                        format gui slot {_slot} of player and arg 3 with black glass named "&6» &e%{_FIGURE}%" to do nothing                                                
+                                                    format gui slot {_slot} of player and arg 3 with ("%{_COLOUR}% glass" parsed as an item) named "&6» &e%{_FIGURE}%" to do nothing                                                                                           
                                                 add 1 to {_slot}
                                             set {_FIGURE} to random integer between 1 and 2
                                             if {_FIGURE} = 1:
