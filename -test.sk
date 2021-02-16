@@ -1,15 +1,40 @@
-on skript load:
-    create a new mongo client to host "mongodb+srv://test:test@cluster0.adzx4.mongodb.net/Cluster0?retryWrites=true&w=majority" as "link"
-    set {client.l} to client named "link"
-    set {database.l} to mongo database named "mongosk" of {client.l}
-    set {collection.l} to collection named "link" of {database.l}
+command /number [<text>] [<text>] [<text>] [<text>]:
+	trigger:
+		if arg 1 is "clear":
+			clear {coinfliphistory::*}
+		if arg 1 is "add":
+			if arg 2 is set:
+				if arg 3 is set:
+					if arg 4 is set:
+						add "%arg 2%,%arg 3%,%arg 4%" to {coinfliphistory::*}
+						send "done"
+		if arg 1 is "remove":
+			set {_num} to (size of {coinfliphistory::*})
+			set {_num1} to ({_num} - {_num} + 1)
+			remove the first element of {coinfliphistory::*} from {coinfliphistory::*}
+			send "%{coinfliphistory::*}%"
+		if arg 1 is "view":
+			create a gui with virtual chest named "&7History" with 3 rows:
+				set {_slot} to 0
+				loop 27 times:
+					make gui slot (loop-number - 1) to gray glass pane named "&7 "
+				set {_num} to (size of {coinfliphistory::*})
+				set {_num1} to {_num}
+				loop {_num} times:
+					set {_sections::*} to {coinfliphistory::%{_num1}%} split at ","
+					set {_amount} to coinflipformatNumBet(({_sections::3} parsed as a number))
+					make gui slot {_slot} to glowing book named " " with lore "&6» &eWinner&7: &b%{_sections::1}%", "&6» &eLoser&7: &b%{_sections::2}%" and "&6» &eWinnings&7: &2$&a%{_amount}%"
+					add 1 to {_slot}
+					remove 1 from {_num1}
+			open last gui to player
+			stop
 
-command /database [<text>] [<text>]:
-    trigger:
-        TestLink(arg 1, arg 2)
+function coinflipformatNumBet(n: number) :: string:
+	set {_l::*} to split "k,M,B,T,Qn,Qi,Sx" at ","
+	set {_i} to min(floor(log({_n})/3), size of {_l::*})
+	return "%{_n}%" if {_i} <= 0
+	set {_i2} to 1000^{_i}
+	set {_bet} to "%{_n}/{_i2}%%{_l::%{_i}%}%"
+	return {_bet}
 
-function TestLink(u: text, d: text):
-    set {_doc} to new mongo document
-    set value "Minecraft Account" of {_doc} to {_u}          # MINECRAFT UUID
-    set value "Discord Account" of {_doc} to {_d}    # DISCORD ID 
-    save {_doc} in {collection.l}
+#add "%{_winner}%,%{_loser}%,%{_bet}%" to {coinfliphistory::*}

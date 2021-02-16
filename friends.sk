@@ -1,0 +1,345 @@
+options:
+    Prefix: &b&lFast&3&lGens &8➤
+    GUI: &3Friends
+    
+on inventory close:
+	if event-inventory's display name contains "{@GUI}":
+		set {friends.open::%player%} to false
+
+on quit:
+    set {friendslogoff::%player%} to now
+
+function FriendsList(p: player, page: number):
+    set {friends.open::%{_p}%} to true
+    if {_page} is 0:
+        set {_friendslist::*} to {friendslist::%{_p}%::*} 
+    else:
+        set {_friendslist::*} to {friendslist::%{_p}%::*}
+        set {_num} to ({_page} * 7)
+        loop {_num} times:
+            remove the first element of {_friendslist::*} from {_friendslist::*}
+    create a gui with virtual chest named "{@GUI}" with 6 rows:
+        loop 54 times:
+            make gui slot (loop-number - 1) to light gray glass pane named " "
+        make gui slot 4 to skull of {_p} named "&6%{_p}%"
+        make gui slot 49 to book named "&6Current Page&7: &8(&7%{_page} + 1%&8)" with lore "" and "&6Total Friends&7: &8(&7%size of {friendslist::%{_p}%::*}%&8)"
+        if {_page} is greater than or equal to 1:
+            make gui slot 48 to glowing arrow named "&6Previous Page":
+                set {_page} to ({_page} - 1)
+                FriendsList({_p}, {_page})
+        set {_slot} to 19
+        loop {_friendslist::*}:
+            if loop-value is online:
+                set {_seen} to "Now"
+                set {_online} to "Yes"
+            else:
+                set {_online} to "No"
+                set {_seen} to "%difference between {friendslogoff::%loop-value%} and now% ago"
+            set {_friend} to loop-value
+            if {_p} does not have permission "essentials.tp":    
+                set {_tpmsg} to "TPA Request"
+                set {_tpcmd} to "/tpa %{_friend}%"
+            else:
+                set {_tpmsg} to "TP to Player &7- &3Staff Feature"
+                set {_tpcmd} to "/tp %{_friend}%"
+            make gui slot {_slot} to skull of loop-value named "&6%loop-value%" with lore "", "&6Balance&7: %loop-value's balance%", "&6Friends&7: %size of {friendslist::%loop-value%::*}%", "", "&6Online&7: %{_online}%", "&6Last Seen&7: %{_seen}%", "", "&a&lLeft Click &7- &eTeleport to their plot", "&a&lMiddle Click &7- &eRemove friend" and "&a&lRight Click &7- &e%{_tpmsg}%":
+                if click type is left mouse button:
+                    make {_p} say "/p h %{_friend}%"
+                if click type is right mouse button:
+                    make {_p} say "%{_tpcmd}%" 
+                close {_p}'s inventory
+                if click type is middle mouse button: 
+                    friendsRemoveConfirm({_p}, {_friend})
+            add 1 to {_slot}
+            if {friends.open::%{_p}%} is false:
+                stop loop
+            if {_slot} is 26:
+                set {_slot} to 28
+            if {_slot} is 35:
+                set {_slot} to 37
+            if {_slot} is 44:
+                make gui slot 50 to glowing arrow named "&6Next Page":
+                    set {_page} to ({_page} + 1)
+                    FriendsList({_p}, {_page})
+                stop loop
+    open last gui to {_p}
+    stop    
+
+function friendsRemove(p: player, friend: offlineplayer):
+    remove {_friend} from {friendslist::%{_p}%::*}
+    remove {_p} from {friendslist::%{_friend}%::*}
+    send "{@Prefix} &a&lSuccesfully &6removed &7&o%{_friend}% &6from your friends list." to {_p}
+    send "{@Prefix} &7&o%{_p}% &6has removed you as a friend." to {_friend}
+
+function friendsInvite(p: player, friend: offlineplayer):
+    if {friendslist::%{_p}%::*} does not contain {_friend}:
+        if {friendsinvites::%{_friend}%::*} does not contain {_p}:
+            if {friendstoggle::%{_friend}%} is true:
+                if {friendsinviteblock::%{_friend}%::*} does not contain {_p}:
+                    add {_friend} to {friendsinvited::%{_p}%::*}
+                    add {_p} to {friendsinvites::%{_friend}%::*}
+                    send "" to {_p} and {_friend}
+                    send "{@Prefix} &a&lSuccesfully &6invited &7&o%{_friend}% &6to be on your friends list." to {_p}
+                    send "{@Prefix} &6They will have to accept before you can see them on your list" to {_p}
+                    send "{@Prefix} &7&o%{_p}% &6has invited you to be their friend." to {_friend}
+                    send "{@Prefix} &6Go to &7&o/friends invites &6to repond to their request" to {_friend}
+                    send "" to {_p} and {_friend}
+                else:
+                    send "{@Prefix} &7&o%{_friend}% &6has blocked your friend requests." to {_p}
+            else:
+                send "{@Prefix} &7&o%{_friend}% &6has friend requests disabled." to {_p}
+        else:
+            send "{@Prefix} &6You have already sent an invite to &7&o%{_friend}%&6 go to &7&o/friends invited &6to see." to {_p}
+    else:
+        send "{@Prefix} &7&o%{_friend}% &6is already in your friends list." to {_p}
+
+function friendsUnBlockRequest(p: player, friend: offlineplayer):
+    remove {_friend} from {friendsinviteblock::%{_p}%::*}
+    send "" to {_p}
+    send "{@Prefix} &a&lSuccesfully &6unblocked &7&o%{_friend}% &6from sending friend requests to you." to {_p}
+    send "" to {_p}
+
+function friendsBlockRequest(p: player, friend: offlineplayer):
+    remove {_friend} from {friendsinvites::%{_p}%::*}
+    remove {_p} from {friendsinvited::%{_friend}%::*}
+    add {_friend} to {friendsinviteblock::%{_p}%::*}
+    send "" to {_p}
+    send "{@Prefix} &a&lSuccesfully &6blocked &7&o%{_friend}% &6from sending friend requests to you." to {_p}
+    send "{@Prefix} &6Do &7&o/friends blocked &6and click their head to unblock them." to {_p}
+    send "" to {_p}
+
+function friendsAcceptRequest(p: player, friend: offlineplayer):
+    add {_p} to {friendslist::%{_friend}%::*}
+    add {_friend} to {friendslist::%{_p}%::*}  
+    remove {_friend} from {friendsinvites::%{_p}%::*}
+    remove {_p} from {friendsinvited::%{_friend}%::*}
+    send "" to {_p} and {_friend}
+    send "{@Prefix} &a&lSuccesfully &6accepted &7&o%{_friend}%&7's &6friend request." to {_p}
+    send "{@Prefix} &7&o%{_p}% &6has accepted your friend request." to {_friend}
+    send "" to {_p} and {_friend}
+
+function friendsDenyRequest(p: player, friend: offlineplayer):
+    remove {_friend} from {friendsinvites::%{_p}%::*}
+    remove {_p} from {friendsinvited::%{_friend}%::*}
+    send "" to {_p} and {_friend}
+    send "{@Prefix} &a&lSuccesfully &6denied &7&o%{_friend}%&7's &6friend request." to {_p}
+    send "{@Prefix} &7&o%{_p}% &6has denied your friend request." to {_friend}
+    send "" to {_p} and {_friend}
+
+
+function friendsCancelRequest(p: player, friend: offlineplayer):
+    remove {_friend} from {friendsinvited::%{_p}%::*}
+    remove {_p} from {friendsinvites::%{_friend}%::*}
+    send "" to {_p} and {_friend}
+    send "{@Prefix} &a&lSuccesfully &6canceled &7&o%{_friend}%&7's &6friend request." to {_p}
+    send "{@Prefix} &7&o%{_p}% &6has canceled their friend request." to {_friend}
+    send "" to {_p} and {_friend}
+
+function friendsBlockedList(p: player, page: number):
+    set {friends.open::%{_p}%} to true
+    if {_page} is 0:
+        set {_friendblocked::*} to {friendsinviteblock::%{_p}%::*}
+    else:
+        set {_friendblocked::*} to {friendsinviteblock::%{_p}%::*}
+        set {_num} to ({_page} * 7)
+        loop {_num} times:
+            remove the first element of {_friendblocked::*} from {_friendblocked::*}
+    create a gui with virtual chest named "{@GUI} &3Blocked" with 4 rows:
+        loop 35 times:
+            make gui slot (loop-number - 1) to light gray glass pane named " "
+        make gui slot 4 to skull of {_p} named "&6%{_p}%"
+        make gui slot 31 to book named "&6Current Page&7: &8(&7%{_page} + 1%&8)" with lore "" and "&6Total Blocked&7: &8(&7%size of {friendsinviteblock::%{_p}%::*}%&8)"
+        if {_page} is greater than or equal to 1:
+            make gui slot 30 to glowing arrow named "&6Previous Page":
+                set {_page} to ({_page} - 1)
+                friendsBlockedList({_p}, {_page})
+        set {_slot} to 10
+        loop {_friendblocked::*}:
+            set {_friend} to loop-value
+            make gui slot {_slot} to skull of loop-value named "&6%loop-value%" with lore "" and "&a&lLeft Click &7- &eUnblock":
+                if click type is left mouse button:
+                    friendsUnBlockRequest({_p}, {_friend})
+                    close {_p}'s inventory
+            add 1 to {_slot}
+            if {friends.open::%{_p}%} is false:
+                stop loop
+            if {_slot} is 17:
+                set {_slot} to 19
+            if {_slot} is 26:
+                make gui slot 32 to glowing arrow named "&6Next Page":
+                    set {_page} to ({_page} + 1)
+                    friendsBlockedList({_p}, {_page})
+                stop loop
+    open last gui to {_p}
+    stop
+
+function friendsInvitedList(p: player, page: number):
+    set {friends.open::%{_p}%} to true
+    if {_page} is 0:
+        set {_friendinvited::*} to {friendsinvited::%{_p}%::*} 
+    else:
+        set {_friendinvited::*} to {friendsinvited::%{_p}%::*}
+        set {_num} to ({_page} * 7)
+        loop {_num} times:
+            remove the first element of {_friendinvited::*} from {_friendinvited::*}
+    create a gui with virtual chest named "{@GUI} &3Sent Requests" with 4 rows:
+        loop 35 times:
+            make gui slot (loop-number - 1) to light gray glass pane named " "
+        make gui slot 4 to skull of {_p} named "&6%{_p}%"
+        make gui slot 31 to book named "&6Current Page&7: &8(&7%{_page} + 1%&8)" with lore "" and "&6Total Invited&7: &8(&7%size of {friendsinvited::%{_p}%::*}%&8)"
+        if {_page} is greater than or equal to 1:
+            make gui slot 30 to glowing arrow named "&6Previous Page":
+                set {_page} to ({_page} - 1)
+                friendsInvitedList({_p}, {_page})
+        set {_slot} to 10
+        loop {_friendinvited::*}:
+            set {_friend} to loop-value
+            make gui slot {_slot} to skull of loop-value named "&6%loop-value%" with lore "" and "&a&lLeft Click &7- &eCancel Request":
+                if click type is left mouse button:
+                    friendsCancelRequest({_p}, {_friend})
+                    close {_p}'s inventory
+            add 1 to {_slot}
+            if {friends.open::%{_p}%} is false:
+                stop loop
+            if {_slot} is 17:
+                set {_slot} to 19
+            if {_slot} is 26:
+                make gui slot 32 to glowing arrow named "&6Next Page":
+                    set {_page} to ({_page} + 1)
+                    friendsInvitedList({_p}, {_page})
+                stop loop
+    open last gui to {_p}
+    stop
+
+function friendsInviteList(p: player, page: number):
+    set {friends.open::%{_p}%} to true
+    if {_page} is 0:
+        set {_friendinvites::*} to {friendsinvites::%{_p}%::*} 
+    else:
+        set {_friendinvites::*} to {friendsinvites::%{_p}%::*}
+        set {_num} to ({_page} * 7)
+        loop {_num} times:
+            remove the first element of {_friendinvites::*} from {_friendinvites::*}
+    create a gui with virtual chest named "{@GUI} &3Requests" with 4 rows:
+        loop 35 times:
+            make gui slot (loop-number - 1) to light gray glass pane named " "
+        make gui slot 4 to skull of {_p} named "&6%{_p}%"
+        make gui slot 31 to book named "&6Current Page&7: &8(&7%{_page} + 1%&8)" with lore "" and "&6Total Invites&7: &8(&7%size of {friendsinvites::%{_p}%::*}%&8)"
+        if {_page} is greater than or equal to 1:
+            make gui slot 30 to glowing arrow named "&6Previous Page":
+                set {_page} to ({_page} - 1)
+                friendsInviteList({_p}, {_page})
+        set {_slot} to 10
+        loop {_friendinvites::*}:
+            set {_friend} to loop-value
+            make gui slot {_slot} to skull of loop-value named "&6%loop-value%" with lore "", "&a&lLeft Click &7- &eAccept Request", "&a&lMiddle Click &7- &eBlock" and "&a&lRight Click &7- &eDelete Request":
+                if click type is left mouse button:
+                    friendsAcceptRequest({_p}, {_friend})
+                if click type is middle mouse button:
+                    friendsBlockRequest({_p}, {_friend})
+                if click type is right mouse button:    
+                    friendsDenyRequest({_p}, {_friend})
+                close {_p}'s inventory
+            add 1 to {_slot}
+            if {friends.open::%{_p}%} is false:
+                stop loop
+            if {_slot} is 17:
+                set {_slot} to 19
+            if {_slot} is 26:
+                make gui slot 32 to glowing arrow named "&6Next Page":
+                    set {_page} to ({_page} + 1)
+                    friendsInviteList({_p}, {_page})
+                stop loop
+    open last gui to {_p}
+    stop
+
+function friendsRemoveConfirm(p: player, friend: offlineplayer):
+    create a gui with virtual chest named "&4&lDelete &3%{_Friend}%" with 1 row:
+        make gui slot (0, 1, 2 and 3) to red glass pane named "&c&LCancel":
+            close {_p}'s inventory
+        make gui slot 4 to skull of {_friend} named "&6%{_friend}%"
+        make gui slot (5, 6, 7 and 8) to green glass pane named "&a&LConfirm":
+            friendsRemove({_p}, {_friend})
+            close {_p}'s inventory
+    open last gui to {_p}
+    stop
+
+function friendsToggleInvites(p: player):
+    if {friendstoggle::%{_p}%} is false:
+        set {friendstoggle::%{_p}%} to true
+        send "{@Prefix} &6You will now recieve friend requests." to {_p}
+    else:
+        set {friendstoggle::%{_p}%} to false
+        send "{@Prefix} &6You will no longer recieve friend requests." to {_p}
+
+
+on script load:
+    loop all players:
+        if {friendstoggle::%loop-value%} is not set:
+            set {friendstoggle::%loop-value%} to true
+
+on join:
+    if {friendstoggle::%player%} is not set:
+        set {friendstoggle::%player%} to true
+
+command /friends [<text>] [<offlineplayer>]:
+    trigger:
+        if arg 1 is not set:
+            send ""
+            send "&5Friends &6Help"
+            send ""
+            send "&6/friends list "
+            send "&6/friends add/invite (player)"
+            send "&6/friends remove (player)"
+            send "&6/friends invited"
+            send "&6/friends toggle"
+            send "&6/friends blocked"
+            send "&6/friends block (player)"
+            send ""
+        if arg 1 is "list":
+            FriendsList(player, 0)
+        if arg 1 is "add" or "invite":
+            if arg 2 is not set:
+                send "{@Prefix} &cPlease enter a player name."
+            else:
+                if arg 2 is player:
+                    send "{@Prefix} &cYou cannot add yourself as a friend."
+                else:
+                    if arg 2 has played before:
+                        friendsInvite(player, arg 2)
+                    else:
+                        send "{@Prefix} &cPlease enter a valid player name."
+        if arg 1 is "remove":
+            if arg 2 is not set:
+                send "{@Prefix} &cPlease enter a player name."
+            else:
+                if arg 2 is player:
+                    send "{@Prefix} &cYou cannot remove yourself."
+                else:
+                    if {friendslist::%player%::*} contains arg 2:
+                        friendsRemoveConfirm(player, arg 2)
+                    else:
+                        send "{@Prefix} &cThis player is not on your friends list."
+        if arg 1 is "invites":
+            friendsInviteList(player, 0)
+        if arg 1 is "invited":
+            friendsInvitedList(player, 0)
+        if arg 1 is "toggle":
+            friendsToggleInvites(player)
+        if arg 1 is "blocked":
+            friendsBlockedList(player, 0)
+        if arg 1 is "block":
+            if arg 2 is not set:
+                send "{@Prefix} &cPlease enter a player name."
+            else:
+                if arg 2 is player:
+                    send "{@Prefix} &cYou cannot block yourself."
+                else:
+                    if arg 2 has played before:
+                        friendsBlockRequest(player, arg 2)
+                    else:
+                        send "{@Prefix} &cPlease enter a valid player name."
+
+
+                
+                    

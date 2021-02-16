@@ -1,0 +1,102 @@
+options:
+	#cost of using the machine
+	slots-cost: 500
+	#prize if first 2 reels match
+	slots-small-win: 5000
+	#prize if all 3 reels match
+	slots-jackpot: 20000	
+
+on sign change:
+    line 1 of event-block is "[Slots]"
+    if player has permission "slots.sk":
+        set line 1 of event-block to "&9[Slots]"
+        set line 2 of event-block to "&d-Ready-"
+    else:
+        cancel event 
+		
+on right click on sign:
+    line 1 of event-block is "&9[Slots]"
+    line 2 of event-block is "&d-Ready-"
+    if player's balance is less than {@slots-cost}:
+        send "&9Insufficient funds! You need &e500© &9to play!"
+    else if player's balance is more than {@slots-cost}:
+        remove {@slots-cost} from player's balance
+        set line 2 of event-block to "&f-Playing-"
+    loop 25 times:
+        set {_reel1} to a random integer between 1 and 10
+        set {_reel2} to a random integer between 1 and 10
+        set {_reel3} to a random integer between 1 and 10
+    if {_reel1} is 1:
+        set {_reel1} to "■"
+    if {_reel1} is 2:
+        set {_reel1} to "♥"
+    if {_reel1} is 3:
+        set {_reel1} to "♦"
+    if {_reel1} is 4:
+        set {_reel1} to "♣"
+    if {_reel1} is 5:
+        set {_reel1} to "♠"
+    if {_reel1} is 6:
+        set {_reel1} to "●"
+    if {_reel1} is 7:
+        set {_reel1} to "✢"
+    if {_reel1} is 8:
+        set {_reel1} to "✠"
+    if {_reel1} is 9:
+        set {_reel1} to "▲"
+    if {_reel1} is 10:
+        set {_reel1} to "▼"
+    if {_reel2} is 1:
+        set {_reel2} to "■"
+    if {_reel2} is 2:
+        set {_reel2} to "♥"
+    if {_reel2} is 3:
+        set {_reel2} to "♦"
+    if {_reel2} is 4:
+        set {_reel2} to "♣"
+    if {_reel2} is 5:
+        set {_reel2} to "♠"
+    if {_reel2} is 6:
+        set {_reel2} to "●"
+    if {_reel2} is 7:
+        set {_reel2} to "✢"
+    if {_reel2} is 8:
+        set {_reel2} to "✠"
+    if {_reel2} is 9:
+        set {_reel2} to "▲"
+    if {_reel2} is 10:
+        set {_reel2} to "▼"
+    if {_reel3} is 1:
+        set {_reel3} to "■"
+    if {_reel3} is 2:
+        set {_reel3} to "♥"
+    if {_reel3} is 3:
+        set {_reel3} to "♦"
+    if {_reel3} is 4:
+        set {_reel3} to "♣"
+    if {_reel3} is 5:
+        set {_reel3} to "♠"
+    if {_reel3} is 6:
+        set {_reel3} to "●"
+    if {_reel3} is 7:
+        set {_reel3} to "✢"
+    if {_reel3} is 8:
+        set {_reel3} to "✠"
+    if {_reel3} is 9:
+        set {_reel3} to "▲"
+    if {_reel3} is 10:
+        set {_reel3} to "▼"
+    set line 3 of event-block to "%{_reel1}% %{_reel2}% %{_reel3}%"
+    wait 1 tick
+    if {_reel1} is {_reel2}:
+        if {_reel1} is {_reel3}:
+            add {@slots-jackpot} to player's money
+            broadcast "&d%player% &9won the slots jackpot at the Lucky Lapis Casino!"
+        else:
+            add {@slots-small-win} to player's money
+            send "&9You won the small prize of &e5000©"
+    else:
+        send "&9You did not win a prize this time."
+    wait 30 ticks
+    set line 2 of event-block to "&d-Ready-"
+    set line 3 of event-block to ""

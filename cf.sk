@@ -1,0 +1,385 @@
+options:
+	Name.GUI: &6» &b&lCoin&3&lFlip
+	Name.GUI.Loading: &B&lC&3&lF&r
+	Prefix: &b&lFast&3&lGens &8➤
+
+on script load:
+	clear {coinflipcolours::*}
+	add "orange", "magenta", "light blue", "yellow", "light green", "pink", "gray glass", "light gray glass", "cyan", "purple", "blue", "brown", "green", "red" and "black" to {coinflipcolours::*}
+
+function roomToggleName(p: player):
+	if {coinflip.roomtoggle::%{_p}%} is 0:
+		set {coinflip.room.selected::%{_p}%} to "&8[&eLow&8]"
+	else if {coinflip.roomtoggle::%{_p}%} is 1:
+		set {coinflip.room.selected::%{_p}%} to "&8[&6Med&8]"
+	else if {coinflip.roomtoggle::%{_p}%} is 2:
+		set {coinflip.room.selected::%{_p}%} to "&8[&cHigh&8]"
+	else if {coinflip.roomtoggle::%{_p}%} is 3:
+		set {coinflip.room.selected::%{_p}%} to "&8[&4Mega&8]"
+	else if {coinflip.roomtoggle::%{_p}%} is 4:
+		set {coinflip.room.selected::%{_p}%} to "&8[&dUltra&8]"
+	else if {coinflip.roomtoggle::%{_p}%} is 5:
+		set {coinflip.room.selected::%{_p}%} to "&8[&5Insane&8]"
+	else if {coinflip.roomtoggle::%{_p}%} is 6:
+		set {coinflip.room.selected::%{_p}%} to "&8[&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls&8]"
+	coinflipMenu({_p})
+
+function roomToggle(p: player, type: int = 0):
+	if {_type} is 0:
+		add 1 to {coinflip.roomtoggle::%{_p}%}
+		if {coinflip.roomtoggle::%{_p}%} is 7:
+			set {coinflip.roomtoggle::%{_p}%} to 0
+		roomToggleName({_p})
+	
+	if {_type} is 1:
+		remove 1 from {coinflip.roomtoggle::%{_p}%}
+		if {coinflip.roomtoggle::%{_p}%} is -1:
+			set {coinflip.roomtoggle::%{_p}%} to 6
+		roomToggleName({_p})
+
+function coinflipCreate(p: player, room: string):
+	send "   &7&oLoading..." to {_p}
+	wait 1 seconds
+	send "   &7&oCreating your CoinFlip..." to {_p}
+	wait 2 seconds
+	send "   &7&oCoinFlip Created " to {_p}
+	send "   &7&oWaiting for a player." to {_p}
+	send "   &7&oThis CF has been added to the &8[%{_room}%&8] &7&oroom" to {_p}
+
+function coinflipformatNum(p: player, room: string, n: number) :: string:
+	set {_l::*} to split "k,M,B,T,Qn,Qi,Sx" at ","
+	set {_i} to min(floor(log({_n})/3), size of {_l::*})
+	return "%{_n}%" if {_i} <= 0
+	set {_i2} to 1000^{_i}
+	set {_bet} to "%{_n}/{_i2}%%{_l::%{_i}%}%"
+	wait 5 seconds
+	coinflipAnnounce({_p}, "%{_room}%", "%{_bet}%")
+
+function coinflipformatNumBet(n: number) :: string:
+	set {_l::*} to split "k,M,B,T,Qn,Qi,Sx" at ","
+	set {_i} to min(floor(log({_n})/3), size of {_l::*})
+	return "%{_n}%" if {_i} <= 0
+	set {_i2} to 1000^{_i}
+	set {_bet} to "%{_n}/{_i2}%%{_l::%{_i}%}%"
+	return {_bet}
+
+function coinflipAnnounce(p: player, room: string, bet: string):
+	if {cf.%{_p}%} is false:
+		stop
+	else:
+		broadcast ""
+		broadcast "        &6&l%{_p}% &ehas made a &b&lCoin&3&lFlip"
+		broadcast "        &eBet Amount: &2$&a%{_bet}%"
+		broadcast "        &eRoom: &8[%{_room}%&8]"
+		broadcast ""
+
+on inventory close:
+	if event-inventory's display name contains "{@Name.GUI}":
+		set {cf.open::%player%} to false
+
+function coinflipRoomCheck(p: player) :: string:
+	if {coinflip.roomtoggle::%{_p}%} is 0:
+		set {_cfrcreturn} to "low"
+	if {coinflip.roomtoggle::%{_p}%} is 1:
+		set {_cfrcreturn} to "med"
+	if {coinflip.roomtoggle::%{_p}%} is 2:
+		set {_cfrcreturn} to "high"
+	if {coinflip.roomtoggle::%{_p}%} is 3:
+		set {_cfrcreturn} to "mega"
+	if {coinflip.roomtoggle::%{_p}%} is 4:
+		set {_cfrcreturn} to "ultra"
+	if {coinflip.roomtoggle::%{_p}%} is 5:
+		set {_cfrcreturn} to "insane"
+	if {coinflip.roomtoggle::%{_p}%} is 6:
+		set {_cfrcreturn} to "ludicrous"
+	return {_cfrcreturn}
+
+function coinflipAmountCheck(p: player, amount: number) :: string:
+	if {_amount} is between 1000 and 499999:
+		set {_room} to "&eLow"
+		set {coinflip.roomtoggle::%{_p}%} to 0
+	if {_amount} is between 500000 and 4999999:
+		set {_room} to "&6Med"
+		set {coinflip.roomtoggle::%{_p}%} to 1
+	if {_amount} is between 5000000 and 249999999:
+		set {_room} to "&cHigh"
+		set {coinflip.roomtoggle::%{_p}%} to 2
+	if {_amount} is between 250000000 and 999999999:
+		set {_room} to "&4Mega"
+		set {coinflip.roomtoggle::%{_p}%} to 3
+	if {_amount} is between 1000000000 and 1999999999:
+		set {_room} to "&dUltra"
+		set {coinflip.roomtoggle::%{_p}%} to 4
+	if {_amount} is between 2000000000 and 9999999999:
+		set {_room} to "&5Insane"
+		set {coinflip.roomtoggle::%{_p}%} to 5
+	if {_amount} is more than 9999999999:
+		set {_room} to "&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls"
+		set {coinflip.roomtoggle::%{_p}%} to 6
+	return {_room}
+
+function coinflipOutcome(num: number, bet: number, 1: offlineplayer, 2: offlineplayer):
+	if {_num} = 1:
+		set {_winner} to {_1}
+		set {_loser} to {_2}
+	if {_num} = 2:
+		set {_winner} to {_2}
+		set {_loser} to {_1}
+	send "" to {_winner} and {_loser}
+	send "" to {_winner} and {_loser}
+	send "{@Prefix} &7&oYou won the Coinflip !" to {_winner}
+	send "{@Prefix} &7&oYou lost the CoinFlip !" to {_loser}
+	send "{@Prefix} &7&oSo you won &6$%{FinalBet.%{_1}%}%" to {_winner}
+	send "{@Prefix} &7&oYou lost &6$%{coinflip.bet.%{_2}%}%" to {_loser}								
+	send "" to {_winner} and {_loser}
+	send "" to {_winner} and {_loser}
+	send "{@Prefix} &eYour winnings of &2$&a%{_bet}% &ehave been debited to your account." to {_winner}
+	add {coinflip.bet.%{_2}%} to {coinflip.lose.total::%{_winner}%} and {coinflip.win.total::%{_loser}%}
+	add 1 to {coinflip.lose::%{_loser}%} and {coinflip.win::%{_winner}%}
+	add {_bet} to {_winner}'s balance
+
+function coinflipMenu(p: player):
+	set {_bal} to coinflipformatNumBet({_p}' balance)
+	create a gui with virtual chest named "{@Name.GUI}" with 4 rows:
+		set {_won} to coinflipformatNumBet({coinflip.win.total::%{_p}%})
+		set {_lost} to coinflipformatNumBet({coinflip.lose.total::%{_p}%})
+		loop 36 times:
+			make gui slot (loop-number - 1) to light gray glass pane named " "
+		make gui slot 27 to skull of {_p} named "&6» &eStats" with lore "", "&6» &eYour Money&7: &2$&a%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%{_p}%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%{_p}%}%", "", "&6» &eBalance won &7: &2$&a%{_won}%" and  "&6» &eBalance lost &7: &2$&c%{_lost}%"
+		make gui slot 31 to glowing book named "&6» &eCommands" with lore "", "&6» &e/cf help", "&6» &e/cf create/make <amount>", "&6» &e/cf leave/cancel", "&6» &e/cfstats <playername>" and ""
+		make gui slot 33 to skull of "DaddyCeacer" parsed as offline player named "&eMade By &6DaddyCeacer"
+		set {_slot} to 0
+		wait 2 ticks
+		set {cf.open::%{_p}%} to true
+		set {_cfrcreturn} to coinflipRoomCheck({_p})
+		loop {coinflip.%{_cfrcreturn}%::*}:
+			set {_text} to loop-value
+			set {_bet} to coinflipformatNumBet({coinflip.bet.%loop-value%})
+			make gui slot {_slot} to skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{_bet}%":
+				make {_p} execute command "cf play 12 %{_text}%"
+			add 1 to {_slot}
+			if {cf.open::%{_p}%} is false:
+				stop loop
+			else:
+				continue
+		make gui slot 35 to stone button named "&6» &eChange Room" with lore "", "&6» &eLow Roller &8(&2$&a1000 &e» &2$&a499k&8)", "&6» &6Med &eRoller &8(&2$&a500k &e» &2$&a4.9M&8)", "&6» &cHigh &eRoller &8(&2$&a5M &e» &2$&a249M&8)", "&6» &4Mega &eRoller &8(&2$&a250M &e» &2$&a999M&8)", "&6» &dUltra &eRoller &8(&2$&a1B &e» &2$&a1.9B&8)", "&6» &5Insane &eRoller &8(&2$&a2B &e» &2$&a9.9B&8)", "&6» &b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &eRoller &8(&2$&a10B &eand up&8)", "",  "&6» &eCurrent %{coinflip.room.selected::%{_p}%}%", "", "&a&lLeft Click &7- &eNext Room" and "&a&lRight Click &7- &ePrevious Room":
+			if click type is left mouse button:
+				roomToggle({_p}, 0)
+			if click type is right mouse button:	
+				roomToggle({_p}, 1)
+	open last gui to {_p}
+	stop	
+
+command /cfstats [<offlineplayer>]:
+	aliases: /coinflipstats, /cflipstats, /coinfstats
+	trigger:
+		if arg 1 is not set:
+			send "{@Prefix} &ePlease enter a playername"
+		else:
+			create a gui with virtual chest named "{@Name.GUI} &7Stats" with 3 rows:
+				loop 27 times:
+					make gui slot (loop-number - 1) to gray glass pane named " "
+				set {_bal} to coinflipformatNumBet(player' balance)
+				set {_won} to coinflipformatNumBet({coinflip.win.total::%player%})
+				set {_lost} to coinflipformatNumBet({coinflip.lose.total::%player%})
+				make gui slot 11 to skull of player named "&6» &eMy Stats" with lore "", "&6» &eMoney&7: &2$&a%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%player%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%", "", "&6» &eBalance won &7: &2$&a%{_won}%" and  "&6» &eBalance lost &7: &2$&c%{_lost}%"
+				set {_bal} to coinflipformatNumBet(arg 1's balance)
+				set {_won} to coinflipformatNumBet({coinflip.win.total::%arg 1%})
+				set {_lost} to coinflipformatNumBet({coinflip.lose.total::%arg 1%})
+				make gui slot 15 to skull of "%arg 1%" parsed as an offlineplayer named "&6» &e%arg 1%'s Stats" with lore "", "&6» &eMoney&7: &2$&a%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%arg 1%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%arg 1%}%", "", "&6» &eBalance won &7: &2$&a%{_won}%" and  "&6» &eBalance lost &7: &2$&c%{_lost}%"
+			open last gui to player
+			stop
+
+
+on tab complete of "/coinflip", "/cflip", "/coinf" or "/cf":
+	if player does not have permission "cf.admin":
+		set tab completions for position 1 to "help", "create" and "leave"
+	else:
+		set tab completions for position 1 to "help", "create", "leave", "toggle" and "reload"
+
+
+command /cf [<text>] [<int>] [<player>]:
+	aliases: /coinflip, /cflip, /coinf
+	trigger:
+		if arg 1 is not set:
+			if {help.read::%uuid of player%} is false:
+				open virtual hopper inventory named "{@Name.GUI}" to player
+				format a gui slot 0, 1, 2, 3 and 4 of player with glowing book named "&e&lRead Me" with lore "&e&lClick Me" to close then run player command "/cf help"
+				set {help.read::%uuid of player%} to true
+			else:
+				if {coinflip.enabled} is false:
+					send "{@Prefix} &eCoinFlip is currently &c&lDISABLED."
+				else:
+					coinflipMenu(player)
+
+		if arg 1 is "leave" or "cancel":
+			if {cf.%player%} is true:
+				send "{@Prefix} &eYour bet of &2$&a%{coinflip.bet.%player%}% &ehas been refunded."
+				add {coinflip.bet.%player%} to player's balance
+				clear {coinflip.bet.%player%} and {cf.%player%}
+				remove player from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}
+			else:
+				send "{@Prefix} &eYou do not have an open &b&lC&3&lF."
+
+		if arg 1 is "help":
+			send ""
+			send "{@Prefix} &b&lCoin&r &l&3Flip&r"
+			send ""
+			send "&c&l» &eTo make a &b&lC&3&lF &r&edo &6&o/cf create <amount>"
+			send "&c&l» &eOnce a &b&lC&3&lF &r&eis made you will have to wait for another player to play it."
+			send ""
+			send "&c&l» &eYou can change rooms by clicking on the button in &6&o/cf "
+			send ""
+			send "&c&l» &eIf you log off before your &b&lC&3&lF &r&eis played, your money will be returned."
+			send ""
+			send "&c&l» &eYou can use &6&o/cf leave &eto leave your &b&lC&3&lF"
+			send ""
+			send "&c&l» &eTen percent of final bet will be taken."
+			send ""
+
+		if arg 1 is "create" or "make":
+			if {coinflip.enabled} is false:
+				send "{@Prefix} &eCoinFlip is currently &c&lDISABLED."
+			else:
+				if arg 2 is not set:
+					send "{@Prefix} &ePlease enter an amount."
+				else:
+					set {_v} to "%arg 2%"
+					if {_v} contains "-", "," or ".":
+						send "{@Prefix} &ePlease enter a valid amount"	
+					else:
+						if arg 2 is not greater than or equal to 1000:
+							send "{@Prefix} &ePlease enter an amount above 1000"
+						else:
+							if player's balance is not greater than or equal to arg 2:
+								send "{@Prefix} &eYou do not have enough money."
+							else:
+								if {cf.%player%} is set:
+									send "{@Prefix} &eYou cannot create another one at the moment."	
+								else:
+									set {_room} to coinflipAmountCheck(player, arg 2)
+									set {_roomannounce} to coinflipRoomCheck(player)
+									if (amount of {coinflip.%{_room}%::*}) >= 27:
+										send "{@Prefix} &eYou cannot create one at the moment, the room is full."
+									else:
+										set {cf.%player%} to true
+										set {coinflip.bet.%player%} to arg 2
+										add player to {coinflip::*} and {coinflip.%{_roomannounce}%::*}
+										remove {coinflip.bet.%player%} from player's balance
+										send "{@Prefix} &eYour bet of &2$&a%{coinflip.bet.%player%}% &ehas been registered."
+										coinflipCreate(player, "%{_room}%")
+										if {coinflip.roomtoggle::%player%} is greater than or equal to 4:
+											coinflipformatNum(player, "%{_room}%", {coinflip.bet.%player%})
+
+		if arg 1 is "play":
+			if arg 2 is set:
+				if arg 3 is set:
+					if arg 3 is online:
+						if arg 3 is not player:
+							if player's balance is greater than or equal to {coinflip.bet.%arg-3%}:
+								if {cf.%player%} is not set:
+									if {cf.%arg-3%} is set:
+										clear {cf.%arg-3%} and {cf.%player%}
+										send "{@Prefix} &7&oLoading ..." to player and arg 3
+										wait 3 ticks
+										send "{@Prefix} &7&oCoinFlip Opening" to player and arg 3
+										remove {coinflip.bet.%arg-3%} from player's balance
+										send "{@Prefix} &eYou have matched &6&l%arg 3%&6&l's &ebet of &2$&a%{coinflip.bet.%arg 3%}%."
+										send "{@Prefix} &6&l%player% &ehas matched your bet of &2$&a%{coinflip.bet.%arg 3%}%." to arg 3
+										set {_FinalBet} to {coinflip.bet.%arg-3%} + {coinflip.bet.%arg-3%}
+										set {_FinalBet} to (({_FinalBet}/100) * 90)
+										add player and arg 3 to {Cf.%player%::*}
+										remove arg 3 from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}							
+										loop 5 times:
+											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading." to player and arg 3
+											wait 3 ticks
+											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading.." to player and arg 3
+											wait 3 ticks
+											open chest with 1 row named "{@Name.GUI.Loading} &7&oLoading..." to player and arg 3
+											wait 3 ticks
+										set {_titlename} to "Loading.."
+										loop 9 times:
+											set {_titlename} to last (length of {_titlename} - 1) characters of {_titlename}
+											open chest with 1 row named "{@Name.GUI.Loading} &7&o%{_titlename}%" to player and arg 3
+											wait 3 ticks	
+										open chest with 1 row named "{@Name.GUI.Loading}" to player and arg 3
+										wait 3 ticks		
+										set {_slot} to 0
+										loop 25 times:
+											loop 9 times:
+												set {_COLOUR} to random element out of {coinflipcolours::*}
+												set {_FIGURE} to random integer between 9999 and 99999
+												if event-inventory's display name is "{@Name.GUI.Loading}":
+													format gui slot {_slot} of player and arg 3 with ("%{_COLOUR}% glass" parsed as an item) named "&6» &e%{_FIGURE}%" to do nothing																								
+												add 1 to {_slot}
+											set {_FIGURE} to random integer between 1 and 2
+											if {_FIGURE} = 1:
+												if event-inventory's display name is "{@Name.GUI.Loading}":
+													format gui slot 4 of arg 3 with skull of "%player%" parsed as offline player named "&6» &e%player%" to do nothing
+												if event-inventory's display name is "{@Name.GUI.Loading}":
+													format gui slot 4 of player with skull of "%arg-3%" parsed as offline player named "&6» &e%arg-3%" to do nothing
+											else if {_FIGURE} = 2:
+												if event-inventory's display name is "{@Name.GUI.Loading}":
+													format gui slot 4 of arg 3 with skull of "%arg-3%" parsed as offline player named "&6» &e%arg-3%" to do nothing
+												if event-inventory's display name is "{@Name.GUI.Loading}":
+													format gui slot 4 of player with skull of "%player%" parsed as offline player named "&6» &e%player%" to do nothing									
+											set {_slot} to 0
+											wait 3 ticks		
+										set {_END} to random integer between 1 and 2
+										close player and arg 3's inventory
+										coinflipOutcome({_END}, {_FinalBet}, player, arg-3)	
+										clear {coinflip.bet.%arg-3%}
+										stop
+									else:
+										send "{@Prefix} &eSomeone has already played this CF."
+								else:
+									send "{@Prefix} &eYou cannot play a CF while you have one set."
+									send "{@Prefix} &eUse &6&o/cf leave &ebefore trying again."
+							else:
+								send "{@Prefix} &eYou do not have enough money."
+						else:
+							send "{@Prefix} &eYou can't play alone."	
+						close player's inventory									
+
+		if arg 1 is "toggle":
+			if player has permission "cf.admin":
+				if {coinflip.enabled} is false:
+					set {coinflip.enabled} to true
+					send "{@Prefix} &eCoinFlip has been &a&lENABLED."
+				else:
+					set {coinflip.enabled} to false
+					send "{@Prefix} &eCoinFlip has been &c&lDISABLED."
+					clear {coinfliphistory::*}
+					loop {coinflip::*}:
+						make loop-value say "/cf leave"
+			else:
+				send "&cYou do not have the required permission to do this."
+ 
+		if arg 1 is "reload" or "rl":
+			if player has permission "cf.admin":
+				set {_t} to now
+				make player execute command "sk reload %script name%"
+				send "&6[&eCoinFlip&6] &eSkript created by &aDaddy&5Ceacer &7(Skript reload in &8%difference between now and {_t}%&7)"
+			else:
+				send "&cYou do not have the required permission to do this."
+		
+
+on join:
+	if {coinflip.win::%player%} is not set:
+		set {coinflip.win::%player%} to 0
+	if {coinflip.lose::%player%} is not set:
+		set {coinflip.lose::%player%} to 0
+	if {coinflip.win.total::%player%} is not set:
+		set {coinflip.win.total::%player%} to 0
+	if {coinflip.lose.total::%player%} is not set:
+		set {coinflip.lose.total::%player%} to 0
+	set {coinflip.roomtoggle::%player%} to 0 
+	set {coinflip.room.selected::%player%} to "&8[&eLow&8]"
+	if {help.read::%uuid of player%} is not set:
+		set {help.read::%uuid of player%} to false
+		
+on quit:
+	remove player from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}
+	if {cf.%player%} is true:
+		add {coinflip.bet.%player%} to player's balance
+		clear {coinflip.bet.%player%} and {cf.%player%}
