@@ -327,8 +327,7 @@ command /cf [<text>] [<int>] [<player>]:
 											wait 3 ticks		
 										set {_END} to random integer between 1 and 2
 										close player and arg 3's inventory
-										coinflipOutcome({_END}, {_FinalBet}, player, arg-3)	
-										clear {coinflip.bet.%arg-3%}
+										coinflipOutcome({_END}, {_FinalBet}, player, arg-3)
 										stop
 									else:
 										send "{@Prefix} &eSomeone has already played this CF."

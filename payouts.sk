@@ -18,6 +18,15 @@ options:
 #    set {client.payout} to client named "payouts"
 #    set {database.payout} to mongo database named "mongosk" of {client.payout}
 #    set {collection.payout} to collection named "PayoutWinners" of {database.payout}
+variables:
+#Payouts
+	#Season 1
+	{S1W1} = "V_PLAY_M"
+	{S1W1Bal} = "134,000,059,737"
+	{S1W2} = "Onii_Baka"
+	{S1W2Bal} = "115,443,234,960"
+	{S1W3} = "YObroMC"
+	{S1W3Bal} = "71,487,583,152"
 
 command /payouts:
 	trigger:
@@ -62,23 +71,25 @@ on inventory click:
 		else:
 			close player's inventory
 
-#function previousWinner(p: player, s: text):
-#	#set {_doc} to first document where "Season" is {_s} in {collection.payout}
-#	open chest with 3 rows named "&b&lSeason &3&l%value ""S"" of {_doc}%" to {_p}
-#	format gui slot 11 of {_p} with skull of ("%value ""F1"" of {_doc}%" parsed as an offline player) named "&a&l&n%value ""F1"" of {_doc}%" with lore "", "{@firstplace}", "", "{@winbal}:" and "&a%value ""F1bal"" of {_doc}%" to close
-#	format gui slot 13 of {_p} with skull of ("%value ""F2"" of {_doc}%" parsed as an offline player) named "&a&l&n%value ""F2"" of {_doc}%" with lore "", "{@secondplace}", "", "{@winbal}:" and "&a%value ""F2bal"" of {_doc}%" to close
-#	format gui slot 15 of {_p} with skull of ("%value ""F3"" of {_doc}%" parsed as an offline player) named "&a&l&n%value ""F3"" of {_doc}%" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&a%value ""F3bal"" of {_doc}%" to close
-#	format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
-#	format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
-#	format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
+function previousWinner(p: player, s: number):
+	#set {_doc} to first document where "Season" is {_s} in {collection.payout}
+	loop 3 times:
+		set {_%loop-number%} to {S%{_s}%W%loop-number%}
+	open chest with 3 rows named "&b&lSeason &3&l%{_s}%" to {_p}
+	format gui slot 11 of {_p} with skull of ({_1} parsed as offlineplayer) named "&a&l&n%{S%{_s}%W1}%" with lore "", "{@firstplace}", "", "{@winbal}:" and "&2$&a%{S%{_s}%W1Bal}%" to close
+	format gui slot 13 of {_p} with skull of ({_2} parsed as offlineplayer) named "&a&l&n%{S%{_s}%W2}%" with lore "", "{@secondplace}", "", "{@winbal}:" and "&2$&a%{S%{_s}%W2Bal}%" to close
+	format gui slot 15 of {_p} with skull of ({_3} parsed as offlineplayer) named "&a&l&n%{S%{_s}%W3}%" with lore "", "{@thirdplace}", "", "{@winbal}:" and "&2$&a%{S%{_s}%W3Bal}%" to close
+	format gui slot 22 of {_p} with glowing arrow named "&cBack" to run function payoutWinners({_p}, 0)
+	format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
+	format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
 
 function payoutWinners(p: player, type: int = 0):
 	open chest with 3 rows named "&b&lFast&3&lGens &8➤" to {_p}
 	format a gui slot 0, 2, 4, 6, 8, 18, 20, 24 and 26 of {_p} with light blue glass pane named "&8"
 	format a gui slot 1, 3, 5, 7, 9, 17, 19, 21, 23, and 25 of {_p} with blue glass pane named "&8"
 	if {_type} is 0:
-		format gui slot 10 of {_p} with glowing clock named "&6&lSeason 1" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
-		format gui slot 11 of {_p} with glowing barrier block named "&6&lSeason 2" with lore "" and "&8(&cNot Avaliable&8)" to close 
+		format gui slot 10 of {_p} with glowing book named "&6&lSeason 1" with lore "" and "&8(&a&lAvailable&8)" to run function previousWinner({_p}, 1)
+		format gui slot 11 of {_p} with glowing clock named "&6&lSeason 2" with lore "" and "&8(&2&lCurrent Season&8)" to run function currentSeason({_p})
 		format gui slot 12 of {_p} with glowing barrier block named "&6&lSeason 3" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 13 of {_p} with glowing barrier block named "&6&lSeason 4" with lore "" and "&8(&cNot Avaliable&8)" to close 
 		format gui slot 14 of {_p} with glowing barrier block named "&6&lSeason 5" with lore "" and "&8(&cNot Avaliable&8)" to close 
