@@ -24,7 +24,7 @@ command /bbar-set:
 	trigger:
 		set {bossbar::toggle} to true
 		remove bossbar "welcome.bossbar"
-		create bossbar titled "&a&lWelcome &7to &b&lFast&3&lGens!" and id "welcome.bossbar" for all players with progress 100 with colors green
+		create bossbar titled "&a&lWelcome &7to !" and id "welcome.bossbar" for all players with progress 100 with colors green
 		wait 5 ticks
 		bossbar(1)
 			
@@ -40,7 +40,7 @@ function bossbarValue(n: number):
 
 function bossbarTitle(n: number):
 	if {_n} is 0:
-		set bossbar "welcome.bossbar" title to "&a&lWelcome &7to &b&lFast&3&lGens!"
+		set bossbar "welcome.bossbar" title to "&a&lWelcome &7to!"
 	if {_n} is 1:
 		set bossbar "welcome.bossbar" title to "&bJoin our &dDiscord &bwith &6/discord"
 	if {_n} is 2:
@@ -51,7 +51,7 @@ function bossbarTitle(n: number):
 		set bossbar "welcome.bossbar" title to "&bNot sure what a &7&lSilo &r&bis go to &6/warp silo"
 	if {_n} is 5:
 		set bossbar "welcome.bossbar" title to "&bDon't forget to &aDonate &bwith &6/buy"
-	
+	#when adding a new message make sure the "if {_n} is x" is 1 higher than the last number 
 
 function bossbar(n: number):
 	if {bossbar::toggle} is true:	
@@ -60,6 +60,6 @@ function bossbar(n: number):
 			wait 1 ticks
 		bossbarTitle({_n})
 		add 1 to {_n}
-		if {_n} is 6:
+		if {_n} is 6: # add 1 to this number 
 			set {_n} to 0
 		bossbar({_n})
