@@ -1,0 +1,109 @@
+options:
+	Low: 5000
+	High: 15000
+
+command /stock:
+	aliases: stocks
+	trigger:
+		loop {stocks::*}:
+			set {%loop-value%stock::%player's uuid%} to 0 if {%loop-value%stock::%player's uuid%} is not set
+		stockGUI(player, "main", "MAIN")
+
+on script load:
+	delete {stocks::*}
+	add "Coal", "Iron", "Gold", "Lapis", "Redstone", "Diamond" and "Emerald" to {stocks::*}
+
+function stockGUI(p: player, stock: text, stockc: text):
+	set {_uuid} to {_p}'s UUID
+	play sound "block.note_block.pling" with volume 3 to {_p}
+	if {_stock} is "main":
+		create a gui with virtual chest named "Stocks" with 3 row:
+			loop 27 times:
+				make gui slot (loop-number - 1) to gray glass pane named " "
+			make gui slot 4 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%stocksformatNum({_p}'s balance)%"
+			make gui slot 10 to glowing coal block named "&8&lCoal &fstocks" with lore "&7Costs: &f%stocksformatNum({coalstock::value})%":
+				stockGUI({_p}, "coal", "Coal")
+			make gui slot 11 to glowing Iron block named "&7&lIron &fstocks" with lore "&7Costs: &f%stocksformatNum({ironstock::value})%":
+				stockGUI({_p}, "iron", "Iron")
+			make gui slot 12 to glowing Gold block named "&6&lGold &fstocks" with lore "&7Costs: &f%stocksformatNum({goldstock::value})%":
+				stockGUI({_p}, "gold", "Gold")
+			make gui slot 13 to glowing Lapis block named "&9&lLapis &fstocks" with lore "&7Costs: &f%stocksformatNum({lapisstock::value})%":
+				stockGUI({_p}, "lapis", "Lapis")
+			make gui slot 14 to glowing Redstone block named "&c&lRedstone &fstocks" with lore "&7Costs: &f%stocksformatNum({redstonestock::value})%":
+				stockGUI({_p}, "redstone", "Redstone")
+			make gui slot 15 to glowing Diamond block named "&b&lDiamond &fstocks" with lore "&7Costs: &f%stocksformatNum({diamondstock::value})%":
+				stockGUI({_p}, "diamond", "Diamond")
+			make gui slot 16 to glowing Emerald block named "&2&lEmerald &fstocks" with lore "&7Costs: &f%stocksformatNum({emeraldstock::value})%":
+				stockGUI({_p}, "emerald", "Emerald")
+			make gui slot 22 to glowing redstone torch named "&6&lInfo&8:" with lore "&7Stocks can randomly grow or fall,", "&7if they fall in value and you have them, you lose money." and "&7If you have them and they blow up, you win!"
+		open last gui to {_p}
+		stop
+	else:
+		create a gui with virtual chest named "%{_stockc}% Stocks" with 3 row:
+			loop 27 times:
+				make gui slot (loop-number - 1) to gray glass pane named " "
+			make gui slot 11 to lime wool named "&a&lBUY" with lore "&7Buy 1 %{_stockc}% stock for &f%{%{_stock}%stock::value}%":
+				buyStock({_p}, {_stock}, {_stockc})
+			make gui slot 13 to glowing "%{_stock}% block" parsed as an item named "&e&lPrice&8:" with lore "&8(&71x&8) &f%{_stockc}% stock is currently worth &e$%{%{_stock}%stock::value}%&f!", "" and "&7You own %{%{_stock}%stock::%{_uuid}%}% %{_stockc}% stocks!"
+			make gui slot 15 to red wool named "&a&lSELL" with lore "&7Sell 1 %{_stockc}% stock for &f%{%{_stock}%stock::value}%":
+				sellStock({_p}, {_stock}, {_stockc})
+			make gui slot 22 to structure void named "&cBack":
+				stockGUI({_p}, "main", "MAIN")
+		open last gui to {_p}
+		stop
+
+function stocksformatNum(n: number) :: string:
+	set {_l::*} to split "k,M,B,T,Qn,Qi,Sx" at ","
+	set {_i} to min(floor(log({_n})/3), size of {_l::*})
+	return "%{_n}%" if {_i} <= 0
+	set {_i2} to 1000^{_i}
+	set {_n} to "%{_n}/{_i2}%%{_l::%{_i}%}%"
+	return {_n}		
+
+function sellStock(p: player, stock: text, stockc: text):
+	set {_uuid} to uuid of {_p}
+	if {%{_stock}%stock::%{_uuid}%} >= 1:
+		remove 1 from {%{_stock}%stock::%{_uuid}%}
+		add {%{_stock}%stock::value} to {_p}'s balance
+		send "" to {_p}
+		send "&e&l[!] Stocks &8| &fYou have sold 1 %{_stockc}% stock for %{%{_stock}%stock::value}%!" to {_p}
+		send "" to {_p}
+	else:
+		send "" to {_p}
+		send "&e&l[!] Stocks &8| &fYou have no more stocks to sell!" to {_p}
+		send "" to {_p}
+	stockGUI({_p}, {_stock}, {_stockc})
+
+function buyStock(p: player, stock: text, stockc: text):
+	set {_uuid} to uuid of {_p}
+	if {_p}'s balance > {%{_stock}%stock::value}:
+		if {%{_stock}%stock::%{_uuid}%} >= 10:
+			send "" to {_p}
+			send "&e&l[!] Stocks &8| &fYou can't have more than 10 same stocks at once!" to {_p}
+			send "" to {_p}
+		else:
+			remove {%{_stock}%stock::value} from {_p}'s balance
+			add 1 to {%{_stock}%stock::%{_uuid}%}
+			send "" to {_p}
+			send "&e&l[!] Stocks &8| &fYou have bought 1 %{_stockc}% stock for %{%{_stock}%stock::value}%!" to {_p}
+			send "" to {_p}
+	stockGUI({_p}, {_stock}, {_stockc})
+
+function changeStocks():
+	delete {_multiplyby::*}
+	add 1, 6, 12, 21, 29, 38 and 48 to {_multiplyby::*}
+	loop 7 times:
+		set {_new%{stocks::%loop-number%}%Price} to random integer between ({_multiplyby::%loop-number%} * {@Low}) and ({_multiplyby::%loop-number%} * {@High})
+		set {%{stocks::%loop-number%}%stock::value} to {_new%{stocks::%loop-number%}%Price}
+	broadcast ""
+	broadcast "&e&l[!] Stocks &8| &fStocks prices have changed!"
+	broadcast ""
+	play sound "block.note_block.pling" with volume 5 to all players
+	
+command /changestocks:
+	permission: admin
+	trigger:
+		changeStocks()
+	
+every 10 minutes:
+	changeStocks()

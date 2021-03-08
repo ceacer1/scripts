@@ -1,0 +1,1072 @@
+options:
+	plotWorld: "plots" # Main machine world name
+	FuelTime: 180 # How long 1 fuel lasts in seconds
+	FuelReloadRate: 5 # How long it takes for 1 fuel to be loaded in ticks
+	
+	PouchNBT: "{z:-5,id:""minecraft:skull"",y:57,x:-15,SkullOwner:{Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTliOTA2YjIxNTVmMTkzNzg3MDQyMzM4ZDA1Zjg0MDM5MWMwNWE2ZDNlODE2MjM5MDFiMjk2YmVlM2ZmZGQyIn19fQ==""}]},Id:[I;1924657862,-1239725711,-1866312190,2025265060]}}"
+
+	TokenChance: 50000 #0.5 Tokens per second per factory = 5000
+
+#Upgrade Prices
+	StoneToCoal: 1000
+	CoalToIron: 15000
+	IronToRedstone: 250000
+	RedstoneToLapis: 1000000
+	LapisToGold: 5000000
+	GoldToDiamond: 20000000
+	DiamondToEmerald: 50000000
+	EmeraldToObsdian: 500000000
+
+
+on load:
+	ReloadSellPrices()
+	
+command /reloadsellprices:
+	permission: op	
+	trigger:
+		ReloadSellPrices()
+		
+function ReloadSellPrices():
+
+	delete {SellMaterials::*}
+	delete {SellMaterialsPrice::*}
+	
+	AddSellMaterial(cobblestone named "&bCobblestone", 3)
+	AddSellMaterial(coal ore named "&bCoal Ore", 4)
+	AddSellMaterial(iron ore named "&bIron Ore", 5)
+	AddSellMaterial(redstone ore named "&bRedstone Ore", 6)
+	AddSellMaterial(lapis ore named "&bLapis Ore", 8)
+	AddSellMaterial(gold ore named "&bGold Ore", 10)
+	AddSellMaterial(diamond ore named "&bDiamond Ore", 18)
+	AddSellMaterial(emerald ore named "&bEmerald Ore", 25)
+	AddSellMaterial(crying obsidian named "&bCrying Obsidian", 40)
+
+	AddSellMaterial(stone named "&bStone", 4)
+	AddSellMaterial(coal named "&bCoal", 6)
+	AddSellMaterial(iron ingot named "&bIron Ingot", 7)
+	AddSellMaterial(redstone dust named "&bRedstone Dust", 8)
+	AddSellMaterial(lapis lazuli named "&bLapis Lazuli", 10)
+	AddSellMaterial(gold ingot named "&bGold Ingot", 13)
+	AddSellMaterial(diamond named "&bDiamond", 20)
+	AddSellMaterial(emerald named "&bEmerald", 35)
+	AddSellMaterial(obsidian named "&bObsidian", 50)
+	
+	AddSellMaterial(smooth stone named "&bCompact Stone", 25)
+	AddSellMaterial(coal block named "&bCompact Coal", 32)
+	AddSellMaterial(iron block named "&bCompact Iron", 37)
+	AddSellMaterial(redstone block named "&bCompact Redstone", 40)
+	AddSellMaterial(lapis block named "&bCompact Lapis", 52)
+	AddSellMaterial(gold block named "&bCompact Gold", 68)
+	AddSellMaterial(diamond block named "&bCompact Diamond", 105)
+	AddSellMaterial(emerald block named "&bCompact Emerald", 190)
+	AddSellMaterial(respawn anchor named "&bCompact Obsidian", 265)
+	
+	AddSellMaterial(smooth stone named "&bShined Stone", 10)
+	AddSellMaterial(coal block named "&bShined Coal", 15)
+	AddSellMaterial(iron block named "&bShined Iron", 18)
+	AddSellMaterial(redstone block named "&bShined Redstone", 20)
+	AddSellMaterial(lapis block named "&bShined Lapis", 30)
+	AddSellMaterial(gold block named "&bShined Gold", 35)
+	AddSellMaterial(diamond block named "&bShined Diamond", 40)
+	AddSellMaterial(emerald block named "&bShined Emerald", 60)
+	AddSellMaterial(respawn anchor named "&bShined Obsidian", 90)
+	
+
+
+function AddSellMaterial(i: item, n: number):
+	set {SellMaterials::%{_i}%} to {_i}
+	set {SellMaterialsPrice::%{_i}%} to {_n}
+
+function UpgradeFactoryOptions(price: integer, l: location, p: player):
+
+	open virtual hopper inventory named "Upgrade Factory" to {_p}
+	
+	format gui slot 2 of {_p} with emerald named "&6&lUpgrade Factory" with lore "&7[$%{_price}%]" to close then run function UpgradeFactory({_price}, {_l}, {_p})
+	
+	
+function UpgradeFactory(price: integer, l: location, p: player):
+	
+	set {_u} to {_p}'s uuid
+	
+	if {balance::%{_u}%} is greater than or equal to {_price}:
+		
+		add 1 to {FactoryType::%{_u}%::%{_l}%}
+		remove {_price} from {balance::%{_u}%}
+		
+		set {_type} to {FactoryType::%{_u}%::%{_l}%}
+		
+		if {_type} is 1:
+			add "{CustomName:'{""text"":""&8Stone Factory ► Tier 1""}'}" to nbt of block at {_l}
+			
+		else if {_type} is 2:
+			add "{CustomName:'{""text"":""&8Coal Factory ► Tier 2""}'}" to nbt of block at {_l}
+
+		else if {_type} is 3:
+			add "{CustomName:'{""text"":""&8Iron Factory ► Tier 3""}'}" to nbt of block at {_l}
+
+		else if {_type} is 4:
+			add "{CustomName:'{""text"":""&8Redstone Factory ► Tier 4""}'}" to nbt of block at {_l}
+
+		else if {_type} is 5:
+			add "{CustomName:'{""text"":""&8Lapis Factory ► Tier 5""}'}" to nbt of block at {_l}
+
+		else if {_type} is 6:
+			add "{CustomName:'{""text"":""&8Gold Factory ► Tier 6""}'}" to nbt of block at {_l}
+
+		else if {_type} is 7:
+			add "{CustomName:'{""text"":""&8Diamond Factory ► Tier 7""}'}" to nbt of block at {_l}
+
+		else if {_type} is 8:
+			add "{CustomName:'{""text"":""&8Emerald Factory ► Tier 8""}'}" to nbt of block at {_l}
+			
+		else if {_type} is 9:
+			add "{CustomName:'{""text"":""&8Obsidian Factory ► Tier 9""}'}" to nbt of block at {_l}
+			
+		send "&e[Factoried] &fYour factory has been upgraded!" to {_p}
+			
+		
+	else:
+		send "&cYou do not have enough money to upgrade this factory" to {_p}
+	
+	
+command /sell:
+	trigger:
+		
+		set {_p} to player
+		set {_u} to {_p}'s uuid
+		
+		set {_slotCount} to amount of slots of {_p}'s inventory
+		set {_currentSlotIndex} to 0
+		loop {_slotCount} times:
+
+			set {_slotItem} to slot {_currentSlotIndex} of {_p}'s inventory
+			
+			if {_slotItem} is not air:
+				set {_amount} to item amount of {_slotItem}
+				
+				set {_oneOf} to 1 of {_slotItem}
+				if {SellMaterials::%{_oneOf}%} is {_slotItem}:
+					set {_addAmount} to {SellMaterialsPrice::%{_oneOf}%} * {_amount}
+					add {_addAmount} to {_sellPrice}
+					#send "Item: %{_oneOf}%"
+					set slot {_currentSlotIndex} of {_p}'s inventory to air
+				
+			add 1 to {_currentSlotIndex}
+				
+		add {_sellPrice} to {balance::%{_u}%}
+		if {_sellprice} is set:
+			send "&eYou sold all of your items for &e$%{_sellprice}%&e!"
+		else:
+			send "&cYou have no items to sell!"
+	
+
+command giveitemnum <integer> [<player = %player%>] [<integer>] [<integer>]:
+	permission: op
+	permission message: &fUnknown command. Type "/help" for help.
+	usage: /giveitemnum <itemid> <player> <amount> <data>
+	trigger:
+		if arg-3 is not set:
+			set {_amount} to 1
+		else:
+			set {_amount} to arg-3
+
+		set {_p} to player if arg-2 isn't set else arg-2
+		if arg-1 is 1:
+			set {_item} to {_amount} of charcoal named "&bFuel"
+		if arg-1 is 2:
+			set {_item} to {_amount} of player head named "&e&lToken Pouch &e[Tier %arg-4%]" with nbt {@PouchNBT}
+		if arg-1 is 3:
+			set {_item} to {_amount} of tripwire hook named "&bCommon Key"
+		if arg-1 is 4:
+			set {_item} to {_amount} of tripwire hook named "&bUncommon Key"
+		if arg-1 is 5:
+			set {_item} to {_amount} of tripwire hook named "&bRare Key"
+		if arg-1 is 6:
+			set {_item} to {_amount} of tripwire hook named "&bLegend Key"
+			
+			
+			
+		give {_item} to {_p}
+		
+		
+		
+		
+		
+
+command givemachinenum <integer> [<player = %player%>] [<integer>]:
+	permission: op
+	permission message: &fUnknown command. Type "/help" for help.
+	usage: /givemachinenum <machineid> <player> <amount>
+	trigger:
+		if arg-3 is not set:
+			set {_amount} to 1
+		else:
+			set {_amount} to arg-3
+
+		set {_p} to player if arg-2 isn't set else arg-2
+		if arg-1 is 1:
+			set {_item} to {_amount} of barrel named "&fStone factory &e[Tier I]" with lore "&8Factory"
+		if arg-1 is 2:
+			set {_item} to {_amount} of barrel named "&fCoal factory &e[Tier II]" with lore "&8Factory"
+		if arg-1 is 3:
+			set {_item} to {_amount} of barrel named "&fIron factory &e[Tier III]" with lore "&8Factory"
+		if arg-1 is 4:
+			set {_item} to {_amount} of barrel named "&fRedstone factory &e[Tier IV]" with lore "&8Factory"
+		if arg-1 is 5:
+			set {_item} to {_amount} of barrel named "&fLapis factory &e[Tier V]" with lore "&8Factory"
+		if arg-1 is 6:
+			set {_item} to {_amount} of barrel named "&fGold factory &e[Tier VI]" with lore "&8Factory"
+		if arg-1 is 7:
+			set {_item} to {_amount} of barrel named "&fDiamond factory &e[Tier VII]" with lore "&8Factory"
+		if arg-1 is 8:
+			set {_item} to {_amount} of barrel named "&fEmerald factory &e[Tier VIII]" with lore "&8Factory"
+		if arg-1 is 9:
+			set {_item} to {_amount} of barrel named "&fObsidian factory &e[Tier IX]" with lore "&8Factory"
+			
+		if arg-1 is equal to 10:
+			set {_item} to {_amount} of light gray shulker box named "&fRefinery &e[/help]"
+		if arg-1 is equal to 11:
+			set {_item} to {_amount} of dispenser named "&fExtractor &e[/help]"
+		if arg-1 is equal to 12:
+			set {_item} to {_amount} of gray shulker box named "&fCompactor &e[/help]"
+		if arg-1 is equal to 13:
+			set {_item} to {_amount} of yellow shulker box named "&fShiner &e[/help]"
+		if arg-1 is equal to 14:
+			set {_item} to {_amount} of dispenser named "&fGenerator &e[/help]"
+		if arg-1 is equal to 15:
+			set {_item} to {_amount} of chest named "&fSell Chest &e[/help]"
+			
+		give {_item} to {_p}
+			
+	
+
+function CheckMachine(p: player, var: text, e: boolean, l: location):
+	wait 1 ticks
+	if block at {_l} is air:
+		pickupMachine({_p}, {_var}, {_e}, {_l}, false)
+
+function placeMachine(p: player, var: text, e: boolean, m: number, l: location) :: boolean:
+	set {_u} to {_p}'s uuid
+	if (size of {%{_var}%Pos::%{_u}%::*}) >= ({%{_var}%Cap::%{_u}%} + {%{_var}%RankCap::%{_u}%}):
+		set block at location of {_l} to air
+		console command "givemachinenum %{_m}% %{_p}% 0"
+		send "&e[Factoried] &7You have reached the max machine limit!" to {_p}
+		return false
+		stop
+		
+	else:
+	
+		set {%{_var}%Pos::%{_u}%::%{_l}%} to {_l}
+		set {%{_var}%PosOnline::%{_u}%::%{_l}%} to {_l}
+		set {%{_var}%Owner::%{_u}%::%{_l}%} to {_u}
+		set {%{_var}%Type::%{_u}%::%{_l}%} to {_m}
+		
+		if {_e}:
+			set {%{_var}%Extra::%{_u}%::%{_l}%} to 0
+		
+		return true
+	
+function pickupMachine(p: player, var: text, e: boolean, l: location, g: boolean) :: string:
+
+	set {_u} to {_p}'s uuid
+	
+	if {%{_var}%Pos::%{_u}%::%{_l}%} is set:
+
+		if {_p}'s inventory doesn't have enough space for 1 trident:
+			sendError({_p}, "&cYou have no space to hold that!")
+			return "Cancel"
+			stop
+		
+		if {%{_var}%Owner::%{_u}%::%{_l}%} is equal to {_u}:
+			set {_type} to {%{_var}%Type::%{_u}%::%{_l}%}
+			
+			play sound "entity.item.pickup" with volume 3 to {_p}
+			send action bar "&e[Factoried] &7You picked up your machine!" to {_p}
+			
+			set block at {_l} to air
+			
+			remove 1 from {%{_var}%Count::%{_u}%}
+			
+			if {_g}:
+				console command "givemachinenum %{_type}% %{_p}% 1"
+			else:
+				console command "givemachinenum %{_type}% %{_p}% 0"
+			
+			delete {%{_var}%Pos::%{_u}%::%{_l}%}
+			delete {%{_var}%PosOnline::%{_u}%::%{_l}%}
+			delete {%{_var}%Type::%{_u}%::%{_l}%}
+			delete {%{_var}%Owner::%{_u}%::%{_l}%}
+			
+			if {_e}:
+				delete {%{_var}%Extra::%{_u}%::%{_l}%}
+				
+		else:
+			play sound "entity.villager.no" with volume 3 to {_p}
+			sendError({_p}, "This is not your machine!")
+			return "Cancel"
+			stop
+	else:
+		return "Cancel"
+		stop
+		
+	return "Good"
+	stop
+	
+	
+	
+function UpdateHolo(p: player, u: text, l: location):
+	if (distance between {_p} and {_l}) is less than 10:
+		if {GenHolo::%{_u}%::%{_l}%} is set:
+			delete hologram {GenHolo::%{_u}%::%{_l}%}
+			
+		set {_holoPos} to {_l}
+		add 1.25 to y-coordinate of {_holoPos}
+		
+		set {_percent} to round({GeneratorExtra::%{_u}%::%{_l}%})
+		set {_lit} to round({_percent} / 10)
+		set {_unLit} to 10 - {_lit}
+		
+		set {_litBars} to ""
+		set {_unLitBars} to ""
+		loop {_lit} times:
+			set {_litBars} to "%{_litBars}%▌"
+			
+		loop {_unLit} times:
+			set {_unLitBars} to "%{_unLitBars}%▌"
+		
+		
+		create a new hologram with line "&fPower: &a%{_litBars}%&7%{_unLitBars}% &o(%{_percent}%%%)" at {_holoPos} and store in {GenHolo::%{_u}%::%{_l}%}
+	else:
+		delete hologram {GenHolo::%{_u}%::%{_l}%}
+		delete {GenHolo::%{_u}%::%{_l}%}
+		
+		
+function GetSellChestPos(l: location) :: boolean:
+	
+	loop all offline players:
+		set {_p} to loop-value
+		set {_u} to {_p}'s uuid
+		
+		if {SellChestPos::%{_u}%::%{_l}%} is set:
+			return true
+			stop
+			
+	return false
+	stop
+	
+	
+on break of shulker box:
+	cancel event
+	
+on break of barrel:
+	cancel event
+	
+on break of dispenser:
+	cancel event
+	
+on break of chest:
+	set {_break} to GetSellChestPos(location of event-block)
+	if {_break}:
+		cancel event
+	
+
+
+#Factories
+
+on place of barrel:
+	if {FactoryPos::%{_l}%} is set:
+		cancel event
+		play sound "entity.villager.no" with volume 3 to the player
+		sendError(player, "This is not your generator!")
+
+	if name of player's tool is "&fStone factory &e[Tier I]":
+		if placeMachine(player, "Factory", false, 1, event-block):
+			add "{CustomName:'{""text"":""&8Stone Factory ► Tier 1""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a stone factory down!"
+		
+	else if name of player's tool is "&fCoal factory &e[Tier II]":
+		if placeMachine(player, "Factory", false, 2, event-block):
+			add "{CustomName:'{""text"":""&8Coal Factory ► Tier 2""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a coal factory down!"
+		
+	else if name of player's tool is "&fIron factory &e[Tier III]":
+		if placeMachine(player, "Factory", false, 3, event-block):
+			add "{CustomName:'{""text"":""&8Iron Factory ► Tier 3""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a iron factory down!"
+		
+	else if name of player's tool is "&fRedstone factory &e[Tier IV]":
+		if placeMachine(player, "Factory", false, 4, event-block):
+			add "{CustomName:'{""text"":""&8Redstone Factory ► Tier 4""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a redstone factory down!"
+		
+	else if name of player's tool is "&fLapis factory &e[Tier V]":
+		if placeMachine(player, "Factory", false, 5, event-block):
+			add "{CustomName:'{""text"":""&8Lapis Factory ► Tier 5""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a lapis factory down!"
+		
+	else if name of player's tool is "&fGold factory &e[Tier VI]":
+		if placeMachine(player, "Factory", false, 6, event-block):
+			add "{CustomName:'{""text"":""&8Gold Factory ► Tier 6""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a gold factory down!"
+		
+	else if name of player's tool is "&fDiamond factory &e[Tier VII]":
+		if placeMachine(player, "Factory", false, 7, event-block):
+			add "{CustomName:'{""text"":""&8Diamond Factory ► Tier 7""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a diamond factory down!"
+		
+	else if name of player's tool is "&fEmerald factory &e[Tier VIII]":
+		if placeMachine(player, "Factory", false, 8, event-block):
+			add "{CustomName:'{""text"":""&8Emerald Factory ► Tier 8""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a emerald factory down!"
+	else if name of player's tool is "&fObsidian factory &e[Tier IX]":
+		if placeMachine(player, "Factory", false, 9, event-block):
+			add "{CustomName:'{""text"":""&8Obsidian Factory ► Tier 9""}'}" to nbt of block
+			send "&e[Factoried] &fYou have placed a obsidian factory down!"
+	else:
+		cancel event
+		stop
+	
+	set facing of block to up
+	CheckMachine(player, "Factory", false, event-block)
+			
+
+on left click on barrel:
+	set {_out} to pickupMachine(player, "Factory", false, event-block, true)
+	if {_out} is equal to "Cancel":
+		cancel event
+
+
+
+
+
+#Refinery
+
+on place of light gray shulker box:
+	if name of player's tool is "&fRefinery &e[/help]":
+		if placeMachine(player, "Machine", false, 10, event-block):
+			add "{CustomName:'{""text"":""&8Refinery ► &8&o(/help)""}'}" to nbt of block
+			set facing of block to up
+			send "&e[Factoried] &fYou have placed a refinery down!"
+		CheckMachine(player, "Machine", false, event-block)
+		
+
+on left click on light gray shulker box:
+	set {_out} to pickupMachine(player, "Machine", false, event-block, true)
+	if {_out} is equal to "Cancel":
+		cancel event
+		
+		
+		
+		
+#Extractor
+
+on place of dispenser:
+	if name of player's tool is "&fExtractor &e[/help]":
+		if placeMachine(player, "Machine", false, 11, event-block):
+			add "{CustomName:'{""text"":""&8Extractor ► &8&o(/help)""}'}" to nbt of block
+			set facing of block to up
+			send "&e[Factoried] &fYou have placed an extractor down!"
+		CheckMachine(player, "Machine", false, event-block)
+
+on left click on dispenser:
+	set {_out} to pickupMachine(player, "Machine", false, event-block, true)
+	if {_out} is equal to "Cancel":
+		cancel event
+		
+	
+
+#Compactor
+
+on place of gray shulker box:
+	if name of player's tool is "&fCompactor &e[/help]":
+		if placeMachine(player, "Machine", false, 12, event-block):
+			add "{CustomName:'{""text"":""&8Compactor ► &8&o(/help)""}'}" to nbt of block
+			set facing of block to up
+			send "&e[Factoried] &fYou have placed an compactor down!"
+		CheckMachine(player, "Machine", false, event-block)
+
+on left click on gray shulker box:
+	set {_out} to pickupMachine(player, "Machine", false, event-block, true)
+	if {_out} is equal to "Cancel":
+		cancel event
+
+
+#Shiner
+
+on place of yellow shulker box:
+	if name of player's tool is "&fShiner &e[/help]":
+		if placeMachine(player, "Machine", false, 13, event-block):
+			add "{CustomName:'{""text"":""&8Shiner ► &8&o(/help)""}'}" to nbt of block
+			set facing of block to up
+			send "&e[Factoried] &fYou have placed a shiner down!"
+		CheckMachine(player, "Machine", false, event-block)
+
+on left click on yellow shulker box:
+	set {_out} to pickupMachine(player, "Machine", false, event-block, true)
+	if {_out} is equal to "Cancel":
+		cancel event
+		
+		
+		
+#Generator
+
+on place of dispenser:
+	if name of player's tool is "&fGenerator &e[/help]":
+		if placeMachine(player, "Generator", true, 14, event-block):
+			add "{CustomName:'{""text"":""&8Generator ► &8&o(/help)""}'}" to nbt of block
+			set facing of block to up
+			send "&e[Factoried] &fYou have placed an generator down!"
+		CheckMachine(player, "Generator", true, event-block)
+
+on left click on dispenser:
+	set {_out} to pickupMachine(player, "Generator", true, event-block, true)
+	if {_out} is equal to "Cancel":
+		cancel event
+	else:
+		set {_l} to location of event-block
+		delete hologram {GenHolo::%player's uuid%::%{_l}%}
+		delete {GenHolo::%player's uuid%::%{_l}%}
+
+
+#Sell Chest
+
+on place of chest:
+	if name of player's tool is "&fSell Chest &e[/help]":
+	
+		if block 1 north of location of event-block is chest:
+			cancel event
+			stop
+		if block 1 east of location of event-block is chest:
+			cancel event
+			stop
+		if block 1 south of location of event-block is chest:
+			cancel event
+			stop
+		if block 1 west of location of event-block is chest:
+			cancel event
+			stop
+	
+		if placeMachine(player, "SellChest", false, 15, event-block):
+			add "{CustomName:'{""text"":""&8Sell Chest ► &8&o(/help)""}'}" to nbt of block
+			set facing of block to up
+			send "&e[Factoried] &fYou have placed a sell chest down!"
+		CheckMachine(player, "Machine", false, event-block)
+		
+	else:
+		if block 1 north of location of event-block is chest:
+			if GetSellChestPos(location of block 1 north of location of event-block):
+				cancel event
+				stop
+		if block 1 east of location of event-block is chest:
+			if GetSellChestPos(location of block 1 east of location of event-block):
+				cancel event
+				stop
+		if block 1 south of location of event-block is chest:
+			if GetSellChestPos(location of block 1 south of location of event-block):
+				cancel event
+				stop
+		if block 1 west of location of event-block is chest:
+			if GetSellChestPos(location of block 1 west of location of event-block):
+				cancel event
+				stop
+
+on left click on chest:
+	set {_break} to GetSellChestPos(location of event-block)
+	if {_break}:
+		set {_out} to pickupMachine(player, "SellChest", false, event-block, true)
+		if {_out} is equal to "Cancel":
+			cancel event
+
+
+
+
+
+
+
+#Factories
+
+on right click on barrel:
+
+	if player's held item is hopper:
+		stop
+
+	if sneaking of player is false:
+		stop
+	
+	set {_p} to player
+	set {_u} to {_p}'s uuid
+	
+	set {_l} to position of event-block
+	
+	if {FactoryPos::%{_u}%::%{_l}%} is set:
+	
+		cancel event
+		
+		set {_type} to {FactoryType::%{_u}%::%{_l}%}
+		
+		if {_type} is 1:
+			UpgradeFactoryOptions({@StoneToCoal}, {_l}, {_p})
+		if {_type} is 2:
+			UpgradeFactoryOptions({@CoalToIron}, {_l}, {_p})
+		if {_type} is 3:
+			UpgradeFactoryOptions({@IronToRedstone}, {_l}, {_p})
+		if {_type} is 4:
+			UpgradeFactoryOptions({@RedstoneToLapis}, {_l}, {_p})
+		if {_type} is 5:
+			UpgradeFactoryOptions({@LapisToGold}, {_l}, {_p})
+		if {_type} is 6:
+			UpgradeFactoryOptions({@GoldToDiamond}, {_l}, {_p})
+		if {_type} is 7:
+			UpgradeFactoryOptions({@DiamondToEmerald}, {_l}, {_p})
+		if {_type} is 8:
+			UpgradeFactoryOptions({@EmeraldToObsdian}, {_l}, {_p})
+			
+	else:
+		send "&cYou do not own this factory"
+	
+
+
+every 20 ticks in {@plotWorld}:
+	
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		if {Powered::%{_u}%} is false:
+			continue
+	
+		add {FactorySpeed::%{_u}%} to {FactoryTimer::%{_u}%}
+		
+		if {FactoryTimer::%{_u}%} >= 5:
+			set {ItemSpawn::%{_u}%} to floor({FactoryTimer::%{_u}%} / 5)
+			set {FactoryTimer::%{_u}%} to mod({FactoryTimer::%{_u}%}, 5)
+		else:
+			if {FactoryTimer::%{_u}%} < 0:
+				set {FactoryTimer::%{_u}%} to 0
+				
+			set {ItemSpawn::%{_u}%} to 0
+			
+		loop {FactoryPos::%loop-player's uuid%::*}:
+			set {_l} to loop-value-2
+			
+			set {_type} to {FactoryType::%loop-player's uuid%::%{_l}%}
+				
+			set {_item} to air
+			
+			if {_type} is equal to 1:
+				set {_item} to {ItemSpawn::%{_u}%} of cobblestone named "&bCobblestone"
+			else if {_type} is equal to 2:
+				set {_item} to {ItemSpawn::%{_u}%} of coal ore named "&bCoal Ore"
+			else if {_type} is equal to 3:
+				set {_item} to {ItemSpawn::%{_u}%} of iron ore named "&bIron Ore"
+			else if {_type} is equal to 4:
+				set {_item} to {ItemSpawn::%{_u}%} of redstone ore named "&bRedstone Ore"
+			else if {_type} is equal to 5:
+				set {_item} to {ItemSpawn::%{_u}%} of lapis ore named "&bLapis Ore"
+			else if {_type} is equal to 6:
+				set {_item} to {ItemSpawn::%{_u}%} of gold ore named "&bGold Ore"
+			else if {_type} is equal to 7:
+				set {_item} to {ItemSpawn::%{_u}%} of diamond ore named "&bDiamond Ore"
+			else if {_type} is equal to 8:
+				set {_item} to {ItemSpawn::%{_u}%} of emerald ore named "&bEmerald Ore"
+			else if {_type} is equal to 9:
+				set {_item} to {ItemSpawn::%{_u}%} of crying obsidian named "&bCrying Obsidian"
+				
+			add {_item} to inventory of block at {_l}
+
+
+
+
+
+
+every 20 ticks in {@plotWorld}:
+	
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+	
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		if {Powered::%{_u}%} is false:
+			continue
+	
+			
+		loop {FactoryPos::%loop-player's uuid%::*}:
+			set {_l} to loop-value-2
+			
+			set {_rNum} to random integer from 1 to {@TokenChance}
+			if {_rNum} is equal to 7:
+				set {_item} to sunflower named "&fToken &e(Right-click)"  with lore "&8Right click to redeem" and "&8Used to purchase in /tokenshop"
+				add {_item} to inventory of block at {_l}
+
+
+#Refinery
+
+
+every 5 seconds in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		if {Powered::%{_u}%} is false:
+			continue
+		
+		loop {MachinePos::%{_u}%::*}:
+			set {_l} to loop-value-2
+		
+			if {MachineType::%{_u}%::%{_l}%} is equal to 10:
+				set {_machineInv} to inventory of block at {_l}
+			
+				set {_currentSlotIndex} to 0
+				loop 27 times:
+					set {_slotItem} to slot {_currentSlotIndex} of {_machineInv}
+					set {_refinedItems} to {_slotItem}
+					set {_amount} to item amount of {_slotItem}
+				
+					if {_slotItem} is cobblestone named "&bCobblestone":
+						set {_refinedItems} to {_amount} of stone named "&bStone"
+					else if {_slotItem} is coal ore named "&bCoal Ore":
+						set {_refinedItems} to {_amount} of coal named "&bCoal"
+					else if {_slotItem} is iron ore named "&bIron Ore":
+						set {_refinedItems} to {_amount} of iron ingot named "&bIron Ingot"
+					else if {_slotItem} is redstone ore named "&bRedstone Ore":
+						set {_refinedItems} to {_amount} of redstone named "&bRedstone Dust"
+					else if {_slotItem} is lapis ore named "&bLapis Ore":
+						set {_refinedItems} to {_amount} of lapis named "&bLapis Lazuli"
+					else if {_slotItem} is gold ore named "&bGold Ore":
+						set {_refinedItems} to {_amount} of gold ingot named "&bGold Ingot"
+					else if {_slotItem} is diamond ore named "&bDiamond Ore":
+						set {_refinedItems} to {_amount} of diamond named "&bDiamond"
+					else if {_slotItem} is emerald ore named "&bEmerald Ore":
+						set {_refinedItems} to {_amount} of emerald named "&bEmerald"
+					else if {_slotItem} is crying obsidian named "&bCrying Obsidian":
+						set {_refinedItems} to {_amount} of obsidian named "&bObsidian"
+				
+				
+					set slot {_currentSlotIndex} of {_machineInv} to {_refinedItems}
+				
+					add 1 to {_currentSlotIndex}
+
+
+
+
+
+
+#Extractor
+
+every 3 seconds in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to loop-player's uuid
+		
+		if {Powered::%{_u}%} is false:
+			continue
+		
+		loop {MachinePos::%{_u}%::*}:
+			set {_l} to loop-value-2
+			
+			set {_type} to {MachineType::%{_u}%::%{_l}%}
+			set {_machineInv} to inventory of block 1 above {_l}
+			set {_extractorInv} to inventory of block at {_l}
+			
+			set {_al} to location of block 1 above {_l}
+			
+			
+			if {MachineType::%{_u}%::%{_l}%} is equal to 11:
+
+				if {MachineType::%{_u}%::%{_al}%} is equal to 10:
+				
+					set {_currentExtractorIndex} to 0
+					loop 27 times:
+					
+						if {_extractorInv} doesn't have enough space for 1 trident:
+							continue
+					
+						set {_slotItem} to slot {_currentExtractorIndex} of {_machineInv}
+						
+						if {_slotItem} is stone or coal or iron ingot or redstone or lapis or gold ingot or diamond or emerald or obsidian or sunflower:
+							add {_slotItem} to {_extractorInv}
+							set slot {_currentExtractorIndex} of {_machineInv} to air
+							
+						add 1 to {_currentExtractorIndex}
+				
+				else if {MachineType::%{_u}%::%{_al}%} is equal to 12:
+						
+					set {_currentExtractorIndex} to 0
+					loop 27 times:
+					
+						set {_slotItem} to slot {_currentExtractorIndex} of {_machineInv}
+						
+						if {_slotItem} is smooth stone or coal block or iron block or redstone block or lapis block or gold block or diamond block or emerald block or respawn anchor or sunflower:
+							add {_slotItem} to {_extractorInv}
+							set slot {_currentExtractorIndex} of {_machineInv} to air
+							
+						add 1 to {_currentExtractorIndex}
+							
+				else if {MachineType::%{_u}%::%{_al}%} is equal to 13:
+						
+					set {_currentExtractorIndex} to 0
+					loop 27 times:
+					
+						set {_slotItem} to slot {_currentExtractorIndex} of {_machineInv}
+						
+						if {_slotItem} is smooth stone or coal block or iron block or redstone block or lapis block or gold block or diamond block or emerald block or respawn anchor or sunflower:
+							if name of {_slotItem} contains "Shined":
+								add {_slotItem} to {_extractorInv}
+								set slot {_currentExtractorIndex} of {_machineInv} to air
+							
+						add 1 to {_currentExtractorIndex}
+
+
+
+#Compactor
+
+every 5 seconds in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		if {Powered::%{_u}%} is false:
+			continue
+		
+		loop {MachinePos::%{_u}%::*}:
+			set {_l} to loop-value-2
+		
+			if {MachineType::%{_u}%::%{_l}%} is equal to 12:
+				set {_machineInv} to inventory of block at {_l}
+			
+				set {_currentSlotIndex} to 0
+				loop 27 times:				
+					set {_slotItem} to slot {_currentSlotIndex} of {_machineInv}
+					set {_refinedItems} to {_slotItem}
+					
+					set {_itemAmount} to item amount of {_slotItem}
+					
+					set {_mod} to mod({_itemAmount}, 5)
+					set {_amount} to floor({_itemAmount} / 5)
+				
+					if {_slotItem} is stone named "&bStone":
+						set {_refinedItems} to {_amount} of smooth stone named "&bCompact Stone"
+					else if {_slotItem} is coal named "&bCoal":
+						set {_refinedItems} to {_amount} of coal block named "&bCompact Coal"
+					else if {_slotItem} is iron ingot named "&bIron Ingot":
+						set {_refinedItems} to {_amount} of iron block named "&bCompact Iron"
+					else if {_slotItem} is redstone named "&bRedstone Dust":
+						set {_refinedItems} to {_amount} of redstone block named "&bCompact Redstone"
+					else if {_slotItem} is lapis named "&bLapis Lazuli":
+						set {_refinedItems} to {_amount} of lapis block named "&bCompact Lapis"
+					else if {_slotItem} is gold ingot named "&bGold Ingot":
+						set {_refinedItems} to {_amount} of gold block named "&bCompact Gold"
+					else if {_slotItem} is diamond named "&bDiamond":
+						set {_refinedItems} to {_amount} of diamond block named "&bCompact Diamond"
+					else if {_slotItem} is emerald named "&bEmerald":
+						set {_refinedItems} to {_amount} of emerald block named "&bCompact Emerald"
+					else if {_slotItem} is emerald named "&bObsidian":
+						set {_refinedItems} to {_amount} of obsidian named "&bCompact Obsidian"
+					else:
+						add 1 to {_currentSlotIndex}
+						continue
+				
+				
+					set slot {_currentSlotIndex} of {_machineInv} to {_mod} of {_slotItem}
+					add {_refinedItems} to {_machineInv}
+				
+					add 1 to {_currentSlotIndex}
+
+
+
+
+#Shiner
+
+every 5 seconds in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		if {Powered::%{_u}%} is false:
+			continue
+		
+		loop {MachinePos::%{_u}%::*}:
+			set {_l} to loop-value-2
+		
+			if {MachineType::%{_u}%::%{_l}%} is equal to 13:
+				set {_machineInv} to inventory of block at {_l}
+			
+				set {_currentSlotIndex} to 0
+				loop 27 times:
+					set {_slotItem} to slot {_currentSlotIndex} of {_machineInv}
+					set {_refinedItems} to {_slotItem}
+					set {_amount} to item amount of {_slotItem}
+				
+					if {_slotItem} is smooth stone named "&bCompact Stone":
+						set {_refinedItems} to {_amount} of glowing smooth stone named "&bShined Stone"
+					else if {_slotItem} is coal block named "&bCompact Coal":
+						set {_refinedItems} to {_amount} of glowing coal block named "&bShined Coal"
+					else if {_slotItem} is iron block named "&bCompact Iron":
+						set {_refinedItems} to {_amount} of glowing iron block named "&bShined Iron"
+					else if {_slotItem} is redstone block named "&bCompact Redstone":
+						set {_refinedItems} to {_amount} of glowing redstone block named "&bShined Redstone"
+					else if {_slotItem} is lapis block named "&bCompact Lapis":
+						set {_refinedItems} to {_amount} of glowing lapis block named "&bShined Lapis"
+					else if {_slotItem} is gold block named "&bCompact Gold":
+						set {_refinedItems} to {_amount} of glowing gold block named "&bShined Gold"
+					else if {_slotItem} is diamond block named "&bCompact Diamond":
+						set {_refinedItems} to {_amount} of glowing diamond block named "&bShined Diamond"
+					else if {_slotItem} is emerald block named "&bCompact Emerald":
+						set {_refinedItems} to {_amount} of glowing emerald block named "&bShined Emerald"
+					else if {_slotItem} is emerald block named "&bCompact Obsidian":
+						set {_refinedItems} to {_amount} of glowing obsidian named "&bShined Obsidian"
+				
+					set slot {_currentSlotIndex} of {_machineInv} to {_refinedItems}
+				
+					add 1 to {_currentSlotIndex}
+	
+
+
+#Generator	
+
+every {@FuelReloadRate} ticks in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		set {_IsPowered} to false
+		loop {GeneratorPos::%{_u}%::*}:
+		
+			set {_l} to loop-value-2
+		
+			if {GeneratorType::%{_u}%::%{_l}%} is equal to 14:
+				set {_power} to {GeneratorExtra::%{_u}%::%{_l}%}
+				if {_power} is less than 100:
+				
+					set {_machineInv} to inventory of block at {_l}
+					set {_currentSlotIndex} to 0
+					loop 9 times:
+						
+						set {_slotItem} to slot {_currentSlotIndex} of {_machineInv}
+						if {_slotItem} is charcoal named "&bFuel":
+						
+							set {_amount} to (item amount of {_slotItem} - 1)
+							
+							set slot {_currentSlotIndex} of {_machineInv} to {_amount} of {_slotItem}
+							add 1 to {GeneratorExtra::%{_u}%::%{_l}%}
+							set {_IsPowered} to true
+							UpdateHolo({_p}, {_u}, {_l})
+
+							exit 1 loop
+						
+						add 1 to {_currentSlotIndex}
+						
+				if {_power} is greater than 0:
+					set {_IsPowered} to true
+					exit 1 loop
+					
+		set {Powered::%{_u}%} to {_IsPowered}
+		
+		
+
+every {@FuelTime} seconds in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+			
+		loop {GeneratorPos::%{_u}%::*}:
+			set {_l} to loop-value-2
+			if {GeneratorExtra::%{_u}%::%{_l}%} is greater than 0:
+				remove 1 from {GeneratorExtra::%{_u}%::%{_l}%}
+
+
+
+
+every 1 seconds in {@plotWorld}:
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		loop {GeneratorPos::%{_u}%::*}:
+
+			set {_l} to loop-value-2
+			
+			UpdateHolo({_p}, {_u}, {_l})
+			
+			
+			
+			
+#Sell Chest			
+			
+every 2 minutes in {@plotWorld}:
+
+	if {GlobalMachineEnabled} is not equal to 1:
+		stop
+		
+	#broadcast "&cSelling!"
+	
+	loop all players:
+		set {_p} to loop-player
+		set {_u} to {_p}'s uuid
+		
+		loop {SellChestPos::%{_u}%::*}:
+			set {_l} to loop-value-2
+		
+			if {SellChestType::%{_u}%::%{_l}%} is equal to 15:
+				set {_machineInv} to inventory of block at {_l}
+			
+				set {_currentSlotIndex} to 0
+				set {_sellPrice} to 0
+				loop 27 times:
+				
+					set {_slotItem} to slot {_currentSlotIndex} of {_machineInv}
+					
+					if {_slotItem} is not air:
+						set {_amount} to item amount of {_slotItem}
+						
+						set {_oneOf} to 1 of {_slotItem}
+						if {SellMaterials::%{_oneOf}%} is {_slotItem}:
+							set {_addAmount} to {SellMaterialsPrice::%{_oneOf}%} * {_amount}
+							add {_addAmount} to {_sellPrice}
+							set slot {_currentSlotIndex} of {_machineInv} to air
+					add 1 to {_currentSlotIndex}
+						
+				add {_sellPrice} to {balance::%{_u}%}
+				
+			
+			
+			
+					
+					
+on quit:
+	delete holograms {GenHolo::%player's uuid%::*}
+	delete {GenHolo::%player's uuid%::*}
+			
+			
+			
+			

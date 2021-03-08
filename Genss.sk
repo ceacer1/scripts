@@ -1,0 +1,37 @@
+on place of coal block:
+    if name of player's tool contains "&7Coal Gen":
+        set block at event-location to coal block
+        add location of event-block to {gens::%uuid of player%::coal::*}
+        send "yes"
+    else:
+        cancel event
+
+on break of coal block:
+    if {gens::%uuid of player%::coal::*} contains location of event-block:
+        remove location of event-block from {gens::%uuid of player%::coal::*}
+        give player coal block named "&7Coal Gen"
+    else:
+        cancel event
+
+on script load:
+    add "Coal", "Iron" and "Gold" to {gens::list::*}
+
+command /gen [<text>]:
+    trigger:
+        if arg 1 is not set:
+            give player coal block named "&7Coal Gen"
+            loop {gens::%uuid of player%::coal::*}:
+                send "%loop-value%"
+        if arg 1 is "reset":
+            delete {gens::%uuid of player%::coal::*}
+    
+every 5 seconds in world "world":
+    loop all players:
+        loop {gens::list::*}:
+            loop {gens::%uuid of loop-player%::%loop-value-2%::*}:
+                if block at loop-value-3 is loop-value-2:
+                    set {_item} to loop-value-2
+                    drop 1 loop-value-2 at block 1 above loop-value-3
+                else:
+                    remove loop-value-3 from {gens::%uuid of loop-player%::%loop-value-2%::*}
+            

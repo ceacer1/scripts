@@ -1,0 +1,417 @@
+options:
+
+	UnableToAffordMessage: "&cYou Cannot Afford To Buy This Item"
+
+
+	BUYstoneFactoryPrice: 300
+
+	BUYstoneFactoryItem: 1 barrel named "&fStone factory &e[Tier I]" with lore "&8Factory"
+
+
+	
+	BUYrefineryPrice: 15000
+	BUYextractorPrice: 5000
+	BUYcompactorPrice: 10000000
+	BUYsellChestPrice: 50000
+	
+	BUYrefineryItem: 1 light gray shulker box named "&fRefinery &e[/help]"
+	BUYextractorItem: 1 dispenser named "&fExtractor &e[/help]"
+	BUYcompactorItem: 1 gray shulker box named "&fCompactor &e[/help]"
+	BUYsellChestItem: 1 chest named "&fSell Chest &e[/help]"
+	
+	
+	BUYhopperPrice: 1000
+	BUYchestPrice: 25
+	
+	BUYwaterBucketPrice: 125
+	BUYbucketPrice: 75
+	
+	BUYicePrice: 75
+	BUYpackedIcePrice: 150
+	BUYblueIcePrice: 300
+	
+	BUYmovementBlockPrice: 100
+	
+	
+	BUYpickaxePrice: 150
+	BUYaxePrice: 150
+	BUYshovelPrice: 150
+	
+	BUYpickaxeItem: 1 diamond pickaxe of efficiency 5
+	BUYaxeItem: 1 diamond axe of efficiency 5
+	BUYshovelItem: 1 diamond shovel of efficiency 5
+	
+	
+	BUYwoodPrice: 25
+	BUYstonePrice: 25
+	BUYnatureBlockPrice: 25
+	BUYleavesPrice: 25
+	BUYfoliagePrice: 25
+	
+	BUYcheapLightingPrice: 25
+	BUYexpensiveLightingPrice: 75
+	
+	BUYdyePrice: 75
+	BUYcolourBlockPrice: 50
+	
+	
+	BUYhopperSlotItem: paper named "&f+1 Hopper slot &e(Right-click)"
+	BUYmachineSlotItem: paper named "&f+1 Machinery slot &e(Right-click)"
+	BUYfactorySlotItem: paper named "&f+1 Factory slot &e(Right-click)"
+		
+command /shop:
+	trigger:
+		ShopMenus(player, 0)
+		
+function ExecuteCommand(p: player, c: text):
+	make {_p} execute command {_c}
+		
+function ShopMenus(p: player, n: integer):
+
+	open virtual chest inventory with size 5 to {_p}
+	ClearGUI({_p})
+	Clickables({_p})
+	
+	set {_u} to {_p}'s uuid
+	
+	if {_n} is 0:
+		format gui slot 19 of {_p} with barrel named "&6&lFactories" to run function ShopMenus({_p}, 1)
+		format gui slot 20 of {_p} with blast furnace named "&8&lMachines" to run function ShopMenus({_p}, 2)
+		format gui slot 21 of {_p} with hopper named "&9&lMiscellaneous" to run function ShopMenus({_p}, 3)
+		format gui slot 22 of {_p} with diamond pickaxe named "&b&lTools" to run function ShopMenus({_p}, 4)
+		format gui slot 23 of {_p} with grass block named "&3&lBlocks" to run function ShopMenus({_p}, 5)
+		format gui slot 24 of {_p} with paper named "&e&lSlots" to run function ShopMenus({_p}, 18)
+
+		format gui slot 25 of {_p} with sunflower named "&6&lToken Shop" to run function ExecuteCommand({_p}, "/tokenshop")
+		
+	if {_n} is 1:
+		open virtual chest inventory with size 3 to {_p}
+		set {_stoneFactory} to {@BUYstoneFactoryPrice}
+		
+		format gui slot 13 of {_p} with barrel named "&7Stone Factory" with lore "&7[$%{_stoneFactory}%]" to run function BuyItem({_p}, {@BUYstoneFactoryPrice}, {@BUYstoneFactoryItem})
+
+	if {_n} is 2:
+		
+		set {_refineryPrice} to {@BUYrefineryPrice}
+		set {_extractorPrice} to {@BUYextractorPrice}
+		set {_compactorPrice} to {@BUYcompactorPrice}
+		set {_sellChestPrice} to {@BUYsellChestPrice}
+		
+		format gui slot 19 of {_p} with light gray shulker box named "&7Refinery" with lore "&7[$%{_refineryPrice}%]" to run function BuyItem({_p}, {@BUYrefineryPrice}, {@BUYrefineryItem})
+		format gui slot 20 of {_p} with dispenser named "&7Extractor" with lore "&7[$%{_extractorPrice}%]" to run function BuyItem({_p}, {@BUYextractorPrice}, {@BUYextractorItem})
+		format gui slot 21 of {_p} with gray shulker box named "&7Compactor" with lore "&7[$%{_compactorPrice}%]" to run function BuyItem({_p}, {@BUYcompactorPrice}, {@BUYcompactorItem})
+		format gui slot 22 of {_p} with chest named "&6Sell Chest" with lore "&7[$%{_sellChestPrice}%]" to run function BuyItem({_p}, {@BUYsellChestPrice}, {@BUYsellChestItem})
+		
+		
+	if {_n} is 3:
+	
+		set {_hopperPrice} to {@BUYhopperPrice}
+		set {_chestPrice} to {@BUYchestPrice}
+		
+		format gui slot 19 of {_p} with hopper with lore "&7[$%{_hopperPrice}%]" to run function BuyItem({_p}, {@BUYhopperPrice}, 1 hopper)
+		format gui slot 20 of {_p} with chest with lore "&7[$%{_chestPrice}%]" to run function BuyItem({_p}, {@BUYchestPrice}, 1 chest)
+		
+		format gui slot 22 of {_p} with water bucket named "&9&lTransportation" to run function ShopMenus({_p}, 17)
+		
+		
+		
+	if {_n} is 17:
+
+		set {_waterBucketPrice} to {@BUYwaterBucketPrice}
+		set {_bucketPrice} to {@BUYbucketPrice}
+
+		set {_icePrice} to {@BUYicePrice}
+		set {_packedIcePrice} to {@BUYpackedIcePrice}
+		set {_blueIcePrice} to {@BUYblueIcePrice}
+		
+		set {_movementBlockPrice} to {@BUYmovementBlockPrice}
+		
+		format gui slot 19 of {_p} with water bucket with lore "&7[$%{_waterBucketPrice}%]" to run function BuyItem({_p}, {@BUYwaterBucketPrice}, 1 water bucket)
+		format gui slot 20 of {_p} with bucket with lore "&7[$%{_bucketPrice}%]" to run function BuyItem({_p}, {@BUYbucketPrice}, 1 bucket)
+		
+		format gui slot 21 of {_p} with 16 ice with lore "&7[$%{_icePrice}%]" to run function BuyItem({_p}, {@BUYicePrice}, 16 ice)
+		format gui slot 22 of {_p} with 16 packed ice with lore "&7[$%{_packedIcePrice}%]" to run function BuyItem({_p}, {@BUYpackedIcePrice}, 16 packed ice)
+		format gui slot 23 of {_p} with 16 blue ice with lore "&7[$%{_blueIcePrice}%]" to run function BuyItem({_p}, {@BUYblueIcePrice}, 16 blue ice)
+		
+		format gui slot 24 of {_p} with 16 soul sand with lore "&7[$%{_movementBlockPrice}%]" to run function BuyItem({_p}, {@BUYmovementBlockPrice}, 16 soul sand)
+		format gui slot 25 of {_p} with 16 magma block with lore "&7[$%{_movementBlockPrice}%]" to run function BuyItem({_p}, {@BUYmovementBlockPrice}, 16 magma block)
+		
+		
+		
+		
+		
+	if {_n} is 4:
+		
+		set {_pickaxePrice} to {@BUYpickaxePrice}
+		set {_axePrice} to {@BUYaxePrice}
+		set {_shovelPrice} to {@BUYshovelPrice}
+		
+		format gui slot 19 of {_p} with diamond pickaxe with lore "&7[$%{_pickaxePrice}%]" to run function BuyItem({_p}, {@BUYpickaxePrice}, {@BUYpickaxeItem})
+		format gui slot 20 of {_p} with diamond axe with lore "&7[$%{_axePrice}%]" to run function BuyItem({_p}, {@BUYaxePrice}, {@BUYaxeItem})
+		format gui slot 21 of {_p} with diamond shovel with lore "&7[$%{_shovelPrice}%]" to run function BuyItem({_p}, {@BUYshovelPrice}, {@BUYshovelItem})
+		
+	
+	if {_n} is 5:
+		
+		format gui slot 19 of {_p} with grass block named "&2&lNature" to run function ShopMenus({_p}, 6)
+		format gui slot 20 of {_p} with stone named "&7&lStone" to run function ShopMenus({_p}, 7)
+		format gui slot 21 of {_p} with oak log named "&2&lWood" to run function ShopMenus({_p}, 8)
+		format gui slot 22 of {_p} with glowstone named "&6&lLighting" to run function ShopMenus({_p}, 15)
+		format gui slot 23 of {_p} with yellow wool named "&6&lColours" to run function ShopMenus({_p}, 16)
+		
+	
+#Nature
+	if {_n} is 6:
+	
+		set {_natureBlockPrice} to {@BUYnatureBlockPrice}
+		set {_leavesPrice} to {@BUYleavesPrice}
+		set {_foliagePrice} to {@BUYfoliagePrice}
+
+	
+		format gui slot 4 of {_p} with sunflower named "&6&lFoliage" to run function ShopMenus({_p}, 14)
+		
+		
+		format gui slot 10 of {_p} with 16 grass block with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 grass block)
+		format gui slot 11 of {_p} with 16 dirt with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 dirt)
+		format gui slot 12 of {_p} with 16 coarse dirt with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 coarse dirt)
+		format gui slot 13 of {_p} with 16 podzol with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 podzol)
+		format gui slot 14 of {_p} with 16 gravel with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 gravel)
+		format gui slot 15 of {_p} with 16 sand with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 sand)
+		format gui slot 16 of {_p} with 16 red sand with lore "&7[$%{_natureBlockPrice}%]" to run function BuyItem({_p}, {@BUYnatureBlockPrice}, 16 red sand)
+		
+		format gui slot 19 of {_p} with 8 melon with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 8 melon)
+		format gui slot 20 of {_p} with 8 pumpkin with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 8 pumpkin)
+		format gui slot 21 of {_p} with 4 hay bale with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 4 hay bale)
+		format gui slot 22 of {_p} with 8 brown mushroom block with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 8 brown mushroom block)
+		format gui slot 23 of {_p} with 8 red mushroom block with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 8 red mushroom block)
+		format gui slot 24 of {_p} with 4 cactus with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 4 cactus)
+		format gui slot 25 of {_p} with 4 bamboo with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 4 bamboo)
+		
+		format gui slot 28 of {_p} with 16 oak leaves with lore "&7[$%{_leavesPrice}%]" to run function BuyItem({_p}, {@BUYleavesPrice}, 16 oak leaves)
+		format gui slot 29 of {_p} with 16 spruce leaves with lore "&7[$%{_leavesPrice}%]" to run function BuyItem({_p}, {@BUYleavesPrice}, 16 spruce leaves)
+		format gui slot 30 of {_p} with 16 birch leaves with lore "&7[$%{_leavesPrice}%]" to run function BuyItem({_p}, {@BUYleavesPrice}, 16 birch leaves)
+		format gui slot 31 of {_p} with 16 jungle leaves with lore "&7[$%{_leavesPrice}%]" to run function BuyItem({_p}, {@BUYleavesPrice}, 16 jungle leaves)
+		format gui slot 32 of {_p} with 16 acacia leaves with lore "&7[$%{_leavesPrice}%]" to run function BuyItem({_p}, {@BUYleavesPrice}, 16 acacia leaves)
+		format gui slot 33 of {_p} with 16 dark oak leaves with lore "&7[$%{_leavesPrice}%]" to run function BuyItem({_p}, {@BUYleavesPrice}, 16 dark oak leaves)
+		format gui slot 34 of {_p} with 4 sugar cane with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 4 sugar cane)
+
+	if {_n} is 14:
+		
+		set {_foliagePrice} to {@BUYfoliagePrice}
+		
+		set {_items::*} to short grass and fern and dead bush and lily pad and vine and rose bush and peony and poppy and dandelion and blue orchid and red tulip and white tulip and brown mushroom and red mushroom and seagrass and sea pickle and kelp and weeping vines and twisting vines and crimson fungus and warped fungus
+		
+		set {_counter} to 0
+		set {_varCounter} to 0
+		loop 45 times:
+			add 1 to {_counter}
+			if {_counter} is greater than or equal to 9:
+				if {_counter} is less than or equal to 34:
+					if {_counter} is not equal to 17 or 18 or 26 or 27:
+						set {_currentItem} to {_items::%{_varCounter}%}
+						format gui slot {_counter} of {_p} with 8 of {_currentItem} with lore "&7[$%{_foliagePrice}%]" to run function BuyItem({_p}, {@BUYfoliagePrice}, 8 of {_currentItem})
+						add 1 to {_varCounter}
+		
+		set {_foliagePrice} to {@BUYfoliagePrice}
+	
+	
+	if {_n} is 15:
+		set {_cheapLightingPrice} to {@BUYcheapLightingPrice}
+		set {_expensiveLightingPrice} to {@BUYexpensiveLightingPrice}
+
+		format gui slot 19 of {_p} with 16 torch with lore "&7[$%{_cheapLightingPrice}%]" to run function BuyItem({_p}, {@BUYcheapLightingPrice}, 16 torch)
+		format gui slot 20 of {_p} with 16 soul torch with lore "&7[$%{_cheapLightingPrice}%]" to run function BuyItem({_p}, {@BUYcheapLightingPrice}, 16 soul torch)
+		format gui slot 21 of {_p} with 16 lantern with lore "&7[$%{_cheapLightingPrice}%]" to run function BuyItem({_p}, {@BUYcheapLightingPrice}, 16 lantern)
+		format gui slot 22 of {_p} with 16 soul lantern with lore "&7[$%{_cheapLightingPrice}%]" to run function BuyItem({_p}, {@BUYcheapLightingPrice}, 16 soul lantern)
+
+		format gui slot 23 of {_p} with 16 glowstone with lore "&7[$%{_expensiveLightingPrice}%]" to run function BuyItem({_p}, {@BUYexpensiveLightingPrice}, 16 glowstone)
+		format gui slot 24 of {_p} with 16 shroomlight with lore "&7[$%{_expensiveLightingPrice}%]" to run function BuyItem({_p}, {@BUYexpensiveLightingPrice}, 16 shroomlight)
+		format gui slot 25 of {_p} with 16 sea lantern with lore "&7[$%{_expensiveLightingPrice}%]" to run function BuyItem({_p}, {@BUYexpensiveLightingPrice}, 16 sea lantern)
+
+
+	if {_n} is 16:
+		set {_dyePrice} to {@BUYdyePrice}
+		set {_colourBlockPrice} to {@BUYcolourBlockPrice}
+	
+		set {_items::*} to white dye and orange dye and magenta dye and light blue dye and yellow dye and lime dye and pink dye and gray dye and light gray dye and cyan dye and purple dye and blue dye and brown dye and green dye and red dye and black dye
+		
+		set {_counter} to 0
+		set {_varCounter} to 0
+		loop 45 times:
+			add 1 to {_counter}
+			if {_counter} is greater than or equal to 9:
+				if {_counter} is less than or equal to 29:
+					if {_counter} is not equal to 17 or 18 or 26 or 27:
+						set {_currentItem} to {_items::%{_varCounter}%}
+						format gui slot {_counter} of {_p} with 32 of {_currentItem} with lore "&7[$%{_dyePrice}%]" to run function BuyItem({_p}, {@BUYdyePrice}, 32 of {_currentItem})
+						add 1 to {_varCounter}
+						
+		format gui slot 30 of {_p} with 16 white wool with lore "&7[$%{_colourBlockPrice}%]" to run function BuyItem({_p}, {@BUYcolourBlockPrice}, 16 white wool)
+		format gui slot 31 of {_p} with 16 terracotta with lore "&7[$%{_colourBlockPrice}%]" to run function BuyItem({_p}, {@BUYcolourBlockPrice}, 16 terracotta)
+		format gui slot 32 of {_p} with 16 white concrete with lore "&7[$%{_colourBlockPrice}%]" to run function BuyItem({_p}, {@BUYcolourBlockPrice}, 16 white concrete)
+		format gui slot 33 of {_p} with 16 glass with lore "&7[$%{_colourBlockPrice}%]" to run function BuyItem({_p}, {@BUYcolourBlockPrice}, 16 glass)
+		format gui slot 34 of {_p} with 16 glass pane with lore "&7[$%{_colourBlockPrice}%]" to run function BuyItem({_p}, {@BUYcolourBlockPrice}, 16 glass pane)
+					
+		
+	
+	
+#Stone
+	if {_n} is 7:
+	
+		set {_stonePrice} to {@BUYstonePrice}
+	
+		format gui slot 10 of {_p} with 16 andesite with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 andesite)
+		format gui slot 19 of {_p} with 16 granite with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 granite)
+		format gui slot 28 of {_p} with 16 diorite with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 diorite)
+		
+		format gui slot 11 of {_p} with 16 polished andesite with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 polished andesite)
+		format gui slot 20 of {_p} with 16 polished granite with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 polished granite)
+		format gui slot 29 of {_p} with 16 polished diorite with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 polished diorite)
+		
+		format gui slot 12 of {_p} with 16 cobblestone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 cobblestone)
+		format gui slot 21 of {_p} with 16 mossy cobblestone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 mossy cobblestone)
+		format gui slot 30 of {_p} with 16 endstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 endstone)
+		
+		
+		format gui slot 13 of {_p} with 16 stone with lore "&7[$%{_stonePrice} * 2%]" to run function BuyItem({_p}, {@BUYstonePrice} * 2, 16 stone)
+		format gui slot 22 of {_p} with 16 stone bricks with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 stone bricks)
+		format gui slot 31 of {_p} with 16 smooth stone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 smooth stone)
+		
+		format gui slot 14 of {_p} with 16 quartz block with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 quartz block)
+		format gui slot 23 of {_p} with 16 quartz bricks with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 quartz bricks)
+		format gui slot 32 of {_p} with 16 smooth quartz with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 smooth quartz)
+		
+		format gui slot 15 of {_p} with 16 sandstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 sandstone)
+		format gui slot 24 of {_p} with 16 cut sandstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 cut sandstone)
+		format gui slot 33 of {_p} with 16 smooth sandstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 smooth sandstone)
+		
+		format gui slot 16 of {_p} with 16 red sandstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 red sandstone)
+		format gui slot 25 of {_p} with 16 cut red sandstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 cut red sandstone)
+		format gui slot 34 of {_p} with 16 smooth red sandstone with lore "&7[$%{_stonePrice}%]" to run function BuyItem({_p}, {@BUYstonePrice}, 16 smooth red sandstone)
+		
+
+
+#Woods		
+		
+	if {_n} is 8:
+	
+		format gui slot 20 of {_p} with oak plank named "&6&lPlanks" to run function ShopMenus({_p}, 9)
+		format gui slot 21 of {_p} with stripped oak log named "&6&lStripped Wood" to run function ShopMenus({_p}, 10)
+		format gui slot 22 of {_p} with stripped oak bark named "&6&lStripped Bark" to run function ShopMenus({_p}, 13)
+		format gui slot 23 of {_p} with oak log named "&6&lLogs" to run function ShopMenus({_p}, 11)
+		format gui slot 24 of {_p} with oak bark named "&6&lBark" to run function ShopMenus({_p}, 12)
+		
+	if {_n} is 9:
+		
+		set {_woodPrice} to {@BUYwoodPrice}
+		
+		format gui slot 13 of {_p} with 16 oak plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 oak plank)
+		format gui slot 19 of {_p} with 16 spruce plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 spruce plank)
+		format gui slot 20 of {_p} with 16 birch plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 birch plank)
+		format gui slot 21 of {_p} with 16 jungle plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 jungle plank)
+		format gui slot 22 of {_p} with 16 acacia plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 acacia plank)
+		format gui slot 23 of {_p} with 16 dark oak plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 dark oak plank)
+		format gui slot 24 of {_p} with 16 crimson plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 crimson plank)
+		format gui slot 25 of {_p} with 16 warped plank with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 warped plank)
+		
+	if {_n} is 10:
+		
+		set {_woodPrice} to {@BUYwoodPrice}
+		
+		format gui slot 13 of {_p} with 16 stripped oak log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped oak log)
+		format gui slot 19 of {_p} with 16 stripped spruce log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped spruce log)
+		format gui slot 20 of {_p} with 16 stripped birch log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped birch log)
+		format gui slot 21 of {_p} with 16 stripped jungle log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped jungle log)
+		format gui slot 22 of {_p} with 16 stripped acacia log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped acacia log)
+		format gui slot 23 of {_p} with 16 stripped dark oak log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped dark oak log)
+		format gui slot 24 of {_p} with 16 stripped crimson hyphae with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped crimson hyphae)
+		format gui slot 25 of {_p} with 16 stripped warped hyphae with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped warped hyphae)
+		
+	if {_n} is 11:
+		
+		set {_woodPrice} to {@BUYwoodPrice}
+		
+		format gui slot 13 of {_p} with 16 oak log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 oak log)
+		format gui slot 19 of {_p} with 16 spruce log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 spruce log)
+		format gui slot 20 of {_p} with 16 birch log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 birch log)
+		format gui slot 21 of {_p} with 16 jungle log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 jungle log)
+		format gui slot 22 of {_p} with 16 acacia log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 acacia log)
+		format gui slot 23 of {_p} with 16 dark oak log with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 dark oak log)
+		format gui slot 24 of {_p} with 16 crimson stem with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 crimson stem)
+		format gui slot 25 of {_p} with 16 warped stem with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 warped stem)
+		
+	if {_n} is 12:
+		
+		set {_woodPrice} to {@BUYwoodPrice}
+		
+		format gui slot 13 of {_p} with 16 oak bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 oak bark)
+		format gui slot 19 of {_p} with 16 spruce bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 spruce bark)
+		format gui slot 20 of {_p} with 16 birch bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 birch bark)
+		format gui slot 21 of {_p} with 16 jungle bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 jungle bark)
+		format gui slot 22 of {_p} with 16 acacia bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 acacia bark)
+		format gui slot 23 of {_p} with 16 dark oak bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 dark oak bark)
+		format gui slot 24 of {_p} with 16 crimson hyphae with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 crimson hyphae)
+		format gui slot 25 of {_p} with 16 warped hyphae with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 warped hyphae)
+		
+	if {_n} is 13:
+		
+		set {_woodPrice} to {@BUYwoodPrice}
+		
+		format gui slot 13 of {_p} with 16 stripped oak bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped oak bark)
+		format gui slot 19 of {_p} with 16 stripped spruce bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped spruce bark)
+		format gui slot 20 of {_p} with 16 stripped birch bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped birch bark)
+		format gui slot 21 of {_p} with 16 stripped jungle bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped jungle bark)
+		format gui slot 22 of {_p} with 16 stripped acacia bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped acacia bark)
+		format gui slot 23 of {_p} with 16 stripped dark oak bark with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped dark oak bark)
+		format gui slot 24 of {_p} with 16 stripped crimson hyphae with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped crimson hyphae)
+		format gui slot 25 of {_p} with 16 stripped warped hyphae with lore "&7[$%{_woodPrice}%]" to run function BuyItem({_p}, {@BUYwoodPrice}, 16 stripped warped hyphae)
+		
+		
+		
+	if {_n} is 18:
+		
+		set {_hopperSlotPrice} to 100 * 2^{HopperCap::%{_u}%}
+		set {_machineSlotPrice} to 100 * 2^{MachineCap::%{_u}%}
+		set {_factorySlotPrice} to 100 * 2^{FactoryCap::%{_u}%}
+		
+		
+		format gui slot 21 of {_p} with 1 paper named "&fHopper Slot" with lore "&7[$%{_hopperSlotPrice}%]" to run function BuySlotItem({_p}, {_hopperSlotPrice}, "hopper1", "Hopper", "hopper")
+		format gui slot 22 of {_p} with 1 paper named "&fMachinery Slot" with lore "&7[$%{_machineSlotPrice}%]" to run function BuySlotItem({_p}, {_machineSlotPrice}, "machine1", "Machine", "machinery")
+		format gui slot 23 of {_p} with 1 paper named "&fFactory Slot" with lore "&7[$%{_factorySlotPrice}%]" to run function BuySlotItem({_p}, {_factorySlotPrice}, "factory1", "Factory", "factory")
+		
+function BuyItem(p: player, price: number, i: item):
+	set {_u} to {_p}'s uuid
+	
+	set {_finalPrice} to {_price}
+	if {balance::%{_u}%} is greater than or equal to {_finalPrice}:
+		remove {_finalPrice} from {balance::%{_u}%}
+		give {_i} to {_p}	
+	else:
+		send {@UnableToAffordMessage} to {_p}
+		
+		
+function BuySlotItem(p: player, price: number, i: text, v: text, lc: text):
+	set {_u} to {_p}'s uuid
+	
+	set {_finalPrice} to {_price}
+	if {balance::%{_u}%} is greater than or equal to {_finalPrice}:
+		remove {_finalPrice} from {balance::%{_u}%}
+		add 1 to {%{_v}%Cap::%{_u}%}
+		close inventory of {_p}
+		send "&eYou have redeemed +1 %{_lc}% &eSlot!" to {_p}
+	else:
+		send {@UnableToAffordMessage} to {_p}
+
+		
+function Clickables(p: player):
+	set {_u} to {_p}'s uuid
+	
+	format gui slot 39 of {_p} with red bed named "&6Home" to run function ShopMenus({_p}, 0)
+	format gui slot 40 of {_p} with barrier named "&7Close" to close
+	format gui slot 41 of {_p} with emerald named "&eBalance: $%{balance::%{_u}%}%"
+		
+function ClearGUI(p: player):
+	set {_slot} to 0
+	loop 45 times:
+		format gui slot {_slot} of {_p} with gray glass pane named "&f"
+		add 1 to {_slot}

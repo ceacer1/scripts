@@ -1,0 +1,73 @@
+# INFO #
+# This script allows you to have a special item that enables
+# additional inventories or ender chests for players by saving data
+# into file located in Skript folder, named Backpack.
+# Each player will have his own backpack and they are able to access
+# their backpack all from one item.
+
+# Copyright and so on...:#
+# This script was made by Darkry!
+# - You are free to use and modify it.
+# - No reuploading and claiming as your work!
+# - Script is for free. If you got it for payment, you got scammed!
+
+# NOTE! #
+# This script needs addon SKUtilities for it to work.
+# If you do not have this addon, go download it!
+
+options:
+	rows: 3
+	# This is number of rows the backpack will have. Set to number 1-6!
+
+	backpack: ink sac named "&e&lBackpack" with lore "&bAdditional inventory"
+	#OPTIONAL:
+	# If you have SKBee addon, you can set the option "backpack" to something
+	# like this, but you need to know how custom models in textures work:
+	# ink sac with nbt "{CustomModelData:001}" named "&e&lBackpack" with lore "&bAdditional inventory"
+
+
+# Command to give the backpack, you can modify this as you want.
+command /bp:
+	permission: backpack
+	trigger:
+		give {@backpack} to player
+
+
+# This checks if player has backpack in hand.
+# DO NOT MODIFY this if you don't know what you're doing!
+
+on right click with ink sac:
+	name of tool of player is "&e&lBackpack":
+
+		# This makes sure the file for player's inventory is created.
+		# You can change the location of data log, but make sure you
+		# change it in all places in this file afterwards!
+
+		if file "plugins/Skript/Backpack/%player%.dat" doesn't exist:
+			create file "plugins/Skript/Backpack/%player%.dat"
+			loop ({@rows} * 9) times:
+				write "" at line loop-value to file "plugins/Skript/Backpack/%player%.dat"
+		
+		open chest with {@rows} rows named "&3&lBackpack" to player
+		loop ({@rows} * 9) times:
+			set {_item} to (line loop-value in file "plugins/Skript/Backpack/%player%.dat") parsed as item
+			set slot (loop-value - 1) of player's current inventory to {_item}
+		
+
+on inventory close:
+	if inventory name of current inventory of player is "&3&lBackpack":
+		loop ({@rows} * 9) times:
+			set {_slot} to (loop-value - 1)
+			set {_item} to slot {_slot} of player's current inventory
+			set line loop-value in file "plugins/Skript/Backpack/%player%.dat" to "%{_item}%"
+
+
+# Script doesn't support names of items, enchants or lores.
+# This part akes sure you can't put them into backpack.
+# I will probably fix this in future updates.
+on inventory click:
+	if inventory name of current inventory of player is "&3&lBackpack":
+		if clicked slot is any tool or any weapon:
+			cancel event
+		if name of clicked slot is set:
+			cancel event

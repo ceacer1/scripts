@@ -1,0 +1,378 @@
+#
+# IMPORTANT:
+# max gens: 54
+# any more will not be loaded in
+#
+
+options:
+  dropdelay: 3 seconds
+  sellwanditem: blaze rod
+  name: &9&lSellwand
+
+on load:
+  reset()
+
+#
+# LOAD GENS CONFIG HERE  ↓
+#
+#
+# format: 
+# loadgen( gen block item, gen drops item, level, upgrade price, sell price of drops)
+#
+# gens are upgraded based on level: 1,2,3,4 etc.
+#
+# the gen block item cannot be named as 
+# the name will be the name of the drop item 
+# eg. loadgen(diamond block, diamond named "crystal", 1, 100, 1)
+# will be named "crystal gen" and is level 1 which will be auto given
+# to new players and diamond named "crystal" sells for 1
+# and gen costs 100 to upgrade to next
+
+  loadgen(coal block, coal named "&8&lCoal", 1, 10000, 50)
+  loadgen(redstone block, redstone named "&4&lRedstone", 2, 40000, 100)
+  loadgen(iron block, iron ingot named "&f&lIron", 3, 80000, 125)
+  loadgen(lapis block, lapis lazuli named "&1&lLapis", 4, 100000, 150)
+  loadgen(diamond block, diamond named "&b&lCrystal", 5, 275000, 175)
+  loadgen(emerald block, emerald named "&2&lEmerald", 6, 500000, 200)
+  loadgen(obsidian, black dye named "&8&lObsidian Rock", 7, 625000, 225)
+  loadgen(glowstone block, glowstone dust named "&e&lGlowstone Dust", 8, 800000, 250)
+  loadgen(nether brick block, nether brick item named "&4&lNether Brick", 9, 1000000, 275)
+  loadgen(nether quartz ore, quartz named "&f&lQuartz", 10, 2000000, 300)
+  loadgen(end portal frame, eye of ender named "&2&lEye of Ender", 11, 5000000, 350)
+  loadgen(end stone, yellow dye named "&6&lEnder Dust", 12, 10000000, 400)
+  loadgen(bedrock, end crystal named "&5&lEnd Crystal", 13, 15000000, 500)
+  loadgen(ice, ice named "&b&lIce Cube", 14, 20000000, 600)
+  loadgen(packed ice, prismarine crystals named "&3&lIce Crystals", 15, 25000000, 700)
+  loadgen(blue ice, prismarine shard named "&b&lIce Shard", 16, 30000000, 800)
+  loadgen(snow block, snowball named "&f&lSnowball", 17, 35000000, 900)
+
+
+#
+# LOAD GENS CONFIG HERE  ↑
+#
+#
+# GEN CAP CONFIG HERE  ↓
+#
+# format:
+# setcap(group, cap)
+# eg. setcap("default", 25) players with default group cannot place more than 25 gens
+# players with permission gen.admin bypass the limit
+# groups with no cap specified set will not be allowed to place gens unless they have permission gen.admin
+# extra gen slots per player can be set via /gen cap in game
+
+  setcap("default", 25)
+
+#
+# GEN CAP CONFIG HERE  ↑
+#
+#
+# END OF CONFIG
+#
+
+  send "&b%size of {gentype::*}% gens loaded" to all players where [input is op]
+
+function loadgen(i: itemtype, drops: item, id: integer, up: number, sp: number):
+  size of {genlevel::*} <= 54
+  set {gentype::%{_id}%} to {_drops}
+  set {genlevel::%{_id}%} to {_i}
+  set {uprice::%{_id}%} to {_up}
+  set {worth::%{_drops}%} to {_sp}
+
+function setcap(group: text, cap: integer):
+  set {gencap::%{_group}%} to {_cap}
+
+function reset():
+  delete {gentype::*}
+  delete {genlevel::*}
+  delete {uprice::*}
+  delete {worth::*}
+  delete {gencap::*}
+
+function toRoman(n: number) :: string:
+  set {_r::*} to split "M,1000|CM,900|D,500|CD,400|C,100|XC,90|L,50|XL,40|X,10|IX,9|V,5|IV,4|I,1" at "|"
+  loop {_r::*}:
+    set {_d::*} to loop-value parsed as "%string%,%int%"
+    while {_n} >= {_d::2}:
+      remove {_d::2} from {_n}
+      set {_result::*} to {_result::*} and {_d::1}
+  return (join {_result::*} with "") ? ""
+
+function toNumber(s: string) :: number:
+  set {_r::*} to split "M,1000|CM,900|D,500|CD,400|C,100|XC,90|L,50|XL,40|X,10|IX,9|V,5|IV,4|I,1" at "|"
+  while length of {_s} > 0:
+    set {_l} to length of {_s}
+    loop {_r::*}:
+      set {_d::*} to loop-value parsed as "%string%,%int%"
+      if {_s} starts with {_d::1}:
+        add {_d::2} to {_n}
+        replace first {_d::1} in {_s} with ""
+    length of {_s} = {_l}
+    stop
+  return {_n} ? 0
+
+on join:
+  give {genlevel::1} named "&f%genname(1)% Gen" with lore "&7Tier %toRoman(1)% &7Gen" to player
+
+on place:
+  if player does not have permission "gen.admin":
+    if searchcap(player) <= gensize(player):
+      cancel event
+      send "&cYou cannot place more than %searchcap(player)% &cgens" to player
+  event is not cancelled
+  set {_n::*} to split (uncoloured line 1 of lore of tool of player) at " "
+  set {_n} to toNumber({_n::2})
+  {_n} is set
+  set {gen::%uuid of player%::%{_n}%::*} to {gen::%uuid of player%::%{_n}%::*} and location of event-block
+
+every {@dropdelay}:
+  loop all players:
+    set {_u} to uuid of loop-player
+    loop indices of {gen::%{_u}%::*}:
+      loop {gen::%{_u}%::%loop-value-2%::*}:
+        if {genlevel::%loop-value-2%} != type of (block at loop-value-3):
+          remove loop-value-3 from {gen::%loop-value-1%::%loop-value-2%::*}
+        else:
+          drop {gentype::%loop-value-2%} at block 1 above loop-value-3 without velocity
+
+on block damage:
+  event is not cancelled
+  loop indices of {gen::*}:
+    loop indices of {gen::%loop-value-1%::*}:
+      {gen::%loop-value-1%::%loop-value-2%::*} contains location of event-block
+      type of event-block = {genlevel::%loop-value-2%}
+      cancel event
+      set {_n} to loop-value-2 parsed as integer
+      {_n} is set
+      if uuid of player = loop-value-1:
+        if player is sneaking:
+          remove location of event-block from {gen::%loop-value-1%::%loop-value-2%::*}
+          set event-block to air
+          give 1 of ({genlevel::%{_n}%} named "&f%genname({_n})% Gen" with lore "&7Tier %toRoman({_n})% &7Gen") to player
+        else:
+          send title "" with subtitle "&cCrouch to remove" to player
+      else:
+        if player has permission "gen.admin":
+          remove location of event-block from {gen::%loop-value-1%::%loop-value-2%::*}
+          set event-block to air
+          give 1 of ({genlevel::%{_n}%} named "&f%genname({_n})% Gen" with lore "&7Tier %toRoman({_n})% &7Gen") to player
+        else:
+          send "&cyou cannot break %loop-value-1 parsed as offlineplayer%&c's gen" to player
+      stop
+
+on right click:
+  player is sneaking
+  loop indices of {gen::%uuid of player%::*}:
+    {gen::%uuid of player%::%loop-value%::*} contains location of clicked block
+    type of clicked block = {genlevel::%loop-value%}
+    cancel event
+    set {_n} to loop-value parsed as integer + 1
+    if balance of player >= {uprice::%loop-value%}:
+      if {genlevel::%{_n}%} is set:
+        set clicked block to {genlevel::%{_n}%}
+        remove location of clicked block from {gen::%uuid of player%::%loop-value%::*}
+        set {gen::%uuid of player%::%{_n}%::*} to {gen::%uuid of player%::%{_n}%::*} and location of clicked block
+        remove {uprice::%loop-value%} from balance of player
+        set {_nn} to {_n} + 1
+        if {genlevel::%{_nn}%} is set:
+          play large explosion at event-block to player
+        else:
+          play huge explosion at event-block to player 
+        send coloured "&aUpgraded to &f%genname({_n})% Gen" to player
+      else:
+        send "&cYou have upgraded to the maximum gen!" to player
+    else:
+      send "&cYou need $%{uprice::%loop-value%}% &cto upgrade your gen" to player
+    stop
+  
+command /sell:
+  trigger:
+    sell(player, inventory of player, 1)
+
+function sell(p: player, c: inventory, multiplier: integer):
+  loop all items in {_c}:
+    set {_i} to 1 of loop-item
+    if {worth::%{_i}%} is set:
+      add ((item amount of loop-value) * {worth::%{_i}%} * {_multiplier}) to {_total}
+      remove loop-item from {_c}
+  if {_total} > 0:
+    send "&aSold &e$%{_total}% &aworth of items" to {_p}
+    add {_total} to balance of {_p}
+  else:
+    send "&cYou do not have any items to sell!" to {_p}
+
+command /generator [<text>] [<offlineplayer>] [<integer>]:
+  aliases: generators, gen, gens, genlist
+  trigger:
+    if player has permission "gen.admin":
+      if arg-1 is not set:
+        open genlist() to player
+        set {inv::%uuid of player%} to "genlist"
+      else if arg-1 is "admin":
+        open genlist() to player
+        set {inv::%uuid of player%} to "genadmin"
+      else if arg-1 is "unbin":
+        if arg-2 is set:
+          loop indices of {gen::%uuid of arg-2%::*}:
+            loop {gen::%uuid of arg-2%::%loop-value%::*}:
+              set block at loop-value-2 to air
+          delete {gen::%uuid of arg-2%::*}
+          send "all gens of %arg-2% have been removed" to player
+        else:
+          send "specify a player" to player
+      else if arg-1 is "cap":
+        set {_p} to (arg-2 ? player)
+        set {_u} to uuid of {_p}
+        if arg-3 is set:
+          set {gencap::%{_u}%} to arg-3
+          send "&7Set &6%{_p}%&7's gen cap to &6%arg-3%&7%nl%&7New gen cap of %{_p}%&7: &b%gensize({_p})% &7/ &b%searchcap({_p})%" to player
+        else:
+          send "&7%{_p}%&7's Gen slots: &b%gensize({_p})% &7/ &b%searchcap({_p})%" to player
+      else if arg-1 is "purge":
+        reset()
+        delete {gen::*}
+        send "all gens purged" to player
+      else if arg-1 is "stats", "stat" or "info":
+        set {inv::%uuid of player%} to "display"
+        open statsgui(arg-2 ? player) to player
+      else:
+        open genlist() to player
+        set {inv::%uuid of player%} to "genlist"
+
+
+    else:
+      if arg-1 is "stats", "stat" or "info":
+        set {inv::%uuid of player%} to "display"
+        open statsgui(arg-2 ? player) to player
+      else if arg-1 is "cap":
+        set {_p} to (arg-2 ? player)
+        send "&b%{_p}%&b's &7Gen slots: &9%gensize({_p})% &7/ &9%searchcap({_p})%" to player
+      else:
+        open genlist() to player
+        set {inv::%uuid of player%} to "genlist"
+
+function gensize(p: offlineplayer) :: integer:
+  set {_u} to uuid of {_p}
+  loop indices of {gen::%{_u}%::*}:
+    set {_n} to size of {gen::%{_u}%::%loop-value%::*}
+    add {_n} to {_i}
+  return "%{_i}%" parsed as integer ? 0
+
+function searchcap(p: offlineplayer) :: integer:
+  set {_u} to uuid of {_p}
+  set {_maxcap} to 0
+  loop groups of {_p}:
+    set {_maxcap} to {gencap::%loop-value%} if {gencap::%loop-value%} > {_maxcap}
+  add {gencap::%{_u}%} to {_maxcap} 
+  return "%{_maxcap}%" parsed as integer ? 0
+
+function genlist() :: inventory:
+  set {_n} to ceil(size of {genlevel::*}/9)
+  set {_c} to chest inventory with {_n} rows named "Genlist"
+  set slot (integers between 0 and ((9 * {_n}) - 1))  of {_c} to black stained glass pane named ""
+  loop {genlevel::*}:
+    set slot (loop-index parsed as number - 1) of {_c} to loop-value named "&f%genname(loop-index parsed as integer)% Gen" with lore "&7Tier %toRoman(loop-index parsed as integer)% &7Gen"
+  return {_c}
+
+function geninfo(id: integer) :: inventory:
+  set {_c} to chest inventory with 1 row named "&f%genname({_id})% Gen info"
+  set slot (integers between 0 and 9) of {_c} to black stained glass pane named ""
+  set slot 2 of {_c} to {genlevel::%{_id}%} named "&f%genname({_id})% Gen" with lore "&7upgrade cost: &c$%{uprice::%{_id}%}%"
+  set slot 6 of {_c} to {gentype::%{_id}%} with lore "&7sell value: &a$%{worth::%{gentype::%{_id}%}%}%"
+  return {_c}
+
+function genname(id: integer) :: text:
+  return ((name of {gentype::%{_id}%}) ? "%type of {gentype::%{_id}%}%")
+
+function statsgui(p: offlineplayer) :: inventory:
+  set {_u} to uuid of {_p}
+  set {_c} to chest inventory with 1 row named "&b%{_p}% gen stats"
+  set slot (integers between 0 and 8) of {_c} to black stained glass pane named ""
+  loop {genlevel::*}:
+    set {_s::*} to {_s::*} and coloured "&7%uncoloured genname(loop-index parsed as integer)% gens: &9%size of {gen::%{_u}%::%loop-index parsed as integer%::*}%"
+  set slot 4 of {_c} to skull of {_p} named "&b&l%{_p}%" with lore "&7Gen cap: &9%gensize({_p})%&7 / &9%searchcap({_p})%" and {_s::*}
+  return {_c}
+
+function bulk(i: item) :: inventory:
+  set {_c} to chest inventory with 4 rows named "&r"
+  set slot (integers between 0 and 35) of {_c} to black stained glass pane named "&r"
+  set slot 13 of {_c} to 1 of {_i}
+  set slot 9 of {_c} to red stained glass pane named "&fRemove 32"
+  set slot 10 of {_c} to red stained glass pane named "&fRemove 16"
+  set slot 11 of {_c} to red stained glass pane named "&fRemove 1"
+  set slot 15 of {_c} to lime stained glass pane named "&fAdd 1"
+  set slot 16 of {_c} to lime stained glass pane named "&fAdd 16"
+  set slot 17 of {_c} to lime stained glass pane named "&fAdd 32"
+  set slot 30 of {_c} to barrier named "&c&lCancel"
+  set slot 31 of {_c} to chest named "&b&lBulk"
+  set slot 32 of {_c} to nether star named "&a&lConfirm"
+  return {_c}
+
+function bulk2(i: item) :: inventory:
+  set {_c} to chest inventory with 1 row named "&r"
+  loop 9 times:
+    set slot (loop-number -1) of {_c} to loop-number of {_i}
+  return {_c}
+
+
+on inventory close:
+  delete {inv::%uuid of player%}
+
+on tab complete:
+  event-string = "/gen" or "/generator" or "/gens" or "/generators"
+  if player has permission "gen.admin":
+    set tab completions for position 1 to "admin", "cap", "list", "purge", "stats" and "unbin" 
+  else:
+    set tab completions for position 1 to "cap", "list" and "stats"
+
+on inventory click:
+  if {inv::%uuid of player%} = "display" or "genlist" or "genadmin" or "bulk" or "bulk2":
+    cancel event
+    event-inventory != inventory of player
+
+    if {inv::%uuid of player%} = "genlist":
+      event-slot is not black glass pane
+      open geninfo(index of event-slot + 1) to player
+      set {inv::%uuid of player%} to "display"
+
+    else if {inv::%uuid of player%} = "genadmin":
+      event-slot is not black glass pane
+      open bulk(event-slot) to player
+      set {inv::%uuid of player%} to "bulk"
+
+    else if {inv::%uuid of player%} = "bulk":
+      set {_n} to (last element of (split uncoloured name of event-slot at " ")) parsed as integer
+      if index of event-slot = 9 or 10 or 11:
+        set {_n} to item amount of slot 13 of top inventory of player - {_n}
+        set {_n} to 64 if {_n} > 64
+        set {_n} to 1 if {_n} < 1
+        set slot 13 of top inventory of player to {_n} of slot 13 of top inventory of player
+      else if index of event-slot = 15 or 16 or 17:
+        add item amount of slot 13 of top inventory of player to {_n}
+        set {_n} to 64 if {_n} > 64
+        set {_n} to 1 if {_n} < 1
+        set slot 13 of top inventory of player to {_n} of slot 13 of top inventory of player
+      else if index of event-slot = 30:
+        close inventory of player
+      else if index of event-slot = 31:
+        open bulk2(slot 13 of top inventory of player) to player
+        set {inv::%uuid of player%} to "bulk2"
+      else if index of event-slot = 32:
+        give slot 13 of top inventory of player to player
+        close inventory of player
+
+    else if {inv::%uuid of player%} = "bulk2":
+      give ((item amount of event-slot) * 64) of event-slot to player
+      close inventory of player
+
+command /sellwand [<integer=1>] [<player=%player%>]:
+  trigger:
+    give glowing({@sellwanditem}) named "{@name}" with lore "&7Multiplier: %arg-1%" to arg-2
+    send "&7Gave {@name} x%arg-1% &7to %arg-2%" to player
+    
+on right click with {@sellwanditem}:
+  event is not cancelled
+  set {_n::*} to uncoloured line 1 of lore of tool of player parsed as "Multiplier: %int%"
+  {_n::1} is set
+  inventory of clicked block is set
+  cancel event
+  sell(player, (inventory of clicked block), {_n::1})

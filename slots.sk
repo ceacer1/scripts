@@ -54,47 +54,48 @@ function slotsformatNum(n: number) :: string:
     return {_n}
 
 function slotsChangeBet(p: player, room: text, minus3: number, minus2: number, minus1: number, min: number, max: number, add1: number, add2: number, add3: number):
-    set {_minus3a} to slotsformatNum({_minus3})
-    set {_minus2a} to slotsformatNum({_minus2})
-    set {_minus1a} to slotsformatNum({_minus1})
-    set {_add1a} to slotsformatNum({_add1})
-    set {_add2a} to slotsformatNum({_add2})
-    set {_add3a} to slotsformatNum({_add3})
+    loop 3 times:
+        set {_minus%4 - loop-number%a} to slotsformatNum({_minus%4 - loop-number%})
+        set {_add%loop-number%a} to slotsformatNum({_add%loop-number%})
     set {_bet} to slotsformatNum({slotscurrentbet::%{_p}%})
     create a gui with virtual chest named "Slots" with 1 row:
         make gui slot (0 and 8) to gray glass pane named " "
-        make gui slot 1 to red glass pane named "&c-%{_minus3a}%":
-            remove {_minus3} from {slotscurrentbet::%{_p}%}
-            if {slotscurrentbet::%{_p}%} < {_min}:
-                set {slotscurrentbet::%{_p}%} to {_min}
+        loop 3 times:
+            set {_m1} to {_minus%4 - loop-number%}
+            set {_m1a} to {_minus%4 - loop-number%a}
+            make gui slot loop-number to red glass pane named "&c-%{_m1a}%":
+                remove {_m1} from {slotscurrentbet::%{_p}%}
+                if {slotscurrentbet::%{_p}%} < {_min}:
+                    set {slotscurrentbet::%{_p}%} to {_min}
+                slotsBetCheck({_p}, {_room}, 1)
+        make gui slot 4 to glowing sunflower named "&6Bet" with lore "", "&6Current&7: &8(&2$&a%{_bet}%&8)", "" and "&a&lClick to reset":
+            set {slotscurrentbet::%{_p}%} to ({_max} / 2)
             slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 2 to red glass pane named "&c-%{_minus2a}%":
-            remove {_minus2} from {slotscurrentbet::%{_p}%}
-            if {slotscurrentbet::%{_p}%} < {_min}:
-                set {slotscurrentbet::%{_p}%} to {_min}
-            slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 3 to red glass pane named "&c-%{_minus1`a}%":
-            remove {_minus1} from {slotscurrentbet::%{_p}%}
-            if {slotscurrentbet::%{_p}%} < {_min}:
-                set {slotscurrentbet::%{_p}%} to {_min}
-            slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 4 to glowing sunflower named "&6Bet" with lore "" and "&6Current&7: &8(&2$&a%{_bet}%&8)"
-        make gui slot 5 to green glass pane named "&a+%{_add1a}%":
-            add {_add1} to {slotscurrentbet::%{_p}%}
-            if {slotscurrentbet::%{_p}%} > {_max}:
-                set {slotscurrentbet::%{_p}%} to {_max}
-            slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 6 to green glass pane named "&a+%{_add2a}%":
-            add {_add2} to {slotscurrentbet::%{_p}%}
-            if {slotscurrentbet::%{_p}%} > {_max}:
-                set {slotscurrentbet::%{_p}%} to {_max}
-            slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 7 to green glass pane named "&a+%{_add3a}%":
-            add {_add3} to {slotscurrentbet::%{_p}%}
-            if {slotscurrentbet::%{_p}%} > {_max}:
-                set {slotscurrentbet::%{_p}%} to {_max}
-            slotsBetCheck({_p}, {_room}, 1)
+        loop 3 times:
+            set {_add1} to {_add%loop-number%}
+            set {_add1a} to {_add%loop-number%a}
+            make gui slot (4 + loop-number) to green glass pane named "&a+%{_add1a}%":
+                add {_add1} to {slotscurrentbet::%{_p}%}
+                if {slotscurrentbet::%{_p}%} > {_max}:
+                    set {slotscurrentbet::%{_p}%} to {_max}
+                slotsBetCheck({_p}, {_room}, 1)
         make gui slot 8 to glowing arrow named "&7Back":
+            slotsPlay({_p}, {_room})
+    open last gui to {_p}
+    stop
+
+function slotsPayouts(p: player, room: text):
+    create a gui with virtual chest named "&3Payouts":
+        loop 27 times:
+            make gui slot (loop-number - 1) to gray glass pane named " "
+        make gui slot 10 to Light Gray Dye named "&eLow &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x0.5 Bet", "&bChance", "&717.4%%", "", "&aMatch 3", "&7x1.0 Jackpot", "&bChance" and "&711.6%%"
+        make gui slot 11 to Yellow Dye named "&6Med &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x0.7 Bet", "&bChance", "&712.6%%", "", "&aMatch 3", "&7x1.125 Jackpot", "&bChance" and "&78.4%%"
+        make gui slot 12 to Green Dye named "&cHigh &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x0.9 Bet", "&bChance", "&78.7%%", "", "&aMatch 3", "&7x1.25 Jackpot", "&bChance" and "&75.8%%"
+        make gui slot 13 to Light Blue Dye named "&4Mega &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x1.2 Bet", "&bChance", "&75.5%%", "", "&aMatch 3", "&7x1.5 Jackpot" , "&bChance" and "&73.7%%"
+        make gui slot 14 to Orange Dye named "&dUltra &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x1.5 Bet", "&bChance", "&73.1%%", "", "&aMatch 3", "&7x1.8 Jackpot" , "&bChance" and "&72.1%%"
+        make gui slot 15 to Pink Dye named "&5Insane &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x1.8 Bet", "&bChance", "&71.5%%", "", "&aMatch 3", "&7x2.1 Jackpot", "&bChance" and "&71.05%%"
+        make gui slot 16 to Purple Dye named "&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &7Jackpot" with lore "&7‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾", "&aMatch 2", "&7x2.2 Bet", "&bChance", "&70.79%%", "", "&aMatch 3", "&7x2.5 Jackpot", "&bChance" and "&70.52%%"
+        make gui slot 22 to glowing arrow named "&7Back":
             slotsPlay({_p}, {_room})
     open last gui to {_p}
     stop
@@ -103,7 +104,7 @@ function slotsPlay(p: player, room: text):
     set {_bet} to slotsformatNum({slotscurrentbet::%{_p}%})
     set {_jp} to slotsformatNum({slotsjackpot::%{_room}%})
     set {_bal} to slotsformatNum({_p}'s balance)
-    create a gui with virtual chest named "{@GUIName}" with 6 rows:
+    create a gui with virtual chest named "{@GUIName} &3JP &7- &2$&a%{_jp}%" with 6 rows:
         loop 54 times:
             make gui slot (loop-number - 1) to gray glass pane named " "
         make gui slot 12 to Light Gray Dye named " "
@@ -116,86 +117,136 @@ function slotsPlay(p: player, room: text):
         make gui slot (2, 3, 4, 5, 6, 11, 15, 20, 24, 29, 33, 38, 39, 40, 41 and 42) to black glass pane named " "
         make gui slot (18, 19, 20, 24, 25 and 26) to light green glass pane named "&aPay Line"
         make gui slot 45 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%{_bal}%"
+        make gui slot 47 to glowing book named "&3Payouts":
+            slotsPayouts({_p}, {_room})
         make gui slot 48 to glowing cauldron named "&bJ&3a&bc&3k&bp&3o&bt" with lore "" and "&6Current&7: &2$&a%{_jp}%"
         make gui slot 49 to glowing sunflower named "&6Bet" with lore "", "&6Current&7: &8(&2$&a%{_bet}%&8)", "" and "&a&lClick to change":
             slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 50 to stone button named "&aSpin":
-            if {slotsspinning::%{_p}%} is false:
-                if {_p}'s balance >= {slotscurrentbet::%{_p}%}:
-                    remove {slotscurrentbet::%{_p}%} from {_p}'s balance
-                    add ({slotscurrentbet::%{_p}%}/100 * 10) to {slotsjackpot::%{_room}%}
-                    set {slotsspinning::%{_p}%} to true
-                    slotsRun({_p}, {_room}, {slotscurrentbet::%{_p}%})
+        if {slotsspinning::%{_p}%} is false:
+            make gui slot 50 to stone button named "&aSpin":
+                if {slotsspinning::%{_p}%} is false:
+                    if {_p}'s balance >= {slotscurrentbet::%{_p}%}:
+                        remove {slotscurrentbet::%{_p}%} from {_p}'s balance
+                        add ({slotscurrentbet::%{_p}%}/100 * 10) to {slotsjackpot::%{_room}%}
+                        set {slotsspinning::%{_p}%} to true
+                        slotsBetCheck({_p}, {_room}, 0)
+                        slotsRun({_p}, {_room}, {slotscurrentbet::%{_p}%})
+                    else:
+                        send "" to {_p}
+                        send "        &c- Error -" to {_p}
+                        send "        &c- Not enough money -" to {_p}
+                        send "" to {_p}
                 else:
-                    send "" to {_p}
-                    send "        &c- Error -" to {_p}
-                    send "        &c- Not enough money -" to {_p}
-                    send "" to {_p}
-            else:
-                cancel event
+                    cancel event
         make gui slot 53 to glowing arrow named "&7Back":
             slotsMenu({_p})
     open last gui to {_p}
     set {slotsguiopen::%{_p}%} to 0
     stop
 
-function slotsPrizeOutcome(p: player, room: text, prize: number, bet: number):
+function slotsPrizeOutcome(p: player, room: text, prize: number, bet: number, colour: text):
+    if {_colour} is "Light Gray Dye":
+        set {_1} to 0.5
+        set {_2} to 1
+    if {_colour} is "Yellow Dye":
+        set {_1} to 0.7
+        set {_2} to 1.125
+    if {_colour} is "Green Dye":
+        set {_1} to 0.9
+        set {_2} to 1.25
+    if {_colour} is "Light Blue Dye":
+        set {_1} to 1.2
+        set {_2} to 1.5
+    if {_colour} is "Orange Dye":
+        set {_1} to 1.5
+        set {_2} to 1.8
+    if {_colour} is "Pink Dye":
+        set {_1} to 1.8
+        set {_2} to 2.1
+    if {_colour} is "Purple Dye":
+        set {_1} to 2.2
+        set {_2} to 2.5
+        set {_ultimate} to true
     if {_prize} is 1:
-        set {_w} to ({slotscurrentbet::%{_p}%} * 2.5)
-        add {_w} to {_p}'s balance
-        set {_w1} to slotsformatNum({_w})
-        send "" to {_p}
-        send "        &eYou have won the &bMinor &eJackpot" to {_p}
-        send "        &eAmount Won: &2$&a%{_w1}%" to {_p}
-        send "" to {_p}
+        add ({slotscurrentbet::%{_p}%} * {_1}) to {_p}'s balance
+        set {_w1} to slotsformatNum(({slotscurrentbet::%{_p}%} * {_1}))
+        set {_jp} to "&bMinor"
     if {_prize} is 2:
-        add {slotsjackpot::%{_room}%} to {_p}'s balance
-        set {_w1} to slotsformatNum({slotsjackpot::%{_room}%})
-        send "" to {_p}
-        send "        &eYou have won the &3Major &eJackpot" to {_p}
-        send "        &eAmount Won: &2$&a%{_w1}%" to {_p}
-        send "" to {_p}
+        add ({slotsjackpot::%{_room}%} * {_2}) to {_p}'s balance
+        set {_w1} to slotsformatNum(({slotsjackpot::%{_room}%} * {_2}))
+        set {_b} to slotsformatNum({_bet})
+        set {_jp} to "&3Major"
+        if {_ultimate} is true:
+            broadcast ""
+            broadcast "        &6%{_p}% &ehas won the &bUltimate &eJackpot"
+            broadcast "        &eBy landing on &73 &5Purple Dye &ein a row"
+            broadcast "        &eBet &2$&a%{_b}%"
+            broadcast "        &eAmount Won: &2$&a%{_w1}%"
+            broadcast ""
         set {slotsjackpot::%{_room}%} to {%{_room}%}
-        
+    wait 2 ticks
+    send "" to {_p}
+    send "        &eYou have won the %{_jp}% &eJackpot" to {_p}
+    send "        &eAmount Won: &2$&a%{_w1}%" to {_p}
+    send "" to {_p}
 
-
+function slotsOutcomeGuiChange(p: player, type: number):
+    if {_type} is 1:
+        set {_item} to light green glass pane
+    if {_type} is 2:
+        set {_item} to red glass pane
+    loop 3 times:
+        format gui slot (2, 3, 4, 5, 6, 11, 15, 29, 33, 38, 39, 40, 41 and 42) of {_p} with {_item} named ""
+        wait 5 ticks
+        format gui slot (2, 3, 4, 5, 6, 11, 15, 29, 33, 38, 39, 40, 41 and 42) of {_p} with black glass pane named " "
+        wait 5 ticks
+ 
 function slotsRun(p: player, room: text, bet: number):
-    set {_items::*} to "Light Gray Dye", "Yellow Dye", "Green Dye", "Pink Dye", "Light Blue Dye", "Purple Dye" and "Orange Dye"
-    set {_slots1::*} to 12, 13, 14, 21, 22, 23, 30, 31 and 32
-    remove gui slot {_slots1::*} of {_p}
+    loop 22 times:
+        add "Light Gray Dye" to {_items::*}
+    loop 16 times:
+        add "Yellow Dye" to {_items::*}
+    loop 11 times:
+        add "Green Dye" to {_items::*}
+    loop 7 times:
+        add "Light Blue Dye" to {_items::*}
+    loop 4 times:
+        add "Orange Dye" to {_items::*}
+    loop 2 times:
+        add "Pink Dye" to {_items::*}
+    add "Purple Dye" to {_items::*}
+    format gui slot (12, 13, 14, 21, 22, 23, 30, 31, and 32) of {_p} with black glass pane named " "
     loop 15 times:
         loop 3 times:
             if {slotsguiopen::%{_p}%} is 1:
                 stop loop
-            set {_reel1} to a random element out of {_items::*}
-            set {_reel2} to a random element out of {_items::*}
-            set {_reel3} to a random element out of {_items::*}
-            format gui slot 12 of {_p} with {_reel1} parsed as an item
-            format gui slot 13 of {_p} with {_reel2} parsed as an item
-            format gui slot 14 of {_p} with {_reel3} parsed as an item
-            format gui slot 21 of {_p} with {_reel12} parsed as an item
-            format gui slot 22 of {_p} with {_reel22} parsed as an item
-            format gui slot 23 of {_p} with {_reel32} parsed as an item
-            format gui slot 30 of {_p} with {_reel13} parsed as an item
-            format gui slot 31 of {_p} with {_reel23} parsed as an item
-            format gui slot 32 of {_p} with {_reel33} parsed as an item
-            set {_slot1} to {_reel12}
-            set {_slot2} to {_reel22}
-            set {_slot3} to {_reel32}
-            set {_reel13} to {_reel12}
-            set {_reel23} to {_reel22}
-            set {_reel33} to {_reel32}
-            set {_reel12} to {_reel1}  
-            set {_reel22} to {_reel2}
-            set {_reel32} to {_reel3}         
-            wait 2 ticks
+            loop 3 times:
+                set {_reel%loop-number-3%} to a random element out of {_items::*}
+            loop 3 times:
+                format gui slot (11 + loop-number-3) of {_p} with {_reel%loop-number-3%} parsed as an item named " "
+                format gui slot (20 + loop-number-3) of {_p} with {_reel%loop-number-3%2} parsed as an item named " "
+                format gui slot (29 + loop-number-3) of {_p} with {_reel%loop-number-3%3} parsed as an item named " "
+            loop 3 times:
+                set {_slot%loop-number-3%} to {_reel%loop-number-3%2}
+            loop 3 times:
+                set {_reel%loop-number-3%3} to {_reel%loop-number-3%2}
+            loop 3 times:
+                set {_reel%loop-number-3%2} to {_reel%loop-number-3%}         
+            wait 3 ticks
+    if {slotsguiopen::%{_p}%} is 1:
+        stop
     if {_slot1} is {_slot3}:
         if {_slot1} is {_slot2}:
-            slotsPrizeOutcome({_p}, {_room}, 2, {_bet})
+            slotsOutcomeGuiChange({_p}, 1)
+            slotsPrizeOutcome({_p}, {_room}, 2, {_bet}, {_slot2})
     else if {_slot1} is {_slot2}:
-        slotsPrizeOutcome({_p}, {_room}, 1, {_bet})
+        slotsOutcomeGuiChange({_p}, 1)
+        slotsPrizeOutcome({_p}, {_room}, 1, {_bet}, {_slot2})
+    else:
+        slotsOutcomeGuiChange({_p}, 2)
     wait 1 second
     set {slotsspinning::%{_p}%} to false
+    slotsBetCheck({_p}, {_room}, 0)
 
 function slotsMenu(p: player):
     set {slotsspinning::%{_p}%} to false
@@ -204,13 +255,13 @@ function slotsMenu(p: player):
         loop 27 times:
             make gui slot (loop-number - 1) to gray glass pane named " "
         make gui slot 4 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%{_bal}%"
-        make gui slot 10 to glowing coal named "&eLow &7Room" with lore "", "&6Bets&7:" and "&2$&a1 &e» &2$&a100":
+        make gui slot 10 to coal named "&eLow &7Room" with lore "", "&6Bets&7:" and "&2$&a1 &e» &2$&a100":
             slotsBetCheck({_p}, "low", 0)
-        make gui slot 11 to glowing iron ingot named "&6Med &7Room" with lore "", "&6Bets&7:" and "&2$&a100 &e» &2$&a1K":
+        make gui slot 11 to iron ingot named "&6Med &7Room" with lore "", "&6Bets&7:" and "&2$&a100 &e» &2$&a1K":
             slotsBetCheck({_p}, "med", 0)
-        make gui slot 12 to glowing gold ingot named "&cHigh &7Room" with lore "", "&6Bets&7:" and "&2$&a1K &e» &2$&a10K":
+        make gui slot 12 to gold ingot named "&cHigh &7Room" with lore "", "&6Bets&7:" and "&2$&a1K &e» &2$&a10K":
             slotsBetCheck({_p}, "high", 0)
-        make gui slot 13 to glowing lapis lazuli named "&4Mega &7Room" with lore "", "&6Bets&7:" and "&2$&a10K &e» &2$&a100K":
+        make gui slot 13 to lapis lazuli named "&4Mega &7Room" with lore "", "&6Bets&7:" and "&2$&a10K &e» &2$&a100K":
             slotsBetCheck({_p}, "mega", 0)
         make gui slot 14 to glowing redstone dust named "&dUltra &7Room" with lore "", "&6Bets&7:" and "&2$&a100K &e» &2$&a1M":
             slotsBetCheck({_p}, "ultra", 0)
@@ -218,8 +269,30 @@ function slotsMenu(p: player):
             slotsBetCheck({_p}, "insane", 0)
         make gui slot 16 to glowing emerald named "&b&lL&3&lu&b&ld&3&li&b&lc&3&lr&b&lo&3&lu&b&ls &7Room" with lore "", "&6Bets&7:" and "&2$&a100M &e» &2$&a1B":
             slotsBetCheck({_p}, "ludicrous", 0)
+        make gui slot 22 to book named "&7-&6Information&7-" with lore "" and "&7--&6READ&7-&6ME&7--":
+            close {_p}'s inventory
+            slotsInformation({_p})
     open last gui to {_p}
     stop
+
+function slotsInformation(p: player):
+    send "" to {_p}
+    send "        &3Slots &6Information" to {_p}
+    send "        &7--------------" to {_p}
+    send "" to {_p}
+    send "      &7Match &7&o2 &7of the same" to {_p}
+    send "      &7for a &o2.5x &7bet prize" to {_p}
+    send "" to {_p}
+    send "      &7Match &7&o3 &7of the same" to {_p}
+    send "       &7to win the Jackpot" to {_p}
+    send "" to {_p}
+    send "  &710 percent of all bets will" to {_p}
+    send "&7be added to the jackpot's pot" to {_p}
+    send "" to {_p}
+    send "  &7If you leave the game whilst" to {_p}
+    send "    &7it is running, you will lose" to {_p}
+    send "        &7your current bet" to {_p}
+    send "" to {_p}
 
 on script load:
     add "Low", "Med", "High", "Mega", "Ultra", "Insane" and "Ludicrous" to {_list::*}
@@ -229,11 +302,10 @@ on script load:
 
 on inventory close:
     if event-inventory's display name contains "{@GUIName}":
-        if {slotsguiopen::%event-player%} is 0:
-            set {slotsguiopen::%event-player%} to 1
+        if {slotsguiopen::%player%} is 0:
+            set {slotsguiopen::%player%} to 1
 
-command /slots:
+command /slots [<text>]:
     trigger:
-        slotsMenu(player)
-
-
+        if arg 1 is not set:
+            slotsMenu(player)
