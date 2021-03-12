@@ -1,7 +1,7 @@
 options:
 	Name.GUI: &6» &b&lCoin&3&lFlip
 	Name.GUI.Loading: &B&lC&3&lF&r
-	Prefix: &b&lFast&3&lGens &8➤
+	Prefix: &b&lServerName &8➤
 
 on script load:
 	clear {coinflipcolours::*}
@@ -139,13 +139,10 @@ function coinflipOutcome(num: number, bet: number, 1: offlineplayer, 2: offlinep
 	add {_bet} to {_winner}'s balance
 
 function coinflipMenu(p: player):
-	set {_bal} to coinflipformatNumBet({_p}' balance)
 	create a gui with virtual chest named "{@Name.GUI}" with 4 rows:
-		set {_won} to coinflipformatNumBet({coinflip.win.total::%{_p}%})
-		set {_lost} to coinflipformatNumBet({coinflip.lose.total::%{_p}%})
 		loop 36 times:
 			make gui slot (loop-number - 1) to light gray glass pane named " "
-		make gui slot 27 to skull of {_p} named "&6» &eStats" with lore "", "&6» &eYour Money&7: &2$&a%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%{_p}%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%{_p}%}%", "", "&6» &eBalance won &7: &2$&a%{_won}%" and  "&6» &eBalance lost &7: &2$&c%{_lost}%"
+		make gui slot 27 to skull of {_p} named "&6» &eStats" with lore "", "&6» &eYour Money&7: &2$&a%coinflipformatNumBet({_p}' balance)%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%{_p}%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%{_p}%}%", "", "&6» &eBalance won &7: &2$&a%coinflipformatNumBet({coinflip.win.total::%{_p}%})%" and  "&6» &eBalance lost &7: &2$&c%coinflipformatNumBet({coinflip.lose.total::%{_p}%})%"
 		make gui slot 31 to glowing book named "&6» &eCommands" with lore "", "&6» &e/cf help", "&6» &e/cf create/make <amount>", "&6» &e/cf leave/cancel", "&6» &e/cfstats <playername>" and ""
 		make gui slot 33 to skull of "DaddyCeacer" parsed as offline player named "&eMade By &6DaddyCeacer"
 		set {_slot} to 0
@@ -154,8 +151,7 @@ function coinflipMenu(p: player):
 		set {_cfrcreturn} to coinflipRoomCheck({_p})
 		loop {coinflip.%{_cfrcreturn}%::*}:
 			set {_text} to loop-value
-			set {_bet} to coinflipformatNumBet({coinflip.bet.%loop-value%})
-			make gui slot {_slot} to skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%{_bet}%":
+			make gui slot {_slot} to skull of "%loop-value%" parsed as offline player named "&6» &eCoin Flip" with lore "", "&6» &ePlayer&7: &c%loop-value%" and "&6» &eBet&7: $&c%coinflipformatNumBet({coinflip.bet.%loop-value%})%":
 				make {_p} execute command "cf play 12 %{_text}%"
 			add 1 to {_slot}
 			if {cf.open::%{_p}%} is false:
@@ -179,14 +175,8 @@ command /cfstats [<offlineplayer>]:
 			create a gui with virtual chest named "{@Name.GUI} &7Stats" with 3 rows:
 				loop 27 times:
 					make gui slot (loop-number - 1) to gray glass pane named " "
-				set {_bal} to coinflipformatNumBet(player' balance)
-				set {_won} to coinflipformatNumBet({coinflip.win.total::%player%})
-				set {_lost} to coinflipformatNumBet({coinflip.lose.total::%player%})
-				make gui slot 11 to skull of player named "&6» &eMy Stats" with lore "", "&6» &eMoney&7: &2$&a%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%player%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%", "", "&6» &eBalance won &7: &2$&a%{_won}%" and  "&6» &eBalance lost &7: &2$&c%{_lost}%"
-				set {_bal} to coinflipformatNumBet(arg 1's balance)
-				set {_won} to coinflipformatNumBet({coinflip.win.total::%arg 1%})
-				set {_lost} to coinflipformatNumBet({coinflip.lose.total::%arg 1%})
-				make gui slot 15 to skull of "%arg 1%" parsed as an offlineplayer named "&6» &e%arg 1%'s Stats" with lore "", "&6» &eMoney&7: &2$&a%{_bal}%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%arg 1%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%arg 1%}%", "", "&6» &eBalance won &7: &2$&a%{_won}%" and  "&6» &eBalance lost &7: &2$&c%{_lost}%"
+				make gui slot 11 to skull of player named "&6» &eMy Stats" with lore "", "&6» &eMoney&7: &2$&a%coinflipformatNumBet(player' balance)%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%player%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%player%}%", "", "&6» &eBalance won &7: &2$&a%coinflipformatNumBet({coinflip.win.total::%player%})%" and  "&6» &eBalance lost &7: &2$&c%coinflipformatNumBet({coinflip.lose.total::%player%})%"
+				make gui slot 15 to skull of "%arg 1%" parsed as an offlineplayer named "&6» &e%arg 1%'s Stats" with lore "", "&6» &eMoney&7: &2$&a%coinflipformatNumBet(arg 1's balance)%", "&6» &eNumber of CoinFlips won&7: &a%{coinflip.win::%arg 1%}%", "&6» &eNumber of CoinFlips Lost&7: &c%{coinflip.lose::%arg 1%}%", "", "&6» &eBalance won &7: &2$&a%coinflipformatNumBet({coinflip.win.total::%arg 1%})%" and  "&6» &eBalance lost &7: &2$&c%coinflipformatNumBet({coinflip.lose.total::%arg 1%})%"
 			open last gui to player
 			stop
 
@@ -362,7 +352,6 @@ command /cf [<text>] [<int>] [<player>]:
 			else:
 				send "&cYou do not have the required permission to do this."
 		
-
 on join:
 	if {coinflip.win::%player%} is not set:
 		set {coinflip.win::%player%} to 0

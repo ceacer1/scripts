@@ -1,0 +1,372 @@
+options:
+	perm: op
+
+on load:
+	set {keys::*} to "Common", "Rare", "Uncommon" and "Legend"
+
+on left click on chest:
+	set {_loc} to location of event-block
+	loop {crate::*}:
+		if {crate::%loop-index%} is {_loc}:
+			cancel event
+			set {_crate} to loop-index
+	if {_crate} is set:
+		cancel event
+	previewCrate(player, {_crate})
+
+on right click on chest:
+	set {_loc} to location of event-block
+	loop {crate::*}:
+		if {crate::%loop-index%} is {_loc}:
+			cancel event
+			set {_crate} to loop-index
+	if {_crate} is set:
+		if player's tool is tripwire hook:
+			loop {keys::*}:
+				name of player's tool is "&b%loop-value% Key":
+					set {_type} to loop-value
+					if {_type} is {_crate}:
+						remove 1 of player's tool from player
+
+						# common Crate
+						if {_crate} is "Common":
+							set {_rng} to random integer from 1 to 10
+							if {_rng} is 1:
+								console command "givemachinenum 1 %player% 1"
+								send "&e[Factoried] &7You received a stone factory&7!"
+							else if {_rng} is 2:
+								console command "givemachinenum 15 %player% 1"
+								send "&e[Factoried] &7You received a x1 sell chest!"
+							else if {_rng} is 3:
+								console command "givemachinenum 2 %player% 1"
+								send "&e[Factoried] &7You received a coal factory&7!"
+							else if {_rng} is 4:
+								add 15000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You've received $15000!"
+							else if {_rng} is 5:
+								add 10000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You received $10000&7!"
+							else if {_rng} is 6:
+								add 7500 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You received $7500&7!"
+							else if {_rng} is 7:
+								console command "/giveitemnum 2 %player% 1 1"
+								send "&e[Factoried] &7You received a tier 1 token pouch!"
+							else if {_rng} is 8:
+								console command "/giveitemnum 3 %player% 1"
+								send "&e[Factoried] &7You received a common key!"								
+							else if {_rng} is 9:
+								console command "/giveitemnum 3 %player% 2"
+								send "&e[Factoried] &7You received 2 common keys!"
+							else if {_rng} is 10:
+								console command "/giveitemnum 4 %player% 1"
+								send "&e[Factoried] &7You received an uncommon key!"
+
+						# uncommon Crate
+						else if {_crate} is "Uncommon":
+							set {_rng} to random integer from 1 to 10
+							if {_rng} is 1:
+								console command "givemachinenum 10 %player% 1"
+								send "&e[Factoried] &7You received a refinery&7!"
+							else if {_rng} is 2:
+								console command "givemachinenum 15 %player% 1"
+								send "&e[Factoried] &7You received a x1 sell chest!"
+							else if {_rng} is 3:
+								console command "givemachinenum 3 %player% 1"
+								send "&e[Factoried] &7You received a lapis factory&7!"
+							else if {_rng} is 4:
+								add 15000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You've received $15000!"
+							else if {_rng} is 5:
+								add 18000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You received $18000&7!"
+							else if {_rng} is 6:
+								add 25000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You received $25000&7!"
+							else if {_rng} is 7:
+								console command "/giveitemnum 2 %player% 1 2"
+								send "&e[Factoried] &7You received a tier 2 token pouch!"
+							else if {_rng} is 8:
+								console command "/giveitemnum 4 %player% 1"
+								send "&e[Factoried] &7You received an uncommon key!"								
+							else if {_rng} is 9:
+								console command "/giveitemnum 3 %player% 2"
+								send "&e[Factoried] &7You received 2 common keys!"
+							else if {_rng} is 10:
+								console command "/giveitemnum 4 %player% 2"
+								send "&e[Factoried] &7You received 2 uncommon keys!"
+							else if {_rng} is 11:
+								console command "/giveitemnum 2 %player% 1 1"
+								send "&e[Factoried] &7You received a tier 1 token pouch!"
+
+						# rare Crate
+						else if {_crate} is "Rare":
+							set {_rng} to random integer from 1 to 10
+							if {_rng} is 1:
+								console command "givemachinenum 10 %player% 1"
+								send "&e[Factoried] &7You received a refinery&7!"
+							else if {_rng} is 2:
+								console command "givemachinenum 15 %player% 1"
+								send "&e[Factoried] &7You received a x1 sell chest!"
+							else if {_rng} is 3:
+								console command "givemachinenum 5 %player% 1"
+								send "&e[Factoried] &7You received a lapis factory&7!"
+							else if {_rng} is 4:
+								add 25000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You've received $25000!"
+							else if {_rng} is 5:
+								add 35000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You received $35000&7!"
+							else if {_rng} is 6:
+								add 50000 to {balance::%player's uuid%}
+								send "&e[Factoried] &7You received $50000&7!"
+							else if {_rng} is 7:
+								console command "/giveitemnum 2 %player% 1 2"
+								send "&e[Factoried] &7You received a tier 2 token pouch!"
+							else if {_rng} is 8:
+								console command "/giveitemnum 4 %player% 1"
+								send "&e[Factoried] &7You received an uncommon key!"								
+							else if {_rng} is 9:
+								console command "/giveitemnum 3 %player% 2"
+								send "&e[Factoried] &7You received 2 common keys!"
+							else if {_rng} is 10:
+								console command "/giveitemnum 4 %player% 2"
+								send "&e[Factoried] &7You received 2 uncommon keys!"
+							else if {_rng} is 11:
+								console command "givemachinenum 11 %player% 1"
+								send "&e[Factoried] &7You received an extractor&7!"
+
+
+
+					else:
+						sendError(player, "&cYou must be holding a %{_crate}% &ckey to open that!")
+		else:
+			sendError(player, "&cYou must be holding a %{_crate}% &ckey to open that!")
+
+function previewCrate(p: player, crate: text):
+	if {_crate} is "rare":
+		open virtual chest inventory with size 3 named "Rare crate" to {_p}
+		format gui slot 0 of {_p} with light gray shulker box named "&fRefinery"
+		format gui slot 1 of {_p} with dispenser named "&fExtractor"
+		format gui slot 2 of {_p} with barrel named "&fDiamond factory &e[Tier VII]"
+		format gui slot 3 of {_p} with paper named "&e$50000"
+		format gui slot 4 of {_p} with paper named "&e$35000"
+		format gui slot 5 of {_p} with paper named "&e$25000"
+		format gui slot 6 of {_p} with chest named "&e1x Sell Chest"
+		format gui slot 7 of {_p} with cauldron named "&e&lToken Pouch &e[Tier 2]"
+		format gui slot 8 of {_p} with tripwire hook named "&dRare Key"
+		format gui slot 9 of {_p} with 2 of tripwire hook named "&a2x Uncommon Key"
+		format gui slot 10 of {_p} with 2 of tripwire hook named "&b2x Common key"
+		format gui slot 11 of {_p} with 2 of tripwire hook named "&d2x Rare key"
+	else if {_crate} is "uncommon":
+		open virtual chest inventory with size 3 named "Uncommon crate" to {_p}
+		format gui slot 0 of {_p} with light gray shulker box named "&fRefinery"
+		format gui slot 1 of {_p} with barrel named "&fIron factory &e[Tier III]"
+		format gui slot 2 of {_p} with paper named "&e$15000"
+		format gui slot 3 of {_p} with paper named "&e$18000"
+		format gui slot 4 of {_p} with paper named "&e$25000"
+		format gui slot 5 of {_p} with chest named "&e1x Sell Chest"
+		format gui slot 6 of {_p} with cauldron named "&e&lToken Pouch &e[Tier 2]"
+		format gui slot 7 of {_p} with cauldron named "&e&lToken Pouch &e[Tier 1]"
+		format gui slot 8 of {_p} with tripwire hook named "&bUncommon Key"
+		format gui slot 9 of {_p} with 2 of tripwire hook named "&a2x Uncommon Key"
+		format gui slot 10 of {_p} with 2 of tripwire hook named "&b2x Common key"
+	else if {_crate} is "common":
+		open virtual chest inventory with size 3 named "Common crate" to {_p}
+		format gui slot 0 of {_p} with barrel named "&fStone factory &e[Tier I]"
+		format gui slot 1 of {_p} with barrel named "&fCoal factory &e[Tier II]"
+		format gui slot 2 of {_p} with paper named "&e$7500"
+		format gui slot 3 of {_p} with paper named "&e$10000"
+		format gui slot 4 of {_p} with paper named "&e$15000"
+		format gui slot 5 of {_p} with chest named "&e1x Sell Chest"
+		format gui slot 6 of {_p} with cauldron named "&e&lToken Pouch &e[Tier 1]"
+		format gui slot 7 of {_p} with tripwire hook named "&bCommon Key"
+		format gui slot 8 of {_p} with tripwire hook named "&aUncommon Key"
+		format gui slot 9 of {_p} with 2 of tripwire hook named "&b2x Common key"
+
+# # # Commands # # #
+
+command /keyall <text> <integer>:
+	usage: /keyall <daily/op/rank/fall> <amount>
+	permission: {@perm}
+	trigger:
+		if arg-1 is "Rank":
+			send "NO"
+			stop
+		set {_type} to arg-1
+		set {_amount} to arg-2
+		
+		# organization
+		set {_type} to "Common" if {_type} is "common"
+		set {_type} to "Uncommon" if {_type} is "uncommon"
+		set {_type} to "Rare" if {_type} is "Rare"
+		set {_type} to "Legend" if {_type} is "legend"
+
+		if {keys::*} contains "%{_type}%":
+			loop all players:
+				giveKey(loop-player, {_type}, {_amount})
+		broadcast "", "&b%player% &7just did a &b%{_type}% &7key all!" and ""
+
+command /keyalloffline <text> <integer>:
+	usage: /keyalloffline <daily/op/rank/GOD> <amount>
+	permission: {@perm}
+	trigger:
+		if arg-1 is "Rank":
+			send "NO"
+			stop
+		set {_type} to arg-1
+		set {_amount} to arg-2
+		
+		# organization
+		set {_type} to "OP" if {_type} is "op"
+		set {_type} to "Daily" if {_type} is "daily"
+		set {_type} to "GOD" if {_type} is "GOD"
+
+		if {keys::*} contains "%{_type}%":
+			loop {joins::*}:
+				set {_player} to loop-value parsed as offline player
+				giveKey({_player}, {_type}, {_amount})
+		broadcast "", "&6%player% &bjust did a &c%{_type}% &bkey all for every player that has joined!" and ""
+
+command /redeem:
+	trigger:
+		if size of {redeem::%player's uuid%::*} > 0:
+			open virtual chest inventory with size 6 named "Redeem" to player
+			format gui slot (integers from 0 to 8) of player with black stained glass named "&7"
+			format gui slot 4 of player with beacon named "&bRedeem" lored "&7Click on an item to redeem it"
+			set {_slot} to 9
+			loop {redeem::%player's uuid%::*}:
+				set {_redeem} to loop-value
+				set {_split::*} to loop-value split at "|"
+				set {_type} to "%{_split::1}%"
+				set {_amount} to {_split::3}
+				set {_item} to "%{_split::2}%"
+
+				# capitalize
+				set {_item} to "OP" if {_item} is "op"
+				set {_item} to "Daily" if {_item} is "daily"
+				set {_item} to "GOD" if {_item} is "GOD"
+				
+				# gui
+				if {_type} is "Key":
+					format gui slot {_slot} of player with shiny tripwire hook named "&6%{_item}% &6Key &7(&bx%{_amount}%&7)" lored "&f||&7Click here to redeem!||&f" to run: #&7(&bx%{_amount}%&7)
+						if player has enough space for 1 trident: # random item to check space
+							giveKey(player, {_item}, ({_amount} parsed as an integer))
+							remove {_redeem} from {redeem::%player's uuid%::*}
+							close player's inventory
+							send "&bSuccessfully redeemed your %{_item}% &bKey!" to player
+						else:
+							sendError(player, "&cYou have no space for that!")
+				else if {_type} is "Voucher": 
+					format gui slot {_slot} of player with shiny paper named "&7Redeem %{_item}% &7(&bx%{_amount}%&7)" lored "&f||&7Click here to redeem!||&f" to run: #&7(&bx%{_amount}%&7)
+						if player has enough space for 1 trident: # random item to check space
+							giveVoucher(player, {_item}, ({_amount} parsed as an integer))
+							remove {_redeem} from {redeem::%player's uuid%::*}
+							close player's inventory
+							send "&bSuccessfully redeemed your %{_item}% &bRank!" to player
+						else:
+							sendError(player, "&cYou have no space for that!")
+				else if {_type} is "Gen":
+					if {_item} contains "ingot":
+						set {_name::*} to {_item} split at " "
+						set {_name} to {_name::1}
+					else:
+						set {_name} to {_item}
+					if {_item} is "Gold":
+						set {_item} to "Gold Ingot"
+					format gui slot {_slot} of player with shiny ({_item} parsed as item) named "&6%{_name}% &6Generator &7(&bx%{_amount}%&7)" lored "&f||&7Click here to redeem!||&f" to run: #&7(&bx%{_amount}%&7)
+						if player has enough space for 1 trident: # random item to check space
+							giveGen(player, {_name}, ({_amount} parsed as an integer))
+							remove {_redeem} from {redeem::%player's uuid%::*}
+							close player's inventory
+							send "&bSuccessfully redeemed your %{_name}% &bGenerator!" to player
+						else:
+							sendError(player, "&cYou have no space for that!")
+				else if {_type} is "Money":
+					format gui slot {_slot} of player with shiny sunflower named "&b$%regex({_item})% &7(DONATOR)" lored "&f||&7Click here to redeem!||&f" to run: #&7(&bx%{_amount}%&7)
+						add ({_item} parsed as integer) to {balance::%player's uuid%}
+						remove {_redeem} from {redeem::%player's uuid%::*}
+						close player's inventory
+						send "&bSuccessfully redeemed your $%regex({_item})% &bdonator money!" to player
+				else if {_type} is "Item":
+					if {_item} contains "Sellwand":
+						set {_name} to {_item}
+						set {_item} to "diamond hoe"
+					else:
+						set {_name} to {_item}
+					format gui slot {_slot} of player with shiny ({_item} parsed as item) named "&6%{_name}% &7(&bx%{_amount}%&7)" lored "&f||&7Click here to redeem!||&f" to run: #&7(&bx%{_amount}%&7)
+						if player has enough space for 1 trident: # random item to check space
+							console command "sellwand %player% 1"
+							remove {_redeem} from {redeem::%player's uuid%::*}
+							close player's inventory
+							send "&bSuccessfully redeemed your %{_name}%&b!" to player
+						else:
+							sendError(player, "&cYou have no space for that!")
+				add 1 to {_slot}
+		else:
+			sendError(player, "&cYou have nothing to redeem!")
+
+command /setcratelocation <text>:
+	usage: /setcratelocation <crate> (look at the chest)
+	permission: op
+	trigger:
+		if {keys::*} contains "%arg-1%":
+			set {crate::%arg-1%} to location of player's targeted block
+			send "e"
+
+function giveKey(p: player, key: text, amount: integer = 1):
+	set {_u} to {_p}'s uuid
+	if {_p} is online:
+		give {_p} {_amount} of tripwire hook named "&b&l%{_key}% &bKEY&7" with no nbt
+	else:
+		add "Key|%{_key}%|%{_amount}%" to {redeem::%{_u}%::*}
+	else:
+		# "Type|Keytype|amount"
+		add "Key|%{_key}%|%{_amount}%" to {redeem::%{_u}%::*}
+	
+function giveVoucher(p: player, rank: text, amount: integer = 1):
+	set {_u} to {_p}'s uuid
+	if {_p} is online:
+		if {_p} has enough space for 1 trident: # random item to check space
+			console command "rankvoucher %{_rank}% %{_p}% %{_amount}%"
+		else:
+			add "Voucher|%{_rank}%|%{_amount}%" to {redeem::%{_u}%::*}
+	else:
+		# "Keytype|amount"
+		add "Voucher|%{_rank}%|%{_amount}%" to {redeem::%{_u}%::*}
+
+function giveGen(p: player, type: text, amount: integer = 1):
+	set {_u} to {_p}'s uuid
+	if {_p} is online:
+		if {_p} has enough space for 1 trident: # random item to check space
+			console command "givegen %{_type}% %{_p}% %{_amount}%"
+		else:
+			add "Gen|%{_type}%|%{_amount}%" to {redeem::%{_u}%::*}
+	else:
+		# "Keytype|amount"
+		add "Gen|%{_type}%|%{_amount}%" to {redeem::%{_u}%::*}
+		
+function sellwand(p: player, sellwand: text, amount: integer = 2):
+	set {_u} to {_p}'s uuid
+	if {_p} is online:
+		if {_p} has enough space for 1 trident: # random item to check space
+			console command "sellwand %{_p}% %{_amount}%"
+		else:
+			add "Sellwand|%{_amount}%" to {redeem::%{_u}%::*}
+	else:
+		# "Keytype|amount"
+		add "Sellwand|%{_amount}%" to {redeem::%{_u}%::*}
+
+function regex(n: object) :: text:
+    if "%{_n}%" contains ".":
+        set {_s::*} to split "%{_n}%" at "."
+        set {_n} to "%a({_s::1})%.%last 2 characters of {_s::2}%"
+        return "%{_n}%"
+    else:
+        set {_n} to a("%{_n}%")
+        return "%{_n} ? 0%"
+function a(b: text) :: text:
+    if length of {_b} > 3:
+        return "%a(first length of {_b} - 3 characters of {_b})%,%last 3 characters of {_b}%"
+    return {_b}
+	

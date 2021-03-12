@@ -54,27 +54,19 @@ function slotsformatNum(n: number) :: string:
     return {_n}
 
 function slotsChangeBet(p: player, room: text, minus3: number, minus2: number, minus1: number, min: number, max: number, add1: number, add2: number, add3: number):
-    loop 3 times:
-        set {_minus%4 - loop-number%a} to slotsformatNum({_minus%4 - loop-number%})
-        set {_add%loop-number%a} to slotsformatNum({_add%loop-number%})
-    set {_bet} to slotsformatNum({slotscurrentbet::%{_p}%})
     create a gui with virtual chest named "Slots" with 1 row:
         make gui slot (0 and 8) to gray glass pane named " "
         loop 3 times:
-            set {_m1} to {_minus%4 - loop-number%}
-            set {_m1a} to {_minus%4 - loop-number%a}
-            make gui slot loop-number to red glass pane named "&c-%{_m1a}%":
+            make gui slot loop-number to red glass pane named "&c-%slotsformatNum({_minus%4 - loop-number%})%":
                 remove {_m1} from {slotscurrentbet::%{_p}%}
                 if {slotscurrentbet::%{_p}%} < {_min}:
                     set {slotscurrentbet::%{_p}%} to {_min}
                 slotsBetCheck({_p}, {_room}, 1)
-        make gui slot 4 to glowing sunflower named "&6Bet" with lore "", "&6Current&7: &8(&2$&a%{_bet}%&8)", "" and "&a&lClick to reset":
+        make gui slot 4 to glowing sunflower named "&6Bet" with lore "", "&6Current&7: &8(&2$&a%slotsformatNum({slotscurrentbet::%{_p}%})%&8)", "" and "&a&lClick to reset":
             set {slotscurrentbet::%{_p}%} to ({_max} / 2)
             slotsBetCheck({_p}, {_room}, 1)
         loop 3 times:
-            set {_add1} to {_add%loop-number%}
-            set {_add1a} to {_add%loop-number%a}
-            make gui slot (4 + loop-number) to green glass pane named "&a+%{_add1a}%":
+            make gui slot (4 + loop-number) to green glass pane named "&a+%slotsformatNum({_add%loop-number%})%":
                 add {_add1} to {slotscurrentbet::%{_p}%}
                 if {slotscurrentbet::%{_p}%} > {_max}:
                     set {slotscurrentbet::%{_p}%} to {_max}
@@ -101,10 +93,7 @@ function slotsPayouts(p: player, room: text):
     stop
 
 function slotsPlay(p: player, room: text):
-    set {_bet} to slotsformatNum({slotscurrentbet::%{_p}%})
-    set {_jp} to slotsformatNum({slotsjackpot::%{_room}%})
-    set {_bal} to slotsformatNum({_p}'s balance)
-    create a gui with virtual chest named "{@GUIName} &3JP &7- &2$&a%{_jp}%" with 6 rows:
+    create a gui with virtual chest named "{@GUIName} &3JP &7- &2$&a%slotsformatNum({slotsjackpot::%{_room}%})%" with 6 rows:
         loop 54 times:
             make gui slot (loop-number - 1) to gray glass pane named " "
         make gui slot 12 to Light Gray Dye named " "
@@ -116,11 +105,11 @@ function slotsPlay(p: player, room: text):
         make gui slot 32 to Light Blue Dye named " "
         make gui slot (2, 3, 4, 5, 6, 11, 15, 20, 24, 29, 33, 38, 39, 40, 41 and 42) to black glass pane named " "
         make gui slot (18, 19, 20, 24, 25 and 26) to light green glass pane named "&aPay Line"
-        make gui slot 45 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%{_bal}%"
+        make gui slot 45 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%slotsformatNum({_p}'s balance)%"
         make gui slot 47 to glowing book named "&3Payouts":
             slotsPayouts({_p}, {_room})
-        make gui slot 48 to glowing cauldron named "&bJ&3a&bc&3k&bp&3o&bt" with lore "" and "&6Current&7: &2$&a%{_jp}%"
-        make gui slot 49 to glowing sunflower named "&6Bet" with lore "", "&6Current&7: &8(&2$&a%{_bet}%&8)", "" and "&a&lClick to change":
+        make gui slot 48 to glowing cauldron named "&bJ&3a&bc&3k&bp&3o&bt" with lore "" and "&6Current&7: &2$&a%slotsformatNum({slotsjackpot::%{_room}%})%"
+        make gui slot 49 to glowing sunflower named "&6Bet" with lore "", "&6Current&7: &8(&2$&a%slotsformatNum({slotscurrentbet::%{_p}%})%&8)", "" and "&a&lClick to change":
             slotsBetCheck({_p}, {_room}, 1)
         if {slotsspinning::%{_p}%} is false:
             make gui slot 50 to stone button named "&aSpin":
@@ -250,11 +239,10 @@ function slotsRun(p: player, room: text, bet: number):
 
 function slotsMenu(p: player):
     set {slotsspinning::%{_p}%} to false
-    set {_bal} to slotsformatNum({_p}'s balance)
     create a gui with virtual chest named "{@GUIName} &3Menu" with 3 rows:
         loop 27 times:
             make gui slot (loop-number - 1) to gray glass pane named " "
-        make gui slot 4 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%{_bal}%"
+        make gui slot 4 to skull of {_p} named "&6%{_p}%" with lore "" and "&6Balance&7: &2$&a%slotsformatNum({_p}'s balance)%"
         make gui slot 10 to coal named "&eLow &7Room" with lore "", "&6Bets&7:" and "&2$&a1 &e» &2$&a100":
             slotsBetCheck({_p}, "low", 0)
         make gui slot 11 to iron ingot named "&6Med &7Room" with lore "", "&6Bets&7:" and "&2$&a100 &e» &2$&a1K":

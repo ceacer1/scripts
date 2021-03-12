@@ -1,0 +1,144 @@
+options:
+	perm: op
+	prefix: &7[&a!&7] [&bCrates&7]&r
+
+on load:
+	set {keys::*} to "Common", "Rare", "Uncommon" and "Legend"
+	set {crateholo::*} to "Common|&2Common", "Rare|&cRare", "Uncommon|&bUncommon" and "Legend|&6Legend"
+		
+	loop {keys::*}:
+		delete {crate::%loop-value%::items::*}
+		delete {crate::%loop-value%::view::*}
+#Adding items to crates.....
+	#When maing a new crate follow this.....
+	#cratesAddItem("arg-1", arg-2, arg-3, "arg-4", "arg-5", arg-6)
+	#Arg-1 Needs to be either "money" or "item"
+	#if arg-1 is "money"
+	#arg-2 needs to be the amount of money you want them to be able to win
+	#arg-3 needs to be set to something random it doesnt get used
+	#same goes for arg-4 but it needs "" around it
+	#arg-5 needs to be the the name of the crate you wish for this item to be in also needs to be in "" and have the first letter capitalized
+	#arg-6 needs to be the percentage chance you want the item to be between 1 and 100 has to be a whole number
+#Common Crate Items
+	cratesAddItem("money", 100000, stick, "stick" , "Common", 40)
+	cratesAddItem("item", 10, coal, "&8Fuel", "Common", 35)
+	cratesAddItem("item", 1, tripwire hook, "&bCommon &7Key", "Common", 25)
+
+on left click on chest:
+	if player is sneaking:
+		set {_loc} to location of event-block
+		loop {keys::*}:
+			if {crate::%loop-value%} is {_loc}:
+				delete {crate::%loop-value%}
+				delete hologram {cratehololoc::%loop-value%}
+		stop
+	set {_loc} to location of event-block
+	loop {keys::*}:
+		if {crate::%loop-value%} is {_loc}:
+			cancel event
+			set {_crate} to loop-value
+			send "%{_crate}%"
+	if {_crate} is set:
+		cancel event
+		cratesPreview(player, {_crate})
+
+function cratesAddItem(type: text, amount: number, item: item, name: text, crate: text, chance: number):
+	if {_type} is "money":
+		loop {_chance} times:
+			add "%{_type}%|%{_amount}%" to {crate::%{_crate}%::items::*}
+		add "%{_type}%|%{_amount}%|%{_chance}%" to {crate::%{_crate}%::view::*}
+	if {_type} is "item":
+		loop {_chance} times:
+			add "%{_type}%|%{_amount}%|%{_item}%|%{_name}%" to {crate::%{_crate}%::items::*}
+		add "%{_type}%|%{_amount}%|%{_item}%|%{_name}%|%{_chance}%" to {crate::%{_crate}%::view::*}
+
+on right click on chest:
+	set {_loc} to location of event-block
+	loop {crate::*}:
+		if {crate::%loop-index%} is {_loc}:
+			cancel event
+			set {_crate} to loop-index
+	if {_crate} is set:
+		if player's tool is tripwire hook:
+			loop {keys::*}:
+				if name of player's tool contains "&b%loop-value% &7Key":
+					set {_type} to loop-value
+					if {_type} is {_crate}:
+						remove 1 of player's tool from player
+						set {_split::*} to random element out of {crate::%{_crate}%::items::*}
+						set {_split::*} to {_split::1} split at "|"
+						if {_split::1} contains "money":
+							add {_split::2} to player's balance 
+							send "{@prefix} &7You received &2$&a%{_split::2}%&7!"
+						if {_split::1} contains "item":
+							give player ({_split::2} parsed as int) of ({_split::3} parsed as item) named "%{_split::4}%"
+							send "{@prefix} &7You received a x%{_split::2}% %{_split::4}%&7!"
+					else:
+						cratesError(player, "&cYou must be holding a %{_crate}% &ckey to open that!")
+		else:
+			cratesError(player, "&cYou must be holding a %{_crate}% &ckey to open that!")
+
+function cratesPreview(p: player, crate: text):
+	set {_ia} to ceil(((size of {crate::%{_crate}%::view::*}) / 7))
+	set {_rows} to (2 + {_ia})
+	add 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42 and 43 to {_slots::*}
+	create a gui with virtual chest named "%{_crate}% Crate" with {_rows} rows:
+		loop ({_rows} * 9) times:
+			make gui slot (loop-number - 1) to gray glass pane named " "
+		loop (size of {crate::%{_crate}%::view::*}) times:
+			set {_split::*} to {crate::%{_crate}%::view::%loop-number%} split at "|"
+			if {_split::1} contains "money":
+				make gui slot {_slots::%loop-number%} to paper named "&7Money &2$&a%{_split::2}%" with lore "" and "&7Chance&8: &3%{_split::3}%"
+			if {_split::1} contains "item":
+				make gui slot {_slots::%loop-number%} to {_split::3} parsed as an itemtype named "%{_split::4}% &7x%{_split::2}%" with lore "" and "&7Chance&8: &3%{_split::5}%"
+	open last gui to {_p}
+	stop
+
+function cratesError(p: player, t: text):
+	send "" to {_p}
+	send "{@prefix} %{_t}%" to {_p}
+	send "" to {_p}
+
+function cratesgiveKey(p: player, key: text, amount: number):
+	set {_u} to {_p}'s uuid
+	loop {crateholo::*}:
+		set {_key::*} to loop-value split at "|"
+		if {_key} is {_key::1}:
+			set {_key} to {_key::2}
+			exit loop
+	give {_p} {_amount} of tripwire hook named "%{_key}% &7Key&7"
+
+command /crate [<text>] [<text>] [<number>]:
+	trigger:
+		if arg-1 is not set:
+			send ""
+		if arg-1 is "setlocation":
+			if arg-2 is not set:
+				cratesError(player, "&cPlease enter a crate type!")
+			else: 
+				if {keys::*} contains arg-2:
+					set {crate::%arg-2%} to location of player's targeted block
+					if {cratehololoc::*} does not contain arg-2:
+						set {_holoPos} to {crate::%arg-2%}
+						add 1.25 to y-coordinate of {_holoPos}
+						loop {crateholo::*}:
+							set {_holo::*} to loop-value split at "|"
+							if arg-2 is {_holo::1}:
+								set {_title} to {_holo::2}
+								exit loop
+						create a new hologram with line "%{_title}%" at {_holoPos} and store in {cratehololoc::%arg-2%}
+				else:
+					cratesError(player, "&cInvalid crate type - try capitalizing the first letter!")
+		if arg-1 is "keyall":
+			if arg-2 is not set:
+				cratesError(player, "&cPlease enter a key type!")
+			else:
+				if {keys::*} does not contain arg-2:
+					cratesError(player, "&cInvalid key type - try capitalizing the first letter!")
+				else:
+					if arg-3 is not set:
+						loop all players:
+							cratesgiveKey(loop-player, arg-2, 1)
+					else:
+						loop all players:
+							cratesgiveKey(loop-player, arg-2, arg-3)

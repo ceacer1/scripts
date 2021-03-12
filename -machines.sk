@@ -683,19 +683,13 @@ every 20 ticks in {@plotWorld}:
 
 
 every 20 ticks in {@plotWorld}:
-	
 	if {GlobalMachineEnabled} is not equal to 1:
 		stop
-	
 	loop all players:
-	
 		set {_p} to loop-player
 		set {_u} to {_p}'s uuid
-		
 		if {Powered::%{_u}%} is false:
 			continue
-	
-			
 		loop {FactoryPos::%loop-player's uuid%::*}:
 			set {_l} to loop-value-2
 			
@@ -704,34 +698,24 @@ every 20 ticks in {@plotWorld}:
 				set {_item} to sunflower named "&fToken &e(Right-click)"  with lore "&8Right click to redeem" and "&8Used to purchase in /tokenshop"
 				add {_item} to inventory of block at {_l}
 
-
 #Refinery
-
-
 every 5 seconds in {@plotWorld}:
-
 	if {GlobalMachineEnabled} is not equal to 1:
 		stop
-	
 	loop all players:
 		set {_p} to loop-player
 		set {_u} to {_p}'s uuid
-		
 		if {Powered::%{_u}%} is false:
 			continue
-		
 		loop {MachinePos::%{_u}%::*}:
 			set {_l} to loop-value-2
-		
 			if {MachineType::%{_u}%::%{_l}%} is equal to 10:
 				set {_machineInv} to inventory of block at {_l}
-			
 				set {_currentSlotIndex} to 0
 				loop 27 times:
 					set {_slotItem} to slot {_currentSlotIndex} of {_machineInv}
 					set {_refinedItems} to {_slotItem}
 					set {_amount} to item amount of {_slotItem}
-				
 					if {_slotItem} is cobblestone named "&bCobblestone":
 						set {_refinedItems} to {_amount} of stone named "&bStone"
 					else if {_slotItem} is coal ore named "&bCoal Ore":
@@ -749,54 +733,33 @@ every 5 seconds in {@plotWorld}:
 					else if {_slotItem} is emerald ore named "&bEmerald Ore":
 						set {_refinedItems} to {_amount} of emerald named "&bEmerald"
 					else if {_slotItem} is crying obsidian named "&bCrying Obsidian":
-						set {_refinedItems} to {_amount} of obsidian named "&bObsidian"
-				
-				
+						set {_refinedItems} to {_amount} of obsidian named "&bObsidian"								
 					set slot {_currentSlotIndex} of {_machineInv} to {_refinedItems}
 				
 					add 1 to {_currentSlotIndex}
 
-
-
-
-
-
 #Extractor
-
 every 3 seconds in {@plotWorld}:
-
 	if {GlobalMachineEnabled} is not equal to 1:
 		stop
-
 	loop all players:
 		set {_p} to loop-player
-		set {_u} to loop-player's uuid
-		
+		set {_u} to loop-player's uuid		
 		if {Powered::%{_u}%} is false:
-			continue
-		
+			continue		
 		loop {MachinePos::%{_u}%::*}:
-			set {_l} to loop-value-2
-			
+			set {_l} to loop-value-2			
 			set {_type} to {MachineType::%{_u}%::%{_l}%}
 			set {_machineInv} to inventory of block 1 above {_l}
-			set {_extractorInv} to inventory of block at {_l}
-			
-			set {_al} to location of block 1 above {_l}
-			
-			
+			set {_extractorInv} to inventory of block at {_l}			
+			set {_al} to location of block 1 above {_l}			
 			if {MachineType::%{_u}%::%{_l}%} is equal to 11:
-
-				if {MachineType::%{_u}%::%{_al}%} is equal to 10:
-				
+				if {MachineType::%{_u}%::%{_al}%} is equal to 10:				
 					set {_currentExtractorIndex} to 0
-					loop 27 times:
-					
+					loop 27 times:					
 						if {_extractorInv} doesn't have enough space for 1 trident:
-							continue
-					
-						set {_slotItem} to slot {_currentExtractorIndex} of {_machineInv}
-						
+							continue					
+						set {_slotItem} to slot {_currentExtractorIndex} of {_machineInv}						
 						if {_slotItem} is stone or coal or iron ingot or redstone or lapis or gold ingot or diamond or emerald or obsidian or sunflower:
 							add {_slotItem} to {_extractorInv}
 							set slot {_currentExtractorIndex} of {_machineInv} to air
@@ -1057,12 +1020,7 @@ every 2 minutes in {@plotWorld}:
 					add 1 to {_currentSlotIndex}
 						
 				add {_sellPrice} to {balance::%{_u}%}
-				
-			
-			
-			
-					
-					
+							
 on quit:
 	delete holograms {GenHolo::%player's uuid%::*}
 	delete {GenHolo::%player's uuid%::*}
