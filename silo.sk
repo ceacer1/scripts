@@ -1,0 +1,199 @@
+command /silo:
+    trigger:
+        loop {silotiers::*}:
+            set {_split::*} to loop-value split at "|"
+            delete {ssu::%uuid of player%::%{_split::1}%::*}
+
+        give player note block named "&7SSU" with lore "&8(&7Silo Storage Unit&8)" and "&7Tier&8: &31" with no nbt
+
+on script load:
+    siloReset()
+    siloAddTier(1, 1800, 500)
+    siloAddTier(2, 4500, 5000)
+    siloAddTier(3, 11250, 10000)
+    siloAddTier(4, 28125, 25000)
+    siloAddTier(5, 70312, 100000)
+    siloAddTier(6, 175718, 500000)
+    siloAddTier(7, 439453, 3000000)
+    siloAddTier(8, 1098632, 12000000)
+    siloAddTier(9, 2746582, 50000000)
+    siloAddTier(10, 6866455, 100000000)
+
+function siloReset():
+    delete {silotiers::*}
+
+function siloAddTier(t: int, a: number, up: number):
+    add "%{_t}%|%{_a}%|%{_up}%" to {silotiers::*}
+
+function siloUpgrade(p: player, t: number, l: location, up: number):
+    if {_p}'s balance >= {_up}:
+        set {_u} to {_p}'s UUID
+        remove {_l} from {ssu::%{_u}%::%{_t}%::*}
+        set {_c::*} to {ssu::%{_u}%::%{_t}%::%{_l}%::*}
+        set {_n} to {_t} + 1
+        add {_l} to {ssu::%{_u}%::%{_n}%::*}
+        add {_c::*} to {ssu::%{_u}%::%{_n}%::%{_l}%::*}
+        remove {_up} from {_p}'s balance
+        send "&eYou have upgraded a silo!" to {_p}
+    else:
+        send "&cYou do not have enough money to do this!" to {_p}
+
+function siloClear(p: player, t: number, l: location):
+    set {_u} to {_p}'s UUID
+    set {_split::*} to {ssu::%{_u}%::%{_t}%::%{_l}%::*}
+    set {_sa} to 0
+    loop 36 times:
+        if slot (loop-number - 1) of {_p} is air:
+            add 1 to {_sa}
+    set {_ia} to {_sa} * 64
+    if {_split::2} <= {_ia}:
+        set {_ia} to {_split::2}
+    set {_item} to uncoloured {_split::1} parsed as item
+    give {_ia} of {_item} named "%{_split::1}%" with no nbt to {_p}
+    remove {_ia} from {ssu::%{_u}%::%{_t}%::%{_l}%::2}
+    if {ssu::%{_u}%::%{_t}%::%{_l}%::2} is 0:
+        set {ssu::%{_u}%::%{_t}%::%{_l}%::1} to "Empty"          
+
+function siloSell(p: player, i: text, a: number, multiplier: integer):
+    loop {gentypes::*}:
+        set {_split::*} to loop-value split at "|"
+        set {_item::*} to {_split::2} split at " "
+        remove "Gen" from {_item::*}
+        if {_item::3} is set:
+            set {_item} to "%{_item::1}% %{_item::2}% %{_item::3}%"
+        else:
+            set {_item} to "%{_item::1}% %{_item::2}%"
+        if {_item} is {_i}:
+            set {_amount} to {_a}
+            set {_sp} to {_split::5} if {_split::2} contains {_item}
+            set {_tsp} to ({_amount} * {_sp} parsed as int)
+            add {_tsp} to {_total}
+    if {_total} > 0:
+        send "&aSold &e$%{_total}% &aworth of items" to {_p}
+        add {_total} to balance of {_p}
+    else:
+        send "&cYou do not have any items to sell!" to {_p}
+
+function siloGUI(p: player, t: number, l: location, o: number):
+    set {_u} to {_p}'s UUID
+    set {_split::*} to {ssu::%{_u}%::%{_t}%::%{_l}%::*}
+    loop {silotiers::*}:
+        set {_n::*} to loop-value split at "|"
+        if {_n::1} parsed as int is not {_t}:
+            continue
+        else:
+            set {_max} to {_n::2}
+            exit loop
+    if {_o} is 0:
+        create a gui with virtual dropper named "&8SSU &7- &8Tier &7(&3%{_t}%&7)":
+            make gui slot 0, 1, 2, 3, 5, 6 and 8 to gray stained glass pane named " "
+            make gui slot 4 to lime stained glass pane named "&7&lSilo" with lore "&7Item Type&8: %{_split::1}%" and "&7Amount&8: &7(&d%{_split::2}%&7/&d%{_max}%&7)"
+            make gui slot 7 to red stained glass pane named "&6Options" with lore "&7Click me or SHIFT Right Click Block":
+                close {_p}'s inventory
+                siloGUI({_p}, {_t}, {_l}, 1)
+    else:
+        create a gui with virtual chest named "&8SSU &7- &8Options":
+            loop 27 times:
+                make gui slot (loop-number - 1) to gray glass pane named " "
+            make gui slot 11 to paper named "&6Sell All Items":
+                close {_p}'s inventory
+                siloSell({_p}, {_split::1}, {_split::2}, 1)
+                set {ssu::%{_u}%::%{_t}%::%{_l}%::1} to "Empty"
+                set {ssu::%{_u}%::%{_t}%::%{_l}%::2} to 0
+            make gui slot 13 to hopper named "&6Clear Silo" with lore "&7This will fill your inventory with as many" and "&7items as possible untill there is none left.":
+                siloClear({_p}, {_t}, {_l})
+            if {_t} is not (size of {silotiers::*}):
+                make gui slot 15 to gold block named "&6Upgrade" with lore "&7Level &8- &3%{_t}% &8> &3%{_t} + 1%" and "&7Price &8- &2$&a%{_n::3}%":
+                    close {_p}'s inventory
+                    siloUpgrade({_p}, {_t}, {_l}, {_n::3} parsed as number)
+            else:
+                make gui slot 14 to glowing gold block named "&6Max Level" with lore "&7Level &8- &3%{_t}%"
+    open last gui to {_p}
+    stop
+
+every 5 seconds:
+    loop all players:
+        set {_u} to loop-player's UUID
+        loop {silotiers::*}:
+            set {_split::*} to loop-value-2 split at "|"
+            loop {ssu::%{_u}%::%{_split::1}%::*}:
+                if block 1 above loop-value-3 is hopper:
+                    set {_inv} to inventory of block 1 above loop-value-3
+                    set {_l} to loop-value-3
+                    set {_n::*} to {ssu::%{_u}%::%{_split::1}%::%{_l}%::*}
+                    if {_n::1} is "Empty":
+                        set {_block} to "Empty"
+                    else:
+                        set {_block} to {_n::1}
+                    set {_slot} to 0
+                    loop 5 times:
+                        if {_block} is "Empty":
+                            if slot {_slot} of {_inv} is air:
+                                stop
+                            else:                            
+                                set {_item} to the name of slot {_slot} of {_inv}
+                                set {ssu::%{_u}%::%{_split::1}%::%{_l}%::1} to "%{_item}%"
+                                stop
+                        else if the name of slot {_slot} of {_inv} is {_block}:
+                            if {ssu::%{_u}%::%{_split::1}%::%{_l}%::2} < {_split::2} parsed as int:
+                                set {_item} to the name of slot {_slot} of {_inv}
+                                set {ssu::%{_u}%::%{_split::1}%::%{_l}%::1} to "%{_item}%"
+                                set {_amount} to (item amount of slot {_slot} of {_inv})
+                                add {_amount} to {_ta}
+                                add 1 to {_slot}
+                        else:
+                            add 1 to {_slot}
+                    if {_ta} is not set:
+                        exit loop
+                    set {_diff} to {_split::2} parsed as int - {ssu::%{_u}%::%{_split::1}%::%{_l}%::2}
+                    if {_ta} > {_diff}:
+                        set {_give} to {_diff}
+                    else:
+                        set {_give} to {_ta}
+                    set {_it} to uncoloured {_item} parsed as itemtype
+                    loop {_give} times:
+                        remove {_it} from {_inv}
+                    add {_give} to {ssu::%{_u}%::%{_split::1}%::%{_l}%::2}
+
+on break of note block:
+    loop {silotiers::*}:
+        set {_split::*} to loop-value split at "|"
+        if {ssu::%uuid of player%::%{_split::1}%::*} does not contain location of event-block:
+            continue
+        else:
+            loop {ssu::%uuid of player%::%{_split::1}%::*}:
+                set {_l} to loop-value-2
+                if loop-value-2 = location of event-block:
+                    exit loop
+            set {_i::*} to {ssu::%uuid of player%::%{_split::1}%::%{_l}%::*}
+            if {_i::2} is not 0:
+                cancel event
+                send "&cSilo is not empty!"
+            else:
+                remove location of event-block from {ssu::%uuid of player%::%{_split::1}%::*}
+                give player note block named "&7SSU" with lore "&8(&7Silo Storage Unit&8)" and "&7Tier&8: &3%{_split::1}%" with no nbt
+                send "&eYou have been given a &7SSU Tier&8: &3%{_split::1}%"
+                    
+on right click:
+    player's tool is not hopper
+    event-block is note block
+    cancel event
+    loop {silotiers::*}:
+        set {_split::*} to loop-value split at "|"
+        if {ssu::%uuid of player%::%{_split::1}%::*} contains location of event-block:
+            if player is sneaking:
+                siloGUI(player, {_split::1} parsed as int, location of event-block, 1)
+            else:
+                siloGUI(player, {_split::1} parsed as int, location of event-block, 0)
+            stop
+
+on place of note block:
+    if (uncoloured name of player's tool) is "SSU":
+        if event is not canceled:
+            set {_n::*} to split (uncoloured line 2 of lore of tool of player) at " "
+            set {_n} to {_n::2}
+            {_n} is set
+            set {ssu::%uuid of player%::%{_n}%::*} to {ssu::%uuid of player%::%{_n}%::*} and location of event-block
+            add "Empty" and 0 to {ssu::%uuid of player%::%{_n}%::%location of event-block%::*}
+            send "%{ssu::%uuid of player%::%{_n}%::%location of event-block%::*}%"
+            send "&eYou have placed down a %name of players's tool% %line 2 of lore of tool of player%"

@@ -2,9 +2,13 @@ options:
 	perm: op
 	prefix: &7[&a!&7] [&bCrates&7]&r
 
+on tab complete of "/crate":
+	set tab completions for position 1 to "setlocation", "clearholo" and "keyall"
+	if tab arg-1 = "setlocation" or "keyall":
+		set tab completions for position 2 to {keys::*}
+
 on load:
 	set {keys::*} to "Common", "Rare", "Uncommon" and "Legend"
-	set {crateholo::*} to "Common|&2Common", "Rare|&cRare", "Uncommon|&bUncommon" and "Legend|&6Legend"
 		
 	loop {keys::*}:
 		delete {crate::%loop-value%::items::*}
@@ -22,22 +26,33 @@ on load:
 #Common Crate Items
 	cratesAddItem("money", 100000, stick, "stick" , "Common", 40)
 	cratesAddItem("item", 10, coal, "&8Fuel", "Common", 35)
-	cratesAddItem("item", 1, tripwire hook, "&bCommon &7Key", "Common", 25)
+	cratesAddItem("item", 1, tripwire hook, "&2Common &7Key", "Common", 25)
+#Uncommon Crate Items
+	cratesAddItem("money", 100000, stick, "stick" , "Uncommon", 40)
+	cratesAddItem("item", 10, coal, "&8Fuel", "Uncommon", 35)
+	cratesAddItem("item", 1, tripwire hook, "&bUncommon &7Key", "Uncommon", 25)
+#Rare Crate Items
+	cratesAddItem("money", 100000, stick, "stick" , "Rare", 40)
+	cratesAddItem("item", 10, coal, "&8Fuel", "Rare", 35)
+	cratesAddItem("item", 1, tripwire hook, "&cRare &7Key", "Rare", 25)
+#Legend Crate Items
+	cratesAddItem("money", 100000, stick, "stick" , "Legend", 40)
+	cratesAddItem("item", 10, coal, "&8Fuel", "Legend", 35)
+	cratesAddItem("item", 1, tripwire hook, "&6Legend &7Key", "Legend", 25)
 
-on left click on chest:
+on left click:
 	if player is sneaking:
-		set {_loc} to location of event-block
-		loop {keys::*}:
-			if {crate::%loop-value%} is {_loc}:
-				delete {crate::%loop-value%}
-				delete hologram {cratehololoc::%loop-value%}
-		stop
+		if player has permission "{@perm}":
+			set {_loc} to location of event-block
+			loop {keys::*}:
+				if {crate::%loop-value%} is {_loc}:
+					delete {crate::%loop-value%}
+			stop
 	set {_loc} to location of event-block
 	loop {keys::*}:
 		if {crate::%loop-value%} is {_loc}:
 			cancel event
 			set {_crate} to loop-value
-			send "%{_crate}%"
 	if {_crate} is set:
 		cancel event
 		cratesPreview(player, {_crate})
@@ -52,7 +67,7 @@ function cratesAddItem(type: text, amount: number, item: item, name: text, crate
 			add "%{_type}%|%{_amount}%|%{_item}%|%{_name}%" to {crate::%{_crate}%::items::*}
 		add "%{_type}%|%{_amount}%|%{_item}%|%{_name}%|%{_chance}%" to {crate::%{_crate}%::view::*}
 
-on right click on chest:
+on right click:
 	set {_loc} to location of event-block
 	loop {crate::*}:
 		if {crate::%loop-index%} is {_loc}:
@@ -61,7 +76,7 @@ on right click on chest:
 	if {_crate} is set:
 		if player's tool is tripwire hook:
 			loop {keys::*}:
-				if name of player's tool contains "&b%loop-value% &7Key":
+				if name of player's tool contains "%loop-value% &7Key":
 					set {_type} to loop-value
 					if {_type} is {_crate}:
 						remove 1 of player's tool from player
@@ -71,7 +86,7 @@ on right click on chest:
 							add {_split::2} to player's balance 
 							send "{@prefix} &7You received &2$&a%{_split::2}%&7!"
 						if {_split::1} contains "item":
-							give player ({_split::2} parsed as int) of ({_split::3} parsed as item) named "%{_split::4}%"
+							give player ({_split::2} parsed as int) of ({_split::3} parsed as item) named {_split::4}
 							send "{@prefix} &7You received a x%{_split::2}% %{_split::4}%&7!"
 					else:
 						cratesError(player, "&cYou must be holding a %{_crate}% &ckey to open that!")
@@ -88,9 +103,9 @@ function cratesPreview(p: player, crate: text):
 		loop (size of {crate::%{_crate}%::view::*}) times:
 			set {_split::*} to {crate::%{_crate}%::view::%loop-number%} split at "|"
 			if {_split::1} contains "money":
-				make gui slot {_slots::%loop-number%} to paper named "&7Money &2$&a%{_split::2}%" with lore "" and "&7Chance&8: &3%{_split::3}%"
+				make gui slot {_slots::%loop-number%} to paper named "&7Money &2$&a%{_split::2}%" with lore "" and "&7Chance&8: &3%{_split::3}%%%"
 			if {_split::1} contains "item":
-				make gui slot {_slots::%loop-number%} to {_split::3} parsed as an itemtype named "%{_split::4}% &7x%{_split::2}%" with lore "" and "&7Chance&8: &3%{_split::5}%"
+				make gui slot {_slots::%loop-number%} to {_split::3} parsed as an itemtype named "%{_split::4}% &7x%{_split::2}%" with lore "" and "&7Chance&8: &3%{_split::5}%%%"
 	open last gui to {_p}
 	stop
 
@@ -109,24 +124,22 @@ function cratesgiveKey(p: player, key: text, amount: number):
 	give {_p} {_amount} of tripwire hook named "%{_key}% &7Key&7"
 
 command /crate [<text>] [<text>] [<number>]:
+	permission: {@perm}
 	trigger:
 		if arg-1 is not set:
 			send ""
+		if arg-1 is "clearholo":
+			clear {crateholo::*}
 		if arg-1 is "setlocation":
 			if arg-2 is not set:
 				cratesError(player, "&cPlease enter a crate type!")
 			else: 
 				if {keys::*} contains arg-2:
-					set {crate::%arg-2%} to location of player's targeted block
-					if {cratehololoc::*} does not contain arg-2:
-						set {_holoPos} to {crate::%arg-2%}
-						add 1.25 to y-coordinate of {_holoPos}
-						loop {crateholo::*}:
-							set {_holo::*} to loop-value split at "|"
-							if arg-2 is {_holo::1}:
-								set {_title} to {_holo::2}
-								exit loop
-						create a new hologram with line "%{_title}%" at {_holoPos} and store in {cratehololoc::%arg-2%}
+					if {crate::%arg-2%} is not set:
+						set {crate::%arg-2%} to location of player's targeted block
+						cratesError(player, "&aLocation of &6%arg-2%&a has been set successfully!")
+					else:
+						cratesError(player, "&cThis crate has already been set at &7%{crate::%arg-2%}%")
 				else:
 					cratesError(player, "&cInvalid crate type - try capitalizing the first letter!")
 		if arg-1 is "keyall":
@@ -136,9 +149,15 @@ command /crate [<text>] [<text>] [<number>]:
 				if {keys::*} does not contain arg-2:
 					cratesError(player, "&cInvalid key type - try capitalizing the first letter!")
 				else:
+					loop {crateholo::*}:
+						if arg-2 is loop-value:
+							set {_crate} to loop-value
+							exit loop
 					if arg-3 is not set:
 						loop all players:
 							cratesgiveKey(loop-player, arg-2, 1)
+							cratesError(player, "&a1 %{_crate}% &7Key &ahas been given to every online player!")
 					else:
 						loop all players:
 							cratesgiveKey(loop-player, arg-2, arg-3)
+							cratesError(player, "&a%arg-3% %{_crate}% &7Keys &ahas been given to every online player!")

@@ -1,0 +1,17 @@
+command /roulette:
+    trigger:
+        rouletterGUI(player)
+
+function rouletterGUI(p: player):
+    set {_blacknos::*} to 1, 3, 5, 7, 9, 11, 13, 15, 17, 
+    set {_black::*} to 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41 and 43
+    set {_red::*} to 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42 and 44
+    create a gui with virtual chest named "Roulette" with 6 rows:
+        loop 27 times:
+            make gui slot (loop-number - 1) to gray glass pane named " "
+        loop {_black::*}:
+            make gui slot loop-value to black stained glass pane named "&8Black &7"
+        loop {_red::*}:
+            make gui slot loop-value to red stained glass pane named "&4Red"
+    open last gui to {_p}
+    stop

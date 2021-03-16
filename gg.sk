@@ -1,0 +1,166 @@
+command /gg:
+    trigger:
+        glassGUI(player)
+    
+on script load:
+    glassReset()
+    glassAddGen("white", "&fWhite", 1, 100000, 5)
+    glassAddGen("light gray", "&7Light Gray", 2, 150000, 10)
+    glassAddGen("gray", "&8Gray", 3, 225000, 15)
+    glassAddGen("magenta", "&dMagenta", 4, 400000, 20)
+    glassAddGen("purple", "&5Purple", 5, 600000, 250)
+    glassAddGen("light blue", "&bLight Blue", 6, 950000, 30)
+    glassAddGen("cyan", "&3Cyan", 7, 1200000, 35)
+    glassAddGen("blue", "&9Blue", 8, 2000000, 40)
+    glassAddGen("lime", "&aLime", 9, 4000000, 45)
+    glassAddGen("green", "&2Green", 10, 8000000, 50)
+    glassAddGen("yellow", "&eYellow", 11, 16000000, 55)
+    glassAddGen("orange", "&6Orange", 12, 32000000, 60)
+    glassAddGen("red", "&4Red", 13, 64000000, 65)
+    glassAddGen("black", "&8&lBlack", 14, 200000000, 70)
+
+function glassReset():
+    delete {gentypes::*}
+
+function glassAddGen(i: text, d: text, t: int, up: number, sp: number):
+    add "%{_i}% stained glass block|%{_d}% &7Dye Gen|%{_t}%|%{_up}%|%{_sp}%" to {gentypes::*}
+
+function glassGiveGen(p: player, i: text, n: text, l: text):
+    if {_p} has enough space for {_i} parsed as item named "%{_n}%" with lore "&7Tier&8: &3%{_l}%" with no nbt:
+        give {_i} parsed as item named "%{_n}%" with lore "&7Tier&8: &3%{_l}%" with no nbt to {_p}
+    else:
+        send "&cYou do not have enough room for this gen!" to {_p}
+
+function glassGUI(p: player):
+    set {_ia} to ceil(((size of {gentypes::*}) / 7))
+    set {_rows} to (2 + {_ia})
+    add 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42 and 43 to {_slots::*}
+    create a gui with virtual chest named "Glass" with {_rows} rows:
+        loop ({_rows} * 9) times:
+            make gui slot (loop-number - 1) to gray glass pane named " "
+        loop (size of {gentypes::*}) times:
+            set {_split::*} to {gentypes::%loop-number%} split at "|"
+            make gui slot {_slots::%loop-number%} to {_split::1} parsed as item named "%{_split::2}%" with lore "&7Tier&8: &3%{_split::3}%", "&7Upgrade Price&8: &2$&a%{_split::4}%" and "&7Drop Sell Price&8: &2$&a%{_split::5}%":
+                glassGiveGen({_p}, {_split::1}, {_split::2}, {_split::3})
+    open last gui to {_p}
+    stop
+
+command /sell:
+    trigger:
+        glassSell(player, inventory of player, 1)
+
+function glassSell(p: player, c: inventory, multiplier: integer):
+    loop {gentypes::*}:
+        set {_split::*} to loop-value split at "|"
+        set {_item::*} to {_split::2} split at " "
+        remove "Gen" from {_item::*}
+        if {_item::3} is set:
+            set {_item} to "%{_item::1}% %{_item::2}% %{_item::3}%"
+        else:
+            set {_item} to "%{_item::1}% %{_item::2}%"
+        loop all items in {_c}:
+            if {_item} is (name of loop-item):
+                set {_amount} to (number of loop-item in {_c})
+                set {_sp} to {_split::5} if {_split::2} contains {_item}
+                set {_tsp} to ({_amount} * {_sp} parsed as int)
+                add {_tsp} to {_total}
+                remove loop-item from {_c}
+    if {_total} > 0:
+        send "&aSold &e$%{_total}% &aworth of items" to {_p}
+        add {_total} to balance of {_p}
+    else:
+        send "&cYou do not have any items to sell!" to {_p}
+
+on right click:
+    if player is sneaking:
+        loop indices of {glassgen::%uuid of player%::*}:
+            if {glassgen::%uuid of player%::%loop-value%::*} contains location of clicked block:
+                loop {gentypes::*}:
+                    set {_split::*} to loop-value-2 split at "|"
+                    set {_level} to {_split::3}
+                    set {_block} to "%{_split::1}%"
+                    if {_block} parsed as item is not type of (block at event-location):
+                        continue
+                    else:
+                        exit loop
+                
+                if balance of player >= {_split::4} parsed as int:
+                    remove {_split::4} parsed as int from player's balance
+                    send "%{_split::4}%"
+                    if {_level} parsed as int = (size of {gentypes::*}):
+                        cancel event
+                        send "&eThis gen is Max Level"
+                    else:
+                        remove location of event-block from {glassgen::%uuid of player%::%{_level}%::*}
+                        send "&6Generator Upgraded"
+                        set {_level} to ({_split::3} parsed as int + 1)
+                        set {_split::*} to {gentypes::%{_level}%} split at "|"
+                        send "%{_split::*}%"
+                        set block at event-location to {_split::1} parsed as item
+                        add location of event-block to {glassgen::%uuid of player%::%{_split::3}%::*}
+                        stop
+                else:
+                    send "&cYou do not have enough money to upgrade this gen!"
+
+every 5 seconds:
+    loop all players:
+        set {_u} to uuid of loop-player
+        loop indices of {glassgen::%{_u}%::*}:
+            loop {glassgen::%{_u}%::%loop-value-2%::*}:
+                loop {gentypes::*}:
+                    set {_split::*} to loop-value-4 split at "|"
+                    set {_block} to "%{_split::1}%"
+                    if {_block} parsed as item is not type of (block at loop-value-3):
+                        continue
+                    else:
+                        set {_item::*} to {_split::1} split at " "
+                        set {_drop} to "%{_item::1}%"
+                        if {_drop} contains "light":
+                            set {_drop} to "%{_item::1}% %{_item::2}% dye"
+                        else:
+                            set {_drop} to "%{_item::1}% dye"
+                        set {_name::*} to {_split::2} split at " "
+                        if {_name::1} contains "light":
+                            set {_name} to "%{_name::1}% %{_name::2}% %{_name::3}%"
+                        else:
+                            set {_name} to "%{_name::1}% &7Dye"
+                        drop {_drop} parsed as an item named "%{_name}%" at block 1 above loop-value-3 without velocity
+                        exit loop
+
+on break:
+    loop {gentypes::*}:
+        set {_split::*} to loop-value split at "|"
+        set {_block} to "%{_split::1}%" parsed as item
+        if type of (block at event-location) is not {_block}:
+            continue
+        else:
+            #if event is not canceled:
+            set {_n} to {_split::3}
+            if {glassgen::%uuid of player%::%{_n}%::*} contains location of event-block:
+                set {_n} to {_split::3}
+                if player has enough space for {_block} named "%{_split::2}%" with lore "&7Tier&8: &3%{_n}%" with no nbt:
+                    set block at location of event-block to air
+                    give {_block} named "%{_split::2}%" with lore "&7Tier&8: &3%{_n}%" with no nbt to player
+                    remove location of event-block from {glassgen::%uuid of player%::%{_n}%::*}
+                    send "&eYou have been given a %{_split::2}%"
+                else:
+                    send "&cYou do not have enough room for this gen!" to player
+                    cancel event
+                #glassGiveGen(player, "%{_block}%", "%{_split::2}%", "%{_n}%")
+                
+            else:
+                send "&cThis is not your generator!" to player
+                cancel event
+
+on place:
+    loop (size of {gentypes::*}) times:
+        set {_split::*} to {gentypes::%loop-number%} split at "|"
+        if name of tool of player is not "%{_split::2}%":
+            continue
+        else:
+            if event is not canceled:
+                set {_n::*} to split (uncoloured line 1 of lore of tool of player) at " "
+                set {_n} to {_n::2}
+                {_n} is set
+                set {glassgen::%uuid of player%::%{_n}%::*} to {glassgen::%uuid of player%::%{_n}%::*} and location of event-block
+                send "&eYou have placed down a %name of players's tool%"

@@ -1,0 +1,70 @@
+options:
+    prefix: &7[&6Booster&7]
+
+on script load:
+    loop all players:
+        if {tokens::%loop-player%} is not set:
+            set {tokens::%loop-player%} to 0
+
+command /booster:
+    trigger:
+        send "%{tokens::%player%}%" 
+        boostGUI(player, 0)
+        
+command /boostadd [<offlineplayer>] [<int>]:
+    trigger:
+        if arg-1 is not set:
+            boostError(player, "&cPlease enter a playername!")
+            add 1 to {tokens::%player%}
+        else:
+            add "%arg-1's uuid%|%arg-2%" to {boost::*}
+            boostError(player, "%arg-1%'s boost has been set to %arg-2%")
+        
+command /bclear:
+    trigger:
+        delete {boost::*}
+
+function boostError(p: player, t: text):
+	send "" to {_p}
+	send "{@prefix} %{_t}%" to {_p}
+	send "" to {_p}
+
+function boostGUI(p: player, page: number):
+    set {_boost::*} to {boost::*}
+    if {_page} > 0:
+        loop (45 * {_page}) times:
+            remove {_boost::1} from {_boost::*}
+    create a gui with virtual chest named "Boost" with 6 rows:
+        loop 54 times:
+            make gui slot (loop-number - 1) to gray glass pane named " "
+        set {_slot} to 0 
+        loop {_boost::*}:
+            set {_o} to loop-value
+            set {_split::*} to loop-value split at "|"
+            make gui slot {_slot} to skull of {_split::1} parsed as offlineplayer named "%{_split::1} parsed as offlineplayer%" with lore "Tokens: %{_split::2}%":
+                boostClick({_p}, "%{_o}%")
+                close player's inventory
+            add 1 to {_slot}
+            if {_slot} = 44:
+                stop loop
+        if {_page} >= 1:
+            make gui slot 48 to paper named "Previous Page":
+                boostGUI({_p}, {_page} - 1)
+        make gui slot 49 to book named "Current Page (%{_page} + 1%)" with lore "" and "Click to go to homepage":
+            boostGUI({_p}, 0)
+        if (size of {_boost::*}) >= 45:
+            make gui slot 50 to paper named "Next Page":
+                boostGUI({_p}, {_page} + 1)
+    open last gui to {_p}
+    stop
+
+function boostClick(p: player, o: string):
+    if {boost::*} contains {_o}:
+        set {_split::*} to {_o} split at "|"
+        set {_u} to {_split::1} parsed as offlineplayer
+        send "%{_split::2}%" to {_p}
+        add {_split::2} parsed as int to {tokens::%{_p}%}
+        send "%{_split::2}% tokens has been credited to you" to {_p} and {_u}
+        remove {_o} from {boost::*} 
+    else:
+        send "These tokens have already been claimed, please reload the gui." to {_p}

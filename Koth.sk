@@ -1,0 +1,28 @@
+command /koth <text> [<integer>]:
+    permission: koth.admin
+    trigger:
+        if arg 1 is "sethill":
+            set {koth::hill} to player's location
+            send "&bThe hill is set to %{koth::hill}% &c(notice: in this radius there still has to be red terracotta)" to player
+        else if arg 1 is "setradius":
+            set {koth::radius} to arg 2
+            send "&bThe radius is set to %{koth::radius}%" to player
+        else if arg 1 is "start":
+            if {koth::started} is not set:
+                set {koth::started} to 1
+                broadcast "&c&lKoth has started! Capture the hill to win!"
+            else:
+                send "&bKoth has already started" to player
+        else if arg 1 is "end":
+            if {koth::started} is not set:
+                send "&bKoth is not started" to player
+            else:
+                set {koth::started} to 0
+                broadcast "&c&lKoth has started! Capture the hill to win!"
+                
+on step on red terracotta:
+    # set {koth::capturedby} to the player if {koth::progress} is less than or equal to 0? better way to do this?
+    # else set {koth::progress} to itself - 10
+
+every minute in "world":
+    # wish I could do this by the second so its an  accurate minute to the time you started capturing... too laggy?
