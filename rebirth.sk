@@ -1,0 +1,6 @@
+command /rebirth:
+    trigger:
+
+
+function rebirth(p: player):
+    
