@@ -129,12 +129,12 @@ function coinflipOutcome(num: number, bet: number, 1: offlineplayer, 2: offlinep
 	send "" to {_winner} and {_loser}
 	send "{@Prefix} &7&oYou won the Coinflip !" to {_winner}
 	send "{@Prefix} &7&oYou lost the CoinFlip !" to {_loser}
-	send "{@Prefix} &7&oSo you won &6$%{FinalBet.%{_1}%}%" to {_winner}
+	send "{@Prefix} &7&oSo you won &6$%{_bet}%" to {_winner}
 	send "{@Prefix} &7&oYou lost &6$%{coinflip.bet.%{_2}%}%" to {_loser}								
 	send "" to {_winner} and {_loser}
 	send "" to {_winner} and {_loser}
 	send "{@Prefix} &eYour winnings of &2$&a%{_bet}% &ehave been debited to your account." to {_winner}
-	add {coinflip.bet.%{_2}%} to {coinflip.lose.total::%{_winner}%} and {coinflip.win.total::%{_loser}%}
+	add {coinflip.bet.%{_2}%} to {coinflip.win.total::%{_winner}%} and {coinflip.lose.total::%{_loser}%}
 	add 1 to {coinflip.lose::%{_loser}%} and {coinflip.win::%{_winner}%}
 	add {_bet} to {_winner}'s balance
 
@@ -277,7 +277,6 @@ command /cf [<text>] [<int>] [<player>]:
 										send "{@Prefix} &eYou have matched &6&l%arg 3%&6&l's &ebet of &2$&a%{coinflip.bet.%arg 3%}%."
 										send "{@Prefix} &6&l%player% &ehas matched your bet of &2$&a%{coinflip.bet.%arg 3%}%." to arg 3
 										set {_FinalBet} to {coinflip.bet.%arg-3%} + {coinflip.bet.%arg-3%}
-										set {_FinalBet} to (({_FinalBet}/100) * 90)
 										add player and arg 3 to {Cf.%player%::*}
 										remove arg 3 from {coinflip::*}, {coinflip.low::*}, {coinflip.med::*}, {coinflip.high::*}, {coinflip.mega::*}, {coinflip.ultra::*}, {coinflip.insane::*} and {coinflip.ludicrous::*}							
 										loop 5 times:

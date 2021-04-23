@@ -83,7 +83,6 @@ on right click:
                         continue
                     else:
                         exit loop
-                
                 if balance of player >= {_split::4} parsed as int:
                     remove {_split::4} parsed as int from player's balance
                     send "%{_split::4}%"
@@ -134,7 +133,7 @@ on break:
         if type of (block at event-location) is not {_block}:
             continue
         else:
-            #if event is not canceled:
+            if event is not canceled:
             set {_n} to {_split::3}
             if {glassgen::%uuid of player%::%{_n}%::*} contains location of event-block:
                 set {_n} to {_split::3}
@@ -145,9 +144,7 @@ on break:
                     send "&eYou have been given a %{_split::2}%"
                 else:
                     send "&cYou do not have enough room for this gen!" to player
-                    cancel event
-                #glassGiveGen(player, "%{_block}%", "%{_split::2}%", "%{_n}%")
-                
+                    cancel event                
             else:
                 send "&cThis is not your generator!" to player
                 cancel event

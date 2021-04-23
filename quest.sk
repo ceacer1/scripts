@@ -1,0 +1,39 @@
+command /quests:
+    trigger:
+        questGUI(player)
+
+on join:
+    if {quests::%UUID of player%::coal} is not set:
+        set {quests::%UUID of player%::coal} to 0
+    if {quests::%UUID of player%::kills} is not set:
+        set {quests::%UUID of player%::kills} to 0
+
+function questGUI(p: player):
+    set {_u} to UUID of {_p}
+    create a gui with virtual chest named "&3Quests" with 3 rows:
+        loop 27 times:
+            make gui slot (loop-number - 1) to gray glass pane named " "
+        if {quests::%{_u}%::coal} < 16:
+            make gui slot 12 to glowing coal named "&bGetting Started" with lore "&8- &7Mine 16 Coal", "&dProgress" and "&8- &7(&a%{quests::%{_u}%::coal}%&7/&a16&7)"
+        else:
+            make gui slot 12 to glowing coal named "&bGetting Started" with lore "&8- &7Mine 16 Coal", "&dProgress" and "&8- &2Completed"
+        if {quests::%{_u}%::kills} < 5:
+            make gui slot 14 to glowing arrow named "&bHunter" with lore "&8- &7Get 5 kills", "&dProgress" and "&8- &7(&a%{quests::%{_u}%::kills}%&7/&a5&7)"
+        else:
+            make gui slot 14 to glowing arrow named "&bHunter" with lore "&8- &7Get 5 kills", "&dProgress" and "&8- &2Completed"
+    open last gui to {_p}
+    stop
+
+on death:
+    if attacker is a player:
+        add 1 to {quests::%uuid of attacker%::kills}
+        send "&7You have killed &e%player%&7!"
+        {quests::%uuid of attacker%::kills} is 5
+        send "&aCongrats &7you have completed the quest &bHunter"
+        play sound "block.note_block.pling" to player
+
+on break of coal ore:
+    add 1 to {quests::%uuid of player%::coal}
+    {quests::%uuid of player%::coal} is 16
+    send "&a - Quest Completed - &7(&bGetting Started&7)"
+    play sound "block.note_block.pling" to player

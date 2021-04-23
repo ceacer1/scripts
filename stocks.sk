@@ -96,7 +96,7 @@ function changeStocks():
 		set {_new%{stocks::%loop-number%}%Price} to random integer between ({_multiplyby::%loop-number%} * {@Low}) and ({_multiplyby::%loop-number%} * {@High})
 		set {%{stocks::%loop-number%}%stock::value} to {_new%{stocks::%loop-number%}%Price}
 	broadcast ""
-	broadcast "&e&l[!] Stocks &8| &fStocks prices have changed!"
+	broadcast "&e&l[!] Stocks &8| &fDiamond stocks are now %{diamondstock::value}%!"
 	broadcast ""
 	play sound "block.note_block.pling" with volume 5 to all players
 	

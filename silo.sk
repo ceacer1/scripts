@@ -28,11 +28,14 @@ function siloAddTier(t: int, a: number, up: number):
 function siloUpgrade(p: player, t: number, l: location, up: number):
     if {_p}'s balance >= {_up}:
         set {_u} to {_p}'s UUID
-        remove {_l} from {ssu::%{_u}%::%{_t}%::*}
         set {_c::*} to {ssu::%{_u}%::%{_t}%::%{_l}%::*}
+        send "%{_c::*}%" to {_p}
+        delete {ssu::%{_u}%::%{_t}%::%{_l}%::*}
+        remove {_l} from {ssu::%{_u}%::%{_t}%::*}
         set {_n} to {_t} + 1
         add {_l} to {ssu::%{_u}%::%{_n}%::*}
         add {_c::*} to {ssu::%{_u}%::%{_n}%::%{_l}%::*}
+        send "%{ssu::%{_u}%::%{_n}%::%{_l}%::*}%" to {_p}
         remove {_up} from {_p}'s balance
         send "&eYou have upgraded a silo!" to {_p}
     else:
@@ -107,7 +110,7 @@ function siloGUI(p: player, t: number, l: location, o: number):
                     close {_p}'s inventory
                     siloUpgrade({_p}, {_t}, {_l}, {_n::3} parsed as number)
             else:
-                make gui slot 14 to glowing gold block named "&6Max Level" with lore "&7Level &8- &3%{_t}%"
+                make gui slot 15 to glowing gold block named "&6Max Level" with lore "&7Level &8- &3%{_t}%"
     open last gui to {_p}
     stop
 
@@ -129,11 +132,11 @@ every 5 seconds:
                     loop 5 times:
                         if {_block} is "Empty":
                             if slot {_slot} of {_inv} is air:
-                                stop
+                                exit loop
                             else:                            
                                 set {_item} to the name of slot {_slot} of {_inv}
                                 set {ssu::%{_u}%::%{_split::1}%::%{_l}%::1} to "%{_item}%"
-                                stop
+                                exit loop
                         else if the name of slot {_slot} of {_inv} is {_block}:
                             if {ssu::%{_u}%::%{_split::1}%::%{_l}%::2} < {_split::2} parsed as int:
                                 set {_item} to the name of slot {_slot} of {_inv}
@@ -141,10 +144,12 @@ every 5 seconds:
                                 set {_amount} to (item amount of slot {_slot} of {_inv})
                                 add {_amount} to {_ta}
                                 add 1 to {_slot}
+                            else:
+                                send action bar "&3&lHEY!! &6One of your Silos is full!" to loop-player
+                                exit loop
                         else:
                             add 1 to {_slot}
-                    if {_ta} is not set:
-                        exit loop
+                    {_ta} is set
                     set {_diff} to {_split::2} parsed as int - {ssu::%{_u}%::%{_split::1}%::%{_l}%::2}
                     if {_ta} > {_diff}:
                         set {_give} to {_diff}
@@ -171,6 +176,7 @@ on break of note block:
                 send "&cSilo is not empty!"
             else:
                 remove location of event-block from {ssu::%uuid of player%::%{_split::1}%::*}
+                delete {ssu::%uuid of player%::%{_split::1}%::%{_l}%::*}
                 give player note block named "&7SSU" with lore "&8(&7Silo Storage Unit&8)" and "&7Tier&8: &3%{_split::1}%" with no nbt
                 send "&eYou have been given a &7SSU Tier&8: &3%{_split::1}%"
                     
@@ -193,7 +199,7 @@ on place of note block:
             set {_n::*} to split (uncoloured line 2 of lore of tool of player) at " "
             set {_n} to {_n::2}
             {_n} is set
-            set {ssu::%uuid of player%::%{_n}%::*} to {ssu::%uuid of player%::%{_n}%::*} and location of event-block
-            add "Empty" and 0 to {ssu::%uuid of player%::%{_n}%::%location of event-block%::*}
+            add location of event-block to {ssu::%uuid of player%::%{_n}%::*}
+            add "Empty", 0 and "None" to {ssu::%uuid of player%::%{_n}%::%location of event-block%::*}
             send "%{ssu::%uuid of player%::%{_n}%::%location of event-block%::*}%"
             send "&eYou have placed down a %name of players's tool% %line 2 of lore of tool of player%"
